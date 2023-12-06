@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:food_delivery_app/Presentation/Pages/home_page.dart';
+import 'package:food_delivery_app/Presentation/Utilities/side_menu.dart';
 import 'package:food_delivery_app/Presentation/Utilities/ui_utilities.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -29,6 +30,7 @@ class MyApp extends StatelessWidget {
         ),
         primaryColor: Palette.primary,
         primaryColorLight: Palette.primary.shade100,
+        primaryColorDark: Palette.primary.shade800,
         colorScheme: ColorScheme.fromSeed(
           seedColor: Palette.primary, 
           primary: Palette.primary,          
@@ -57,10 +59,36 @@ class MyApp extends StatelessWidget {
             fontWeight: FontWeight.w200,
             color: Colors.grey
           ),
+          headlineMedium: textTheme.bodyMedium!.copyWith(
+            fontSize: 20,
+            fontWeight: FontWeight.w100,            
+            color: Colors.grey
+          ),
         ),
         useMaterial3: false,
       ),
-      home: const MyHomePage(),
+      home: SideMenuView(
+        rotate3D: false,
+        groups: [
+          SideMenuGroup(
+            title: "Navigazione", 
+            buttons: [
+              SideMenuButton(
+                icon: Icon(Icons.home),
+                name: "Home",
+                content: MyHomePage()
+              ),
+              SideMenuButton(
+                icon: Icon(Icons.more),
+                name: "More",
+                onPressed: (){
+                  print("More");
+                }
+              )
+            ]
+          )
+        ]
+      ),
     );
   }
 }
