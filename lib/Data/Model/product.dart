@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 class Product{
   final String name;
   final String description;
@@ -17,4 +19,13 @@ class Product{
     imageName = json["image"],
     price = double.parse(json['price'].toString());
   
+  String toJson()
+  {
+    return jsonEncode({
+      "name":name,
+      "description":name,
+      "image":imageName,
+      "price":price
+    });
+  }
 }

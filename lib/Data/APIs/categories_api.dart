@@ -10,4 +10,23 @@ class CategoryApi{
       return value.body;
     });
   }
+
+  static Future<String> createCategory(
+    String categoryName,
+    String username,
+    String token,
+    String image
+  ) async{
+    return await FdaServerCommunication.getRequest(
+      "create_products_category", 
+      {
+        "name":categoryName,
+        "username":username,
+        "token":token,
+        "image":image
+      }
+    ).then((value) {
+      return value.body;
+    });
+  }
 }

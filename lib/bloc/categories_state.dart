@@ -14,6 +14,10 @@ final class CategoriesFetched extends CategoriesState{
   const CategoriesFetched(super.categories);
 }
 
+final class CategoryCreatedSuccesfully extends CategoriesState{
+  const CategoryCreatedSuccesfully(super.categories);
+}
+
 final class CategoriesErrorState extends CategoriesState{
   final String error;
   final CategoriesEvent event;

@@ -33,6 +33,7 @@ class CategoriesBloc extends Bloc<CategoriesEvent, CategoriesState> {
         break;
 
         case CategoriesCreateEvent():
+          
         break;
       }
     });
