@@ -1,53 +1,54 @@
+import 'package:flutter/material.dart';
 import 'package:food_delivery_app/Communication/http_communication.dart';
 import 'package:food_delivery_app/Data/APIs/user_api.dart';
 import 'package:food_delivery_app/Data/Model/fda_user.dart';
 class UserRepository{
 
-  Future<FdaUser> login(String username, password) async
+  Future<String> login(String username, String password) async
   {
     String result = await UserApi.login(username, password);
-   
-    
-    throw Exception(result);
+    return result;
   }
 
-  Future<String> signIn(String name, String username, String password) async
+  Future<bool> signIn(
+    String name, 
+    String username, 
+    String password
+  ) async
   {
     String result =  await UserApi.signIn(name, username, password);
     if(ErrorCodes.codes.containsValue(result))
     {
-      return result;
+      return ErrorCodes.isSuccesfull(result);
     }
     else {
       throw Exception(result);
     }
   }
 
-  Future<bool> verifyLoggedInState(FdaUser user) async
+  Future<bool> verifyLoggedInState(String username, String token) async
   {    
     return await UserApi.verifyLoggedInState(
-      user.username, 
-      user.token!
+      username, 
+      token
     ).then((result) => result == "YES");
   }
 
-  Future<bool> logout(FdaUser user) async
+  Future<bool> logout(String username, String token) async
   {
-    String result = await UserApi.logout(user.username, user.token!);
+    String result = await UserApi.logout(username, token);
     return ErrorCodes.isSuccesfull(result);
   }
 
-  Future<FdaUserInfo> fetchUserInfo(
-    FdaUser user
-  ) async
+  Future<FdaUserInfo> fetchUserInfo(String username, String token) async
   {
     String json = await UserApi.fetchUserInfo(
-      user.username,
-      user.token!
+      username,
+      token
     );
     
     if(!ErrorCodes.isNotSuccesfull(json) && json != ErrorCodes.codes['empty_result']) {      
-      return FdaUserInfo.fromJson(json, user);
+      return FdaUserInfo.fromJson(json);
     }
     else {
       throw Exception(json);

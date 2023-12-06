@@ -11,5 +11,6 @@ class CategoriesFetchEvent extends CategoriesEvent{
 
 class CategoriesCreateEvent extends CategoriesEvent{
   final ProductsCategory newCategory;
-  const CategoriesCreateEvent(this.newCategory);
+  final XFile newImage;
+  const CategoriesCreateEvent(this.newCategory, this.newImage);
 }

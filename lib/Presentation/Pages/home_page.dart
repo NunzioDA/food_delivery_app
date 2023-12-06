@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:food_delivery_app/Data/Model/products_category.dart';
 import 'package:food_delivery_app/Presentation/Pages/category_page.dart';
+import 'package:food_delivery_app/Presentation/Utilities/loading.dart';
 import 'package:food_delivery_app/Presentation/Utilities/ui_utilities.dart';
 import 'package:food_delivery_app/bloc/categories_bloc.dart';
+import 'package:food_delivery_app/bloc/user_bloc.dart';
 import 'package:gap/gap.dart';
 
 class MyHomePage extends StatefulWidget {
@@ -14,72 +16,106 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   late CategoriesBloc categoriesBloc;
+  ValueNotifier<bool> loading = ValueNotifier(false);
 
   @override
   void initState() {
-    categoriesBloc = CategoriesBloc();
+    categoriesBloc = CategoriesBloc(BlocProvider.of<UserBloc>(context));
     categoriesBloc.add(const CategoriesFetchEvent());
+    loading.value = true;
     super.initState();
+  }
+
+  void openCategoryPage(ProductsCategory? category, bool creationMode) async
+  {    
+    var newCategoryPair = await Navigator.of(context).push(
+      PageRouteBuilder(
+        opaque: false,
+        pageBuilder: (context, animation, secondaryAnimation) {
+          return CategoryPage(
+            category: category,  
+            creationMode: creationMode,
+            hasPermission: true,                                     
+          );
+        },
+      ) 
+    );
+
+    if(newCategoryPair != null)
+    {
+      categoriesBloc.add(
+        CategoriesCreateEvent(
+          ProductsCategory(newCategoryPair[0],"",[]),
+          newCategoryPair[1] //Immagine
+        )
+      );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         body: SafeArea(
-      child: Padding(
-        padding: const EdgeInsets.all(25.0),
-        child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              Text(
-                "Da te\nIn pochi passi",
-                style: Theme.of(context).textTheme.titleLarge,
-              ),
-              const Gap(20),
-              Text(
-                "Ecco i nostri prodotti",
-                style: Theme.of(context).textTheme.titleMedium,
-              ),
-              Expanded(
-                child: BlocBuilder<CategoriesBloc, CategoriesState>(
-                  bloc: categoriesBloc,
-                  builder: (context, state) {
-                    return GridView.count(
-                      crossAxisCount: 2,
-                      mainAxisSpacing: 10,
-                      crossAxisSpacing: 10,
-                      children: [
-                        ...categoriesBloc.state.categories
-                            .map(
-                              (e) => CategoryWidget(
-                                category: e,
-                                onPressed: (){
-                                  Navigator.of(context).push(
-                                    PageRouteBuilder(
-                                      opaque: false,
-                                      pageBuilder: (context, animation, secondaryAnimation) {
-                                        return CategoryPage(
-                                          category: e,                                            
-                                        );
-                                      },
-                                    ) 
-                                  );
-                                },
-                              ),
+        child: FdaLoading(
+          loadingNotifier: loading,
+          dynamicText: ValueNotifier("Sto caricando i dati.."),
+          child: Padding(
+            padding: const EdgeInsets.all(25.0),
+            child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Text(
+                    "Da te\nIn pochi passi",
+                    style: Theme.of(context).textTheme.headlineLarge,
+                  ),
+                  const Gap(20),
+                  Text(
+                    "Ecco i nostri prodotti",
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                  Expanded(
+                    child: BlocConsumer<CategoriesBloc, CategoriesState>(
+                      bloc: categoriesBloc,
+                      listener:(context, state) {
+                        loading.value = false;
+
+                        if(state is CategoriesErrorState)
+                        {
+
+                        } 
+                      },
+                      builder: (context, state) {
+                        return GridView.count(
+                          crossAxisCount: 2,
+                          mainAxisSpacing: 10,
+                          crossAxisSpacing: 10,
+                          children: [
+                            ...categoriesBloc.state.categories
+                                .map(
+                                  (e) => CategoryWidget(
+                                    category: e,
+                                    onPressed: (){
+                                      openCategoryPage(e, false);
+                                    },
+                                  ),
+                                )
+                                .toList(),
+                            AddCategoryWidget(
+                              onPressed: () {
+                                openCategoryPage(null, true);
+                              },
                             )
-                            .toList(),
-                        AddCategoryWidget(
-                          onPressed: () {},
-                        )
-                      ],
-                    );
-                  },
-                ),
-              )
-            ]),
-      ),
-    ));
+                          ],
+                        );
+                      },
+                    ),
+                  )
+                ]),
+          ),
+        ),
+      )
+    );
   }
 }
 

@@ -6,6 +6,7 @@ import 'package:food_delivery_app/Data/APIs/categories_api.dart';
 import 'package:food_delivery_app/Data/Model/fda_user.dart';
 import 'package:food_delivery_app/Data/Model/products_category.dart';
 import 'package:food_delivery_app/Presentation/Utilities/image_optimizer.dart';
+import 'package:food_delivery_app/bloc/user_bloc.dart';
 
 class CategoryRepository{
   Future<List<ProductsCategory>> fetchCategories() async
@@ -27,7 +28,7 @@ class CategoryRepository{
   Future<bool> createCategory(
     ProductsCategory newCategory,  
     XFile newPic,
-    FdaUser user
+    LoggedInState user
   ) async
   {
     FdaImage? optimized = await FdaImageOptimizer.optimize(newPic);
@@ -37,7 +38,7 @@ class CategoryRepository{
       String result = await CategoryApi.createCategory(
         newCategory.name,
         user.username,
-        user.token!,
+        user.token,
         base64Encode(optimized.image)
       );
       return ErrorCodes.isSuccesfull(result);

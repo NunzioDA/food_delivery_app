@@ -1,4 +1,3 @@
-import 'dart:ffi';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
@@ -150,12 +149,12 @@ class _SideMenuViewInherited extends InheritedWidget{
   });
   
 
-  static _SideMenuViewInherited? maybeOf(BuildContext context) {
+  static _SideMenuViewInherited? _maybeOf(BuildContext context) {
     return context.dependOnInheritedWidgetOfExactType<_SideMenuViewInherited>();
   }
 
   static _SideMenuViewInherited of(BuildContext context) {
-    final _SideMenuViewInherited? result = maybeOf(context);
+    final _SideMenuViewInherited? result = _maybeOf(context);
     assert(result != null, 'No _SideMenuViewInherited found in context');
     return result!;
   }

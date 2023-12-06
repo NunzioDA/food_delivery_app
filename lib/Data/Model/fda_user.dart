@@ -4,32 +4,24 @@ class FdaUser
   final String? password;
   final String? token;
 
-  const FdaUser(
-    this.username,
-    [
-      this.password,
-      this.token
-    ]
-  );
+  const FdaUser({
+    required this.username,
+    this.password,
+    this.token
+  });
 }
 
-class FdaUserInfo extends FdaUser{
+class FdaUserInfo{
   final String name;
   final String image;
 
   const FdaUserInfo(
     this.name, 
-    this.image, 
-    super.username,
-    [
-      super.password,
-      super.token,
-    ]
+    this.image,
   );
 
 
-  FdaUserInfo.fromJson(json, FdaUser user):
+  FdaUserInfo.fromJson(json):
     name = json["name"],
-    image = json["image"],
-    super(user.username, user.password, user.token);
+    image = json["image"];
 }
