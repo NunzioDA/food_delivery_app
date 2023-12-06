@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+const double defaultBorderRadius = 20;
+
 // Developed by Nunzio D'Amore
 class _ColorWithDarkness extends Color
 {
