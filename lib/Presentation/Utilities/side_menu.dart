@@ -10,13 +10,15 @@ class SideMenuView extends StatefulWidget{
   final List<SideMenuGroup> groups;
   final bool rotate3D;
   final Widget? topBarActionWidget;
+  final double contentBorderRadius;
 
   const SideMenuView({
     super.key,
     required this.groups,
     this.initialContentIndex = 0,
     this.rotate3D = true,
-    this.topBarActionWidget
+    this.topBarActionWidget,
+    this.contentBorderRadius = 10
   });
 
   @override
@@ -134,6 +136,7 @@ class _SideMenuViewState extends State<SideMenuView>
                           key: contentKey,
                           animation: animation,
                           topBarActionWidget: widget.topBarActionWidget,
+                          borderRadius: widget.contentBorderRadius,
                           onMenuButton: (bool state){
                             if(state)
                             {
@@ -341,11 +344,13 @@ class ContentVisualizer extends StatefulWidget{
   final Animation<double> animation;
   final void Function(bool state) onMenuButton;
   final Widget? topBarActionWidget;
+  final double borderRadius;
 
   const ContentVisualizer({
     super.key,
     required this.animation,
     required this.onMenuButton,
+    required this.borderRadius,
     this.topBarActionWidget
   });
 
@@ -370,7 +375,9 @@ class _ContentVisualizerState extends State<ContentVisualizer> {
       clipBehavior: Clip.hardEdge,
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(10 * widget.animation.value)
+        borderRadius: BorderRadius.circular(
+          widget.borderRadius * widget.animation.value
+        )
       ),
       child: Stack(
         children: [

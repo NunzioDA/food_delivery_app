@@ -4,6 +4,7 @@ import 'package:food_delivery_app/Presentation/Pages/login_page.dart';
 import 'package:food_delivery_app/Presentation/Pages/order_page.dart';
 import 'package:food_delivery_app/Presentation/Utilities/dialog_manager.dart';
 import 'package:food_delivery_app/Presentation/Utilities/side_menu.dart';
+import 'package:food_delivery_app/Presentation/Utilities/ui_utilities.dart';
 import 'package:food_delivery_app/bloc/user_bloc.dart';
 
 class HomePage extends StatefulWidget {
@@ -59,6 +60,7 @@ class _HomePageState extends State<HomePage> {
       builder: (context, state) {     
         return SideMenuView(
             rotate3D: false,
+            contentBorderRadius: defaultBorderRadius,
             topBarActionWidget: TopBarUserStatus(
               loggedIn: state is LoggedInState,
               name: userName,
