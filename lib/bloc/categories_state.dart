@@ -18,6 +18,14 @@ final class CategoryCreatedSuccesfully extends CategoriesState{
   const CategoryCreatedSuccesfully(super.categories);
 }
 
+final class CategoryAlreadyExisting extends CategoriesState{
+  const CategoryAlreadyExisting(super.categories);
+}
+
+final class CategoryDeletedSuccesfully extends CategoriesState{
+  const CategoryDeletedSuccesfully(super.categories);
+}
+
 final class CategoriesErrorState extends CategoriesState{
   final String error;
   final CategoriesEvent event;

@@ -17,14 +17,34 @@ class CategoryApi{
     String token,
     String image
   ) async{
-    return await FdaServerCommunication.getRequest(
+    return await FdaServerCommunication.postRequest(
       "create_products_category", 
+      getParameters: {
+        "name":categoryName,
+        "username":username,
+        "token":token,
+      },
+      body: {        
+        "image":image
+      }
+    ).then((value) {
+      return value.body;
+    });
+  }
+
+
+  static Future<String> deleteCategory(
+    String categoryName,
+    String username,
+    String token,
+  ) async{
+    return await FdaServerCommunication.getRequest(
+      "delete_products_category", 
       {
         "name":categoryName,
         "username":username,
         "token":token,
-        "image":image
-      }
+      },
     ).then((value) {
       return value.body;
     });

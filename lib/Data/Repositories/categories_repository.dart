@@ -24,7 +24,7 @@ class CategoryRepository{
     return categories;
   }
 
-  Future<bool> createCategory(
+  Future<String> createCategory(
     ProductsCategory newCategory,  
     XFile newPic,
     LoggedInState user
@@ -40,11 +40,25 @@ class CategoryRepository{
         user.token,
         base64Encode(optimized.image)
       );
-      return ErrorCodes.isSuccesfull(result);
+      return result;
     }
     else {
-      return false;
+      return "Cant optimize image";
     }
     
+  }
+
+
+  Future<String> deleteCategory(
+    ProductsCategory category,  
+    LoggedInState user
+  ) async
+  {
+    String result = await CategoryApi.deleteCategory(
+      category.name,
+      user.username,
+      user.token,
+    );
+    return result;    
   }
 }

@@ -14,3 +14,8 @@ class CategoriesCreateEvent extends CategoriesEvent{
   final XFile newImage;
   const CategoriesCreateEvent(this.newCategory, this.newImage);
 }
+
+class CategoryDeleteEvent extends CategoriesEvent{
+  final ProductsCategory category;
+  const CategoryDeleteEvent(this.category);
+}
