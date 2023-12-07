@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:food_delivery_app/Presentation/Utilities/dialog_manager.dart';
@@ -10,13 +12,16 @@ import 'package:gap/gap.dart';
 
 class LoginPage extends StatefulWidget {
 
-  const LoginPage({super.key});
+  
+  const LoginPage({
+    super.key,
+  });
 
   @override
   State<LoginPage> createState() => _LoginPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMixin{
   final CredentialPageCubit credentialPageCubit = CredentialPageCubit();
   late UserBloc userBloc;
 
@@ -25,6 +30,12 @@ class _LoginPageState extends State<LoginPage> {
   ValueNotifier<bool> loading = ValueNotifier(false);
   ValueNotifier<String> dynamicLoadingText = ValueNotifier("");
 
+  bool alreadyPopped = false;
+
+  late StreamSubscription subscription;
+
+  late AnimationController controller;
+  late CurvedAnimation cardIntroAnimation;
 
   void showPasswordValidationError(PasswordValidationErrors error)
   {
@@ -68,19 +79,37 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   void initState() {
-    userBloc = BlocProvider.of<UserBloc>(context);
+    controller = AnimationController(
+      vsync: this, 
+      duration: const Duration(milliseconds: 700)
+    )..addListener(() {setState(() {});}); 
 
-    userBloc.stream.listen((event) { 
+
+    cardIntroAnimation = CurvedAnimation(
+      parent: Tween<double>(begin: 0, end: 1).animate(controller), 
+      curve: Curves.fastOutSlowIn
+    );    
+
+    WidgetsBinding.instance.addPostFrameCallback((_) => controller.forward());
+
+    userBloc = BlocProvider.of<UserBloc>(context);
+    subscription = userBloc.stream.listen((event) { 
       String? errorMessage;
       loading.value = false;
 
       switch (event) {
         case WrongUsernameOrPasswordState():
           errorMessage = "Username o Password errati.";
+          break;
         case UsernameAlreadyUsedState():
           errorMessage = "Questo username è già in uso.";
+          break;
         case LoggedInState():
-          Navigator.of(context).pop();
+          if(!alreadyPopped){
+            alreadyPopped = true;
+            Navigator.of(context).pop();
+          }
+          break;
         case CorrectlySignedinState():
           DialogShower.showAlertDialog(
             context, 
@@ -91,6 +120,7 @@ class _LoginPageState extends State<LoginPage> {
             dynamicLoadingText.value = "Sto effettuando il login";
             userBloc.add(LoginEvent(usernameS!, passwordS!));
           });
+          break;
         default:
           errorMessage = "Si è verificato un errore durante "
           "${(credentialPageCubit.state is LoginMode)? 
@@ -113,6 +143,12 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   @override
+  void dispose() {
+    subscription.cancel();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {    
     return FdaLoading(
       loadingNotifier: loading,
@@ -120,108 +156,119 @@ class _LoginPageState extends State<LoginPage> {
       child: Scaffold(
         backgroundColor: Theme.of(context).primaryColor.withAlpha(110),
         body: SafeArea(
-          child: Center(
-              child: Padding(
-            padding: const EdgeInsets.all(30.0),
-            child: Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(defaultBorderRadius),
-                color: Theme.of(context).dialogBackgroundColor,
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(35.0),
-                child: Stack(
-                  children: [
-                    Positioned(
-                      top: 0,
-                      left: 0,
-                      child: BlocBuilder<CredentialPageCubit, CredentialPageState>(
-                        bloc: credentialPageCubit,
-                        builder: (context, state) {
-                          return Text(
-                            state is LoginMode ? "Login" : "Signup",
-                            style: Theme.of(context)
-                                .textTheme
-                                .headlineLarge
-                                ?.copyWith(color: Theme.of(context).primaryColor),
-                          );
-                        },
+          child: Stack(
+            children: [
+              Positioned(     
+                top: MediaQuery.of(context).size.height * (1 - cardIntroAnimation.value),  
+                width: MediaQuery.of(context).size.width,         
+                height: MediaQuery.of(context).size.height,         
+                child: Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(30.0),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(defaultBorderRadius),
+                        color: Theme.of(context).dialogBackgroundColor,
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(35.0),
+                        child: Stack(
+                          children: [
+                            Positioned(
+                              top: 0,
+                              left: 0,
+                              child: BlocBuilder<CredentialPageCubit, CredentialPageState>(
+                                bloc: credentialPageCubit,
+                                builder: (context, state) {
+                                  return Text(
+                                    state is LoginMode ? "Login" : "Signup",
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .headlineLarge
+                                        ?.copyWith(color: Theme.of(context).primaryColor),
+                                  );
+                                },
+                              ),
+                            ),
+                            Padding(
+                              padding: EdgeInsets.only(
+                                  top: Theme.of(context)
+                                          .textTheme
+                                          .headlineLarge!
+                                          .fontSize! +
+                                      30
+                              ),
+                              child: SingleChildScrollView(
+                                  child: LoginSignInForm(
+                                    credentialPageCubit: credentialPageCubit,
+                                    nameValidator: (value) {
+                                      if(!validateName(value))
+                                      {
+                                        return "Inserisci un nome tra i 3 e 20 caratteri.";
+                                      }
+                        
+                                      return null;
+                                    },
+                                    usernameValidator: (value) {
+                                      if(!validateUsername(value))
+                                      {
+                                        return "Solo lettere e più di 6";
+                                      }
+                        
+                                      return null;
+                                    },
+                                    passwordValidator: (value) {
+                                      PasswordValidationErrors error = validatePassword(value);
+                        
+                                      if(credentialPageCubit.state is SignupMode)
+                                      {
+                                        if(error != PasswordValidationErrors.good &&
+                                        error != PasswordValidationErrors.empty)
+                                        {                              
+                                          showPasswordValidationError(error);
+                                          return "Inserisci la password correttamente";
+                                        }
+                                        else if(error == PasswordValidationErrors.empty)
+                                        {
+                                          return "Inserisci la password";
+                                        }
+                                      }
+                                      else if(error != PasswordValidationErrors.good){
+                                        return "Password errata";
+                                      }
+                        
+                                      return null;
+                                    },
+                                    onLoginRequest: (username, password) {
+                                      loading.value = true;
+                                      dynamicLoadingText.value = "Sto effettuando il login";
+                                      userBloc.add(
+                                        LoginEvent(username, password)
+                                      );
+                                    },
+                                    onSignInRequest: (name, username, password) {
+                                      loading.value = true;
+                                      dynamicLoadingText.value = "Sto effettuando la registazione";
+                              
+                                      usernameS = username;
+                                      passwordS = password;
+                        
+                                      userBloc.add(
+                                        SignupEvent(name, username, password)
+                                      );
+                                    },
+                                )
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
-                    Padding(
-                      padding: EdgeInsets.only(
-                          top: Theme.of(context)
-                                  .textTheme
-                                  .headlineLarge!
-                                  .fontSize! +
-                              30),
-                      child: SingleChildScrollView(
-                          child: LoginSignInForm(
-                            credentialPageCubit: credentialPageCubit,
-                            nameValidator: (value) {
-                              if(!validateName(value))
-                              {
-                                return "Inserisci un nome tra i 3 e 20 caratteri.";
-                              }
-    
-                              return null;
-                            },
-                            usernameValidator: (value) {
-                              if(!validateUsername(value))
-                              {
-                                return "Solo lettere e più di 6";
-                              }
-    
-                              return null;
-                            },
-                            passwordValidator: (value) {
-                              PasswordValidationErrors error = validatePassword(value);
-    
-                              if(credentialPageCubit.state is SignupMode)
-                              {
-                                if(error != PasswordValidationErrors.good &&
-                                error != PasswordValidationErrors.empty)
-                                {                              
-                                  showPasswordValidationError(error);
-                                  return "Inserisci la password correttamente";
-                                }
-                                else if(error == PasswordValidationErrors.empty)
-                                {
-                                  return "Inserisci la password";
-                                }
-                              }
-                              else if(error != PasswordValidationErrors.good){
-                                return "Password errata";
-                              }
-    
-                              return null;
-                            },
-                            onLoginRequest: (username, password) {
-                              loading.value = true;
-                              dynamicLoadingText.value = "Sto effettuando il login";
-                              userBloc.add(
-                                LoginEvent(username, password)
-                              );
-                            },
-                            onSignInRequest: (name, username, password) {
-                              loading.value = true;
-                              dynamicLoadingText.value = "Sto effettuando la registazione";
-
-                              usernameS = username;
-                              passwordS = password;
-    
-                              userBloc.add(
-                                SignupEvent(name, username, password)
-                              );
-                            },
-                        )
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
               ),
-            ),
-          )),
+            ],
+          ),
         ),
       ),
     );

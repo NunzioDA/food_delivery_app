@@ -68,7 +68,7 @@ class UserBloc extends Bloc<UserEvent, UserState> {
                   username: event.username, 
                   token: token
                 )
-              );
+              );              
             }
             else if(result.contains(ErrorCodes.codes["wrong_username_or_password"]!))
             {
@@ -82,8 +82,8 @@ class UserBloc extends Bloc<UserEvent, UserState> {
                 )
               );
             }
-
-          } 
+            
+          }   
           catch(e){
             emit(
               UserErrorState(
@@ -159,6 +159,7 @@ class UserBloc extends Bloc<UserEvent, UserState> {
               user.username, 
               user.token
             );
+            
             emit(
               FetchedUserInfoState(
                 userInfo: userInfo, 

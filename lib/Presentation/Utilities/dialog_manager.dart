@@ -51,7 +51,7 @@ class DialogShower
         return AlertDialog(
           title: Text(
             title, 
-            style: Theme.of(context).textTheme.titleMedium,
+            style: Theme.of(context).textTheme.titleLarge,
           ),
           content: Text(text),
           

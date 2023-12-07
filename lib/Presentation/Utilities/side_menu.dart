@@ -9,12 +9,14 @@ class SideMenuView extends StatefulWidget{
   final int initialContentIndex;
   final List<SideMenuGroup> groups;
   final bool rotate3D;
+  final Widget? topBarActionWidget;
 
   const SideMenuView({
     super.key,
+    required this.groups,
     this.initialContentIndex = 0,
     this.rotate3D = true,
-    required this.groups
+    this.topBarActionWidget
   });
 
   @override
@@ -46,16 +48,34 @@ class _SideMenuViewState extends State<SideMenuView>
 
     // Init content
     int initialContentIndex = widget.initialContentIndex;
-    changeState(widget.groups.fold<SideMenuButton?>(
-      null, 
-      (previousValue, element){
-        SideMenuButton? menuButton = element.buttons.firstWhere(
-          (element) => element.content!=null && initialContentIndex == 0,
+
+    SideMenuButton? buttonWithContent;
+
+    widget.groups.firstWhere((group) {
+      try{
+        buttonWithContent = group.buttons.firstWhere(
+          (element) {
+            if(element.content != null)
+            {
+              initialContentIndex --;
+              return initialContentIndex < 0;
+            }
+            else {
+              return false;
+            }
+          }
         );
-        initialContentIndex --;
-        return menuButton;
       }
-    ));
+      catch(e){
+        // No content in this group
+        return false;
+      }
+      
+      return true;
+    });
+
+
+    changeState(buttonWithContent);
 
     _controller = AnimationController(
       vsync: this,
@@ -113,6 +133,7 @@ class _SideMenuViewState extends State<SideMenuView>
                         child: ContentVisualizer(
                           key: contentKey,
                           animation: animation,
+                          topBarActionWidget: widget.topBarActionWidget,
                           onMenuButton: (bool state){
                             if(state)
                             {
@@ -319,11 +340,13 @@ class ContentVisualizer extends StatefulWidget{
 
   final Animation<double> animation;
   final void Function(bool state) onMenuButton;
+  final Widget? topBarActionWidget;
 
   const ContentVisualizer({
     super.key,
     required this.animation,
-    required this.onMenuButton
+    required this.onMenuButton,
+    this.topBarActionWidget
   });
 
   @override
@@ -346,6 +369,7 @@ class _ContentVisualizerState extends State<ContentVisualizer> {
     return Container(
       clipBehavior: Clip.hardEdge,
       decoration: BoxDecoration(
+        color: Colors.white,
         borderRadius: BorderRadius.circular(10 * widget.animation.value)
       ),
       child: Stack(
@@ -357,6 +381,7 @@ class _ContentVisualizerState extends State<ContentVisualizer> {
                 onMenuButton: (bool state){
                   widget.onMenuButton(state);
                 },
+                topBarActionWidget: widget.topBarActionWidget,
               ),
               Expanded(
                 child: _SideMenuViewInherited.of(context).content,
@@ -380,9 +405,12 @@ class ContentVisualizerTopBar extends StatefulWidget{
   static const double barHeight = 65;
 
   final void Function(bool state) onMenuButton;
+  final Widget? topBarActionWidget;
+  
   const ContentVisualizerTopBar({
     super.key,
-    required this.onMenuButton
+    required this.onMenuButton,
+    this.topBarActionWidget
   });
 
   @override
@@ -406,25 +434,35 @@ class _ContentVisualizerTopBarState extends State<ContentVisualizerTopBar> {
     return Container(
       height: ContentVisualizerTopBar.barHeight,
       color: Theme.of(context).dialogBackgroundColor,
-      child: Padding(
-        padding: const EdgeInsets.all(15.0),
-        child: Row(
-          mainAxisSize: MainAxisSize.max,
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            GestureDetector(
-              onTap: () {
-                menuPressed();
-              },
-              child: Icon(Icons.menu),
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(15.0),
+            child: Row(
+              mainAxisSize: MainAxisSize.max,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                GestureDetector(
+                  onTap: () {
+                    menuPressed();
+                  },
+                  child: const Icon(Icons.menu),
+                ),
+                Text(
+                  title ?? "Vuoto",
+                  style: Theme.of(context).textTheme.headlineMedium,
+                ),
+                const Icon(Icons.menu, color: Colors.transparent,),
+              ],
             ),
-            Text(
-              title ?? "Vuoto",
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-            Icon(Icons.menu, color: Colors.transparent,),
-          ],
-        ),
+          ),
+          if(widget.topBarActionWidget != null)
+          Positioned(
+            right: 0,
+            child: widget.topBarActionWidget!
+          )
+        ],
       ),
     );
   }

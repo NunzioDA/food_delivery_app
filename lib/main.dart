@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:food_delivery_app/Presentation/Pages/home_page.dart';
+import 'package:food_delivery_app/Presentation/Pages/order_page.dart';
 import 'package:food_delivery_app/Presentation/Pages/login_page.dart';
 import 'package:food_delivery_app/Presentation/Utilities/side_menu.dart';
 import 'package:food_delivery_app/Presentation/Utilities/ui_utilities.dart';
@@ -11,23 +12,36 @@ void main() {
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
   @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  late UserBloc userBloc;
+
+  @override
+  void initState() {
+    userBloc = UserBloc();
+    userBloc.add(const VerifyLoggedInEvent());
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    TextTheme textTheme = GoogleFonts.outfitTextTheme();
+    TextTheme textTheme = GoogleFonts.outfitTextTheme();    
 
     return BlocProvider(
-      create: (context) => UserBloc(),
+      create: (context) => userBloc,
       child: MaterialApp(
         title: 'Food Delivery App',
         theme: ThemeData(
           inputDecorationTheme: InputDecorationTheme(
             filled: true,
             fillColor: Colors.grey.shade100,
-            contentPadding:
-                const EdgeInsets.all(15),
+            contentPadding: const EdgeInsets.all(15),
             focusedBorder: UnderlineInputBorder(
               borderSide: const BorderSide(color: Colors.white),
               borderRadius: BorderRadius.circular(defaultBorderRadius),
@@ -96,18 +110,7 @@ class MyApp extends StatelessWidget {
           ),
           useMaterial3: false,
         ),
-        home: SideMenuView(rotate3D: false, groups: [
-          SideMenuGroup(title: "Navigazione", buttons: [
-            SideMenuButton(
-                icon: Icon(Icons.home), name: "Home", content: MyHomePage()),
-            SideMenuButton(
-                icon: Icon(Icons.more),
-                name: "More",
-                onPressed: () {
-                  print("More");
-                })
-          ])
-        ]),
+        home: const HomePage()
       ),
     );
   }

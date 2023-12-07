@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:food_delivery_app/Communication/http_communication.dart';
 import 'package:food_delivery_app/Data/APIs/user_api.dart';
 import 'package:food_delivery_app/Data/Model/fda_user.dart';
@@ -39,9 +41,10 @@ class UserRepository{
       username,
       token
     );
-    
+
+
     if(!ErrorCodes.isNotSuccesfull(json) && json != ErrorCodes.codes['empty_result']) {      
-      return FdaUserInfo.fromJson(json);
+      return FdaUserInfo.fromJson(jsonDecode(json));
     }
     else {
       throw Exception(json);
