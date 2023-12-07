@@ -1,9 +1,9 @@
 import 'package:food_delivery_app/Communication/http_communication.dart';
 
 class UserApi{
-  static Future<String> signIn(String name, String username, String password)
+  static Future<String> signup(String name, String username, String password)
   {
-    return FdaServerCommunication.getRequest("signin", {
+    return FdaServerCommunication.getRequest("signup", {
       "name" : name,
       "username" : username,
       "password" : password

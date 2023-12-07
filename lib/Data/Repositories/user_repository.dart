@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:food_delivery_app/Communication/http_communication.dart';
 import 'package:food_delivery_app/Data/APIs/user_api.dart';
 import 'package:food_delivery_app/Data/Model/fda_user.dart';
@@ -10,20 +9,14 @@ class UserRepository{
     return result;
   }
 
-  Future<bool> signIn(
+  Future<String> signup(
     String name, 
     String username, 
     String password
   ) async
   {
-    String result =  await UserApi.signIn(name, username, password);
-    if(ErrorCodes.codes.containsValue(result))
-    {
-      return ErrorCodes.isSuccesfull(result);
-    }
-    else {
-      throw Exception(result);
-    }
+    String result =  await UserApi.signup(name, username, password);
+    return result;
   }
 
   Future<bool> verifyLoggedInState(String username, String token) async

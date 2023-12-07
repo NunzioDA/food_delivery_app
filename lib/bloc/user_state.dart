@@ -18,7 +18,6 @@ class CorrectlySignedinState extends NotLoggedState{
 }
 
 class WrongUsernameOrPasswordState extends NotLoggedState{
-  const WrongUsernameOrPasswordState();
 }
 
 class InvalidPasswordState extends NotLoggedState{

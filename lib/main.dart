@@ -36,6 +36,14 @@ class MyApp extends StatelessWidget {
               borderSide: const BorderSide(color: Colors.white),
               borderRadius: BorderRadius.circular(defaultBorderRadius),
             ),
+            errorBorder: UnderlineInputBorder(
+              borderSide: const BorderSide(color: Colors.red),
+              borderRadius: BorderRadius.circular(defaultBorderRadius),
+            ),
+            focusedErrorBorder: UnderlineInputBorder(
+              borderSide: const BorderSide(color: Colors.red),
+              borderRadius: BorderRadius.circular(defaultBorderRadius),
+            ),
             labelStyle: textTheme.bodySmall?.copyWith(
                 fontWeight: FontWeight.w100, color: Colors.grey.shade800),
             floatingLabelStyle:
@@ -70,9 +78,9 @@ class MyApp extends StatelessWidget {
                 fontWeight: FontWeight.w900,
                 color: Palette.primary.shade800),
             titleLarge: textTheme.titleLarge!.copyWith(
-                fontSize: 30,
-                fontWeight: FontWeight.w900,
-                color: Palette.primary.shade800),
+                fontSize: 25,
+                fontWeight: FontWeight.w800,
+                color: Palette.primary),
             titleMedium: textTheme.titleMedium!.copyWith(
                 fontSize: 20,
                 fontWeight: FontWeight.w500,
@@ -88,19 +96,18 @@ class MyApp extends StatelessWidget {
           ),
           useMaterial3: false,
         ),
-        home: LoginPage(),
-        // home: SideMenuView(rotate3D: false, groups: [
-        //   SideMenuGroup(title: "Navigazione", buttons: [
-        //     SideMenuButton(
-        //         icon: Icon(Icons.home), name: "Home", content: MyHomePage()),
-        //     SideMenuButton(
-        //         icon: Icon(Icons.more),
-        //         name: "More",
-        //         onPressed: () {
-        //           print("More");
-        //         })
-        //   ])
-        // ]),
+        home: SideMenuView(rotate3D: false, groups: [
+          SideMenuGroup(title: "Navigazione", buttons: [
+            SideMenuButton(
+                icon: Icon(Icons.home), name: "Home", content: MyHomePage()),
+            SideMenuButton(
+                icon: Icon(Icons.more),
+                name: "More",
+                onPressed: () {
+                  print("More");
+                })
+          ])
+        ]),
       ),
     );
   }

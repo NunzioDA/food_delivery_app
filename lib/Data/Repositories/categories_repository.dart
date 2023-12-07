@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:cross_file/cross_file.dart';
 import 'package:food_delivery_app/Communication/http_communication.dart';
 import 'package:food_delivery_app/Data/APIs/categories_api.dart';
-import 'package:food_delivery_app/Data/Model/fda_user.dart';
 import 'package:food_delivery_app/Data/Model/products_category.dart';
 import 'package:food_delivery_app/Presentation/Utilities/image_optimizer.dart';
 import 'package:food_delivery_app/bloc/user_bloc.dart';

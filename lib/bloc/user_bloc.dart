@@ -1,4 +1,5 @@
 import 'package:bloc/bloc.dart';
+import 'package:food_delivery_app/Communication/http_communication.dart';
 import 'package:food_delivery_app/Data/Model/fda_user.dart';
 import 'package:food_delivery_app/Data/Repositories/user_repository.dart';
 import 'package:meta/meta.dart';
@@ -15,19 +16,22 @@ class UserBloc extends Bloc<UserEvent, UserState> {
 
       switch(event)
       {        
-        case SigninEvent():
+        case SignupEvent():
           try{
-            bool result = await _userRepository.signIn(
+            String result = await _userRepository.signup(
               event.name, 
               event.username, 
               event.password
             );
 
-            if(result)
+            if(ErrorCodes.isSuccesfull(result))
             {
               emit(const CorrectlySignedinState());
             }
-            else {
+            else if(ErrorCodes.codes["username_already_used"]! == result){
+              emit(const UsernameAlreadyUsedState());
+            }
+            else{
               emit(
                 UserErrorState(
                   error: "Some error during sign in occurredd",
@@ -66,9 +70,9 @@ class UserBloc extends Bloc<UserEvent, UserState> {
                 )
               );
             }
-            else if(result.contains("Wrong Username or Password"))
+            else if(result.contains(ErrorCodes.codes["wrong_username_or_password"]!))
             {
-              emit(const WrongUsernameOrPasswordState());
+              emit(WrongUsernameOrPasswordState());
             }
             else{
               emit(

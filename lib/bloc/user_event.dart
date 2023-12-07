@@ -5,12 +5,12 @@ sealed class UserEvent {
   const UserEvent();
 }
 
-class SigninEvent extends UserEvent
+class SignupEvent extends UserEvent
 {
   final String name;
   final String username;
   final String password;
-  const SigninEvent(this.name, this.username, this.password);
+  const SignupEvent(this.name, this.username, this.password);
 }
 
 class LoginEvent extends UserEvent
