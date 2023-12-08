@@ -37,16 +37,34 @@ class _SideMenuViewState extends State<SideMenuView>
 
   GlobalKey<_ContentVisualizerState> contentKey = GlobalKey(); 
 
-  void changeState(SideMenuButton? lastActive)
+  void changeState(SideMenuButton? newButton)
   {
     setState(() {
-      this.lastActive = lastActive;
+      lastActive = newButton;
     });
   }
 
   @override
   void initState() {
     super.initState();
+
+    // Multiple buttons name check
+    Map<String, int> namesOccurrences = {};
+    for(SideMenuGroup group in widget.groups){ 
+      for(SideMenuButton button in group.buttons)
+      {
+        if(namesOccurrences.containsKey(button.name))
+        {
+          throw Exception(
+            "Can't have more buttons with the same name: "
+            "${button.name}"
+          );
+        }
+        else{
+          namesOccurrences[button.name] = 1;
+        }
+      }
+    }
 
     // Init content
     int initialContentIndex = widget.initialContentIndex;
@@ -69,13 +87,14 @@ class _SideMenuViewState extends State<SideMenuView>
         );
       }
       catch(e){
-        // No content in this group
-        return false;
+        throw Exception(
+          "No content found. "
+          "At least one button should have content to visualize."
+        );
       }
       
       return true;
     });
-
 
     changeState(buttonWithContent);
 
@@ -268,7 +287,7 @@ class SideMenuButton{
   final Widget? content;
   final VoidCallback? onPressed;
 
-  SideMenuButton({
+  const SideMenuButton({
     required this.name,
     required this.icon,
     this.content,
@@ -300,8 +319,14 @@ class _SideMenuButtonState extends State<_SideMenuButton> {
 
   @override
   Widget build(BuildContext context) {
-    _isActive = _SideMenuViewInherited.of(context).lastActive == widget.button;
+    SideMenuButton? lastActive = _SideMenuViewInherited.of(context).lastActive;
 
+
+    if(lastActive != null)
+    {
+      _isActive = lastActive.name  == widget.button.name;
+    }
+      
     return Material(
       color: !_isActive? Colors.transparent : Theme.of(context).primaryColorLight,
       child: InkWell(
