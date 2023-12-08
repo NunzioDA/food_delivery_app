@@ -22,6 +22,7 @@ import 'package:image_picker/image_picker.dart';
 class CategoryPage extends StatefulWidget {
   static const double imageSize = 90;
   static const double listHeight = 500;
+  static const double deleteIconSize = 25;
 
   final bool creationMode;
   final bool hasPermission;
@@ -142,7 +143,39 @@ class _CategoryPageState extends State<CategoryPage> {
                                       category: myCategory!, 
                                       onCountChanged: (value){},
                                     ),
-                                    if (!widget.creationMode) const Gap(20),
+                                    if (!widget.creationMode && widget.hasPermission)
+                                    Align(
+                                      alignment: Alignment.centerRight,
+                                      child: TextButton(
+                                        onPressed: (){
+                                          DialogShower.showConfirmDenyDialog(
+                                            context, 
+                                            "Eliminazione", 
+                                            "Sei sicuro di voler eliminare definitivamente questa categoria?",
+                                            onConfirmPressed: ()
+                                             => _categoriesBloc.add(CategoryDeleteEvent(myCategory!)),
+                                          );
+                                        },
+                                        child: Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            Text(
+                                              "Elimina",
+                                              style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                                                color: Colors.red
+                                              ),
+                                            ),
+                                            const Icon(
+                                              Icons.delete_forever,
+                                              color: Colors.red,
+                                              size: CategoryPage.deleteIconSize,
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                    if (!widget.creationMode && !widget.hasPermission) 
+                                    const Gap(20),
                                     if (!widget.creationMode)
                                     ConstrainedBox(
                                       constraints: const BoxConstraints(
@@ -258,7 +291,8 @@ class _CategoryPageState extends State<CategoryPage> {
                                   newCategoryImage = img;
                                 },
                               ),
-                      )
+                      ),
+                    
                     ],
                   ),
                 ],
