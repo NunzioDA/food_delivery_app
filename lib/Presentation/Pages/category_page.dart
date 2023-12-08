@@ -3,17 +3,23 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:food_delivery_app/Communication/http_communication.dart';
+import 'package:food_delivery_app/Data/Model/product.dart';
 import 'package:food_delivery_app/Data/Model/products_category.dart';
+import 'package:food_delivery_app/Presentation/Pages/product_page.dart';
+import 'package:food_delivery_app/Presentation/Utilities/add_element.dart';
 import 'package:food_delivery_app/Presentation/Utilities/cached_image.dart';
+import 'package:food_delivery_app/Presentation/Utilities/category_info.dart';
 import 'package:food_delivery_app/Presentation/Utilities/dialog_manager.dart';
 import 'package:food_delivery_app/Presentation/Utilities/image_chooser.dart';
 import 'package:food_delivery_app/Presentation/Utilities/loading.dart';
 import 'package:food_delivery_app/Presentation/Utilities/ui_utilities.dart';
+import 'package:food_delivery_app/bloc/cart_bloc.dart';
 import 'package:food_delivery_app/bloc/categories_bloc.dart';
+import 'package:food_delivery_app/cubit/add_remove_counter_cubit.dart';
 import 'package:gap/gap.dart';
 import 'package:image_picker/image_picker.dart';
 
-class CategoryPage extends StatefulWidget{
+class CategoryPage extends StatefulWidget {
   static const double imageSize = 90;
   static const double listHeight = 500;
 
@@ -21,19 +27,18 @@ class CategoryPage extends StatefulWidget{
   final bool hasPermission;
   final ProductsCategory? category;
 
-  const CategoryPage({
-    super.key, 
-    this.category,
-    required this.hasPermission,
-    this.creationMode = false
-  }) : assert((category != null) != creationMode);
+  const CategoryPage(
+      {super.key,
+      this.category,
+      required this.hasPermission,
+      this.creationMode = false})
+      : assert((category != null) != creationMode);
 
   @override
   State<CategoryPage> createState() => _CategoryPageState();
 }
 
 class _CategoryPageState extends State<CategoryPage> {
-
   String? newCategoryName;
   XFile? newCategoryImage;
   GlobalKey<FormState> nameFormKey = GlobalKey<FormState>();
@@ -41,40 +46,52 @@ class _CategoryPageState extends State<CategoryPage> {
   late CategoriesBloc _categoriesBloc;
   late StreamSubscription subscription;
 
+  ProductsCategory? myCategory;
+
   ValueNotifier<bool> loading = ValueNotifier(false);
 
-  bool validateCategoryName()
-  {
+  bool validateCategoryName() {
     return newCategoryName != null && newCategoryName!.isNotEmpty;
   }
 
-  bool validateNewCategory()
-  {
+  bool validateNewCategory() {
     bool? result = nameFormKey.currentState?.validate();
-    return newCategoryImage != null &&  result!= null  && result;
+    return newCategoryImage != null && result != null && result;
   }
 
-
   @override
-  void initState() {
+  void initState() {    
+
+    myCategory = widget.category;
+
     _categoriesBloc = BlocProvider.of<CategoriesBloc>(context);
     subscription = _categoriesBloc.stream.listen((event) {
       loading.value = false;
-      if(event is CategoryDeletedSuccesfully)
-      {
+      if (event is CategoryDeletedSuccesfully) {
         DialogShower.showAlertDialog(
           context, 
-          "Fatto!", 
+          "Fatto!",
           "La categoria è stata eliminata correttamente"
         ).then((value) => Navigator.of(context).pop());
-      }
-      else if(event is CategoriesErrorState && event.event is CategoryDeleteEvent)
-      {        
+      } else if (event is CategoriesErrorState &&
+          event.event is CategoryDeleteEvent) {
         DialogShower.showAlertDialog(
           context, 
-          "Attenzione", 
+          "Attenzione",
           "Ho riscontrato un errore provando ad eliminare la categoria. Riprova."
         );
+      }
+      else if(event is ProductCreatedSuccesfully)
+      {
+        _categoriesBloc.add(const CategoriesFetchEvent());
+      }
+      else if(event is CategoriesFetched)
+      {
+        setState(() {
+          myCategory = event.categories.firstWhere(
+            (element) => element.name == myCategory!.name
+          );
+        });
       }
     });
     super.initState();
@@ -102,113 +119,116 @@ class _CategoryPageState extends State<CategoryPage> {
                   Stack(
                     children: [
                       Column(
-                        mainAxisSize: MainAxisSize.min,                
+                        mainAxisSize: MainAxisSize.min,
                         children: [
-                          const Gap(CategoryPage.imageSize/2),
+                          const Gap(CategoryPage.imageSize / 2),
                           Hero(
-                            tag: "Container${widget.category?.name}",
+                            tag: "Container${myCategory?.name}",
                             child: Material(
                               elevation: 10,
                               color: Theme.of(context).dialogBackgroundColor,
-                              borderRadius: BorderRadius.circular(defaultBorderRadius),
+                              borderRadius:
+                                  BorderRadius.circular(defaultBorderRadius),
                               child: Padding(
                                 padding: const EdgeInsets.only(
-                                  top: 30, 
-                                  right: 20, 
-                                  left: 20, 
-                                  bottom: 20
-                                ),
+                                    top: 30, right: 20, left: 20, bottom: 20),
                                 child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                                  crossAxisAlignment:
+                                      CrossAxisAlignment.stretch,
                                   mainAxisAlignment: MainAxisAlignment.end,
-                                  children: [         
-                                    if(!widget.creationMode)                       
-                                    Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                      mainAxisSize: MainAxisSize.max,
-                                      children: [
-                                        Text(
-                                          widget.category!.name,
-                                          style: Theme.of(context).textTheme.titleSmall,
-                                        ),
-                                        if(widget.hasPermission)
-                                        GestureDetector(
-                                          onTap: (){
-                                            loading.value = true;
-                                            _categoriesBloc.add(
-                                              CategoryDeleteEvent(widget.category!)
-                                            );
-                                          },
-                                          child: const Icon(
-                                            Icons.delete_forever, 
-                                            color: Colors.red,
-                                          ),
-                                        )
-                                      ],
+                                  children: [
+                                    if (!widget.creationMode)
+                                    CategoryInfo(
+                                      category: myCategory!, 
+                                      onCountChanged: (value){},
                                     ),
-                                    if(!widget.creationMode)
-                                    Text("${widget.category!.products.length} prodotti"),
-                                    if(!widget.creationMode)
+                                    if (!widget.creationMode) const Gap(20),
+                                    if (!widget.creationMode)
                                     ConstrainedBox(
                                       constraints: const BoxConstraints(
-                                        maxHeight: CategoryPage.listHeight,
-                                        minHeight: 1
+                                          maxHeight:CategoryPage.listHeight,
+                                          minHeight: 1
                                       ),
-                                      child: ListView.builder(
-                                        itemCount: widget.category!.products.length,
-                                        itemBuilder: (context, index) {
-                                          return Text(widget.category!.products[index].name);
-                                        },
+                                      child: GridView.count(
+                                        crossAxisCount: 2,
+                                        childAspectRatio: 0.75,
+                                        children: [
+                                          ...myCategory!.products
+                                            .map((product) => Padding(
+                                              padding: const EdgeInsets.all(5.0),
+                                              child: ProductItem(
+                                                  product: product
+                                                ),
+                                            )
+                                            ).toList(),
+                                          if(widget.hasPermission)
+                                          AddElementWidget(
+                                            onPressed: () async {
+                                              var productPair = await Navigator.of(context).push(
+                                                PageRouteBuilder(
+                                                  opaque: false,
+                                                  pageBuilder: (context, animation, secondaryAnimation) {
+                                                    return ProductPage();
+                                                  },
+                                                )
+                                              );
+
+                                              if(productPair != null)
+                                              {
+                                                _categoriesBloc.add(
+                                                  ProductCreateEvent(
+                                                    myCategory!, 
+                                                    productPair.$1, 
+                                                    productPair.$2,
+                                                  )
+                                                );
+                                              }
+                                            },
+                                          )
+                                        ]
                                       )
                                     ),
-                                    if(widget.creationMode)
-                                    const Gap(50),
-                                    if(widget.creationMode)
-                                    Form(
-                                      key: nameFormKey,
-                                      child: TextFormField(                                  
-                                        validator: (value){
-                                          if(!validateCategoryName())
-                                          {
-                                            return "Inserisci il nome, da 3 a 20 caratteri. Solo lettere.";
-                                          }
-                                          else{
-                                            return null;
-                                          }
-                                        },
-                                        decoration: const InputDecoration(
-                                          label: Text("Nome categoria")
-                                        ),       
-                                        onChanged: (value){
-                                          newCategoryName = value;
-                                        },
+                                    if (widget.creationMode) const Gap(50),
+                                    if (widget.creationMode)
+                                      Form(
+                                        key: nameFormKey,
+                                        child: TextFormField(
+                                          validator: (value) {
+                                            if (!validateCategoryName()) {
+                                              return "Inserisci il nome, da 3 a 20 caratteri. Solo lettere.";
+                                            } else {
+                                              return null;
+                                            }
+                                          },
+                                          decoration: const InputDecoration(
+                                              label: Text("Nome categoria")),
+                                          onChanged: (value) {
+                                            newCategoryName = value;
+                                          },
+                                        ),
                                       ),
-                                    ),
-                                    if(widget.creationMode)
-                                    const Gap(10),
-                                    if(widget.creationMode)
-                                    SizedBox(
-                                      height: 50,
-                                      child: ElevatedButton(
-                                        onPressed: (){
-                                          if(validateNewCategory())
-                                          {
-                                            Navigator.of(context).pop(
-                                              (newCategoryName, newCategoryImage)
-                                            );
-                                          }
-                                          else if(newCategoryImage == null)
-                                          {
-                                            DialogShower.showAlertDialog(
-                                              context, 
-                                              "Attenzione",
-                                              "Inserisci un'immagine prima di procedere"
-                                            );
-                                          }
-                                        }, 
-                                        child: const Text("Crea categoria")
-                                      ),
-                                    )
+                                    if (widget.creationMode) const Gap(10),
+                                    if (widget.creationMode)
+                                      SizedBox(
+                                        height: 50,
+                                        child: ElevatedButton(
+                                            onPressed: () {
+                                              if (validateNewCategory()) {
+                                                Navigator.of(context).pop((
+                                                  newCategoryName,
+                                                  newCategoryImage
+                                                ));
+                                              } else if (newCategoryImage ==
+                                                  null) {
+                                                DialogShower.showAlertDialog(
+                                                    context,
+                                                    "Attenzione",
+                                                    "Inserisci un'immagine prima di procedere");
+                                              }
+                                            },
+                                            child:
+                                                const Text("Crea categoria")),
+                                      )
                                   ],
                                 ),
                               ),
@@ -218,26 +238,26 @@ class _CategoryPageState extends State<CategoryPage> {
                       ),
                       Align(
                         alignment: Alignment.topCenter,
-                        child: !widget.creationMode? Hero(
-                          tag: "Image${widget.category?.name}",
-                          child: SizedBox(
-                            height: CategoryPage.imageSize,
-                            width: CategoryPage.imageSize,
-                            child: FdaCachedNetworkImage(
-                              url: FdaServerCommunication
-                              .getImageUrl(widget.category!.imageName),
-                            ),
-                          )                     
-                        ) :
-                        ImageChooser(       
-                          heroTag: "Image${widget.category?.name}",    
-                          height: CategoryPage.imageSize,
-                          width: CategoryPage.imageSize,
-                          editable: true,
-                          onImageChanged: (img){
-                            newCategoryImage = img;
-                          },
-                        ),
+                        child: !widget.creationMode
+                            ? Hero(
+                                tag: "Image${myCategory?.name}",
+                                child: SizedBox(
+                                  height: CategoryPage.imageSize,
+                                  width: CategoryPage.imageSize,
+                                  child: FdaCachedNetworkImage(
+                                    url: FdaServerCommunication.getImageUrl(
+                                        myCategory!.imageName),
+                                  ),
+                                ))
+                            : ImageChooser(
+                                heroTag: "Image${myCategory?.name}",
+                                height: CategoryPage.imageSize,
+                                width: CategoryPage.imageSize,
+                                editable: true,
+                                onImageChanged: (img) {
+                                  newCategoryImage = img;
+                                },
+                              ),
                       )
                     ],
                   ),
@@ -247,6 +267,178 @@ class _CategoryPageState extends State<CategoryPage> {
           ),
         ),
       ),
+    );
+  }
+}
+
+class ProductItem extends StatefulWidget {
+  static const double imageSize = 80;
+
+  final Product product;
+  const ProductItem({super.key, required this.product});
+
+  @override
+  State<ProductItem> createState() => _ProductItemState();
+}
+
+class _ProductItemState extends State<ProductItem> {
+  late CartBloc cartBloc;
+  late StreamSubscription cartSubscription;
+
+  late AddRemoveCounterCubit addRemoveCounterCubit;
+
+  @override
+  void initState() {
+    addRemoveCounterCubit = AddRemoveCounterCubit();
+    cartBloc = BlocProvider.of<CartBloc>(context);
+
+    // init product count
+    int? count = cartBloc.state.products[widget.product];
+    addRemoveCounterCubit.changeCounter(count ?? 0);
+
+    cartSubscription = cartBloc.stream.listen((event) { 
+      if(event is CartProductAdded && event.addedProduct == widget.product)
+      {
+        int count = event.products[widget.product]!;
+        addRemoveCounterCubit.changeCounter(count);
+      }
+      else if(event is CartProductRemoved && event.removedProduct == widget.product)
+      {
+        int? count = event.products[widget.product];
+        addRemoveCounterCubit.changeCounter(count ?? 0);
+      }
+    });
+
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    cartSubscription.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      elevation: 10,
+      borderRadius: BorderRadius.circular(defaultBorderRadius),
+      color: Theme.of(context).dialogBackgroundColor,
+      child: Padding(
+        padding: const EdgeInsets.all(10.0),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Align(
+              child: SizedBox(
+                height: ProductItem.imageSize,
+                width: ProductItem.imageSize,
+                child: FdaCachedNetworkImage(
+                    url: FdaServerCommunication.getImageUrl(widget.product.imageName)),
+              ),
+            ),
+            Text(
+              widget.product.name,
+              style: Theme.of(context).textTheme.titleSmall,
+              textAlign: TextAlign.left,
+            ),
+            Text(
+              widget.product.description,
+            ),
+            Expanded(
+              child: Align(
+                alignment: Alignment.bottomRight,
+                child: BlocProvider(
+                  create: (context) => addRemoveCounterCubit,
+                  child: AddRemove(
+                    onAddPressed: () {
+                      cartBloc.add(AddProductToCart(widget.product));
+                    },
+                    onRemovePressed: () {
+                      cartBloc.add(RemoveProductFromCart(widget.product));
+                    },
+                  ),
+                )
+              ),
+            )
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class AddRemove extends StatelessWidget {
+  final VoidCallback onAddPressed;
+  final VoidCallback onRemovePressed;
+
+  const AddRemove({
+    super.key,
+    required this.onAddPressed,
+    required this.onRemovePressed,
+  });
+
+  Widget createButton(
+      {required BuildContext context,
+      required Color backgroundColor,
+      required Color borderColor,
+      required Color iconColor,
+      required IconData icon,
+      required VoidCallback onPressed}) {
+    return Container(
+      decoration: BoxDecoration(
+        border: Border.all(color: borderColor),
+        borderRadius: BorderRadius.circular(defaultBorderRadius),
+      ),
+      child: Material(
+        clipBehavior: Clip.hardEdge,
+        borderRadius: BorderRadius.circular(defaultBorderRadius),
+        // border: Border.all(color: Theme.of(context).primaryColor),
+        color: backgroundColor,
+        child: InkWell(
+          onTap: onPressed.call,
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Icon(
+              icon,
+              color: iconColor,
+              size: 15,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        createButton(
+            context: context,
+            backgroundColor: Colors.white,
+            borderColor: Theme.of(context).primaryColor,
+            iconColor: Theme.of(context).primaryColor,
+            icon: Icons.remove,
+            onPressed: onRemovePressed.call),
+        const Gap(10),
+        BlocBuilder<AddRemoveCounterCubit, AddRemoveCounterState>(
+          bloc: BlocProvider.of<AddRemoveCounterCubit>(context),
+          builder: (context, state) {
+            return Text("${(state as AddRemoveNewCounterState).count}x");
+          },
+        ),
+        const Gap(10),
+        createButton(
+            context: context,
+            backgroundColor: Theme.of(context).primaryColor,
+            borderColor: Colors.transparent,
+            iconColor: Colors.white,
+            icon: Icons.add,
+            onPressed: onAddPressed.call),
+      ],
     );
   }
 }

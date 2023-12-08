@@ -1,0 +1,145 @@
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:food_delivery_app/Data/Model/product.dart';
+import 'package:food_delivery_app/Presentation/Utilities/dialog_manager.dart';
+import 'package:food_delivery_app/Presentation/Utilities/image_chooser.dart';
+import 'package:food_delivery_app/Presentation/Utilities/ui_utilities.dart';
+import 'package:food_delivery_app/Utilities/credential_validation.dart';
+import 'package:gap/gap.dart';
+import 'package:image_picker/image_picker.dart';
+
+class ProductPage extends StatefulWidget{
+  static const double imageSize = 90;
+  const ProductPage({super.key});
+
+  @override
+  State<ProductPage> createState() => _ProductPageState();
+}
+
+class _ProductPageState extends State<ProductPage> {
+
+  XFile? image;
+
+  String? name, description;
+  double? price;
+
+  GlobalKey<FormState> formKey = GlobalKey();
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: defaultTransparentScaffoldBackgrounColor(context),
+      body: SafeArea(
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(defaultBorderRadius),
+                color: Theme.of(context).dialogBackgroundColor
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Align(
+                        child: ImageChooser(
+                          height: ProductPage.imageSize,
+                          width: ProductPage.imageSize,
+                          onImageChanged: (value) {
+                            image = value;
+                          },
+                        ),
+                      ),
+                      const Gap(20),
+                      Form(
+                        key: formKey,
+                        child: Column(
+                          children: [
+                            TextFormField(
+                              validator: (value) => !validateName(name)? 
+                              "Inserire un nome dai 3 ai 20 caratteri":null,
+                              decoration: const InputDecoration(
+                                label: Text("Nome")
+                              ),
+                              onChanged: (value) => name = value,
+                            ),
+                            const Gap(20),
+                            TextFormField(
+                              validator: (value) {
+                                if(value==null || value.isEmpty)
+                                {
+                                  return "Inserire una descrizione";
+                                }
+                                return null;
+                              },
+                              decoration: const InputDecoration(
+                                label: Text("Descrizione")
+                              ),
+                              onChanged: (value) => description = value,
+                            ),
+                            const Gap(20),
+                            TextFormField(
+                              validator: (value) {
+                                if(value==null || value.isEmpty)
+                                {
+                                  return "Inserire un prezzo";
+                                }
+                                return null;
+                              },
+                              decoration: const InputDecoration(
+                                label: Text("Prezzo")
+                              ),
+                              inputFormatters: [
+                                FilteringTextInputFormatter.allow(RegExp(r'(^\d*\.?\d*)'))
+                              ],
+                              keyboardType: TextInputType.number,
+                              onChanged: (value) => price = double.parse(value),
+                            )
+                          ],
+                        )
+                      ),
+                      const Gap(20),
+                      SizedBox(
+                        height: 60,
+                        child: ElevatedButton(
+                          onPressed: (){
+                            if(formKey.currentState?.validate()??false)
+                            {
+                              if(image != null)
+                              {
+                                var product = Product(
+                                  name!, 
+                                  description!,
+                                  "",
+                                  price!
+                                );
+
+                                Navigator.of(context).pop((product, image));
+                              }
+                              else{
+                                DialogShower.showAlertDialog(
+                                  context, 
+                                  "Immagine", 
+                                  "Prima di procedere inserisci un'immagine che rappresenta il prodotto."
+                                );
+                              }
+                            }                            
+                          }, 
+                          child: const Text("Crea prodotto")
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}

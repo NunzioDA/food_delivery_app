@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
 
+Color defaultTransparentScaffoldBackgrounColor(BuildContext context)
+{
+  return Theme.of(context).primaryColor.withAlpha(110);
+}
+
 const double defaultBorderRadius = 20;
 
 // Developed by Nunzio D'Amore

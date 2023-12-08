@@ -28,4 +28,16 @@ class Product{
       "price":price
     });
   }
+
+  @override
+  int get hashCode => "$name$price$imageName".hashCode;
+  
+  @override
+  bool operator ==(Object other) {
+    return other is Product && 
+      other.name == name &&
+      other.description == description &&
+      other.price == price &&
+      other.imageName == imageName;
+  }
 }

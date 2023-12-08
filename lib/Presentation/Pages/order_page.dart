@@ -3,10 +3,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:food_delivery_app/Communication/http_communication.dart';
 import 'package:food_delivery_app/Data/Model/products_category.dart';
 import 'package:food_delivery_app/Presentation/Pages/category_page.dart';
+import 'package:food_delivery_app/Presentation/Utilities/add_element.dart';
 import 'package:food_delivery_app/Presentation/Utilities/cached_image.dart';
+import 'package:food_delivery_app/Presentation/Utilities/category_info.dart';
 import 'package:food_delivery_app/Presentation/Utilities/dialog_manager.dart';
 import 'package:food_delivery_app/Presentation/Utilities/loading.dart';
 import 'package:food_delivery_app/Presentation/Utilities/ui_utilities.dart';
+import 'package:food_delivery_app/bloc/cart_bloc.dart';
 import 'package:food_delivery_app/bloc/categories_bloc.dart';
 import 'package:food_delivery_app/bloc/user_bloc.dart';
 import 'package:gap/gap.dart';
@@ -20,12 +23,15 @@ class OrderPage extends StatefulWidget {
 class _OrderPageState extends State<OrderPage> {
   late CategoriesBloc categoriesBloc;
   late UserBloc userBloc;
+  late CartBloc cartBloc;
+
   ValueNotifier<bool> loading = ValueNotifier(false);
 
   @override
   void initState() {
     userBloc = BlocProvider.of<UserBloc>(context);
     categoriesBloc = CategoriesBloc(userBloc);
+    cartBloc = BlocProvider.of<CartBloc>(context);
 
     updateCategories();
     super.initState();
@@ -39,8 +45,15 @@ class _OrderPageState extends State<OrderPage> {
     var newCategoryPair = await Navigator.of(context).push(PageRouteBuilder(
       opaque: false,
       pageBuilder: (context, animation, secondaryAnimation) {
-        return BlocProvider.value(
-          value: categoriesBloc,
+        return MultiBlocProvider(
+          providers: [
+            BlocProvider.value(
+              value: categoriesBloc,
+            ),
+            BlocProvider.value(
+              value: cartBloc,
+            ),
+          ],
           child: CategoryPage(
             category: category,
             creationMode: creationMode,
@@ -51,10 +64,12 @@ class _OrderPageState extends State<OrderPage> {
     ));
 
     if (newCategoryPair != null) {
-      categoriesBloc.add(CategoriesCreateEvent(
+      categoriesBloc.add(
+        CategoriesCreateEvent(
           ProductsCategory(newCategoryPair.$1, "", []),
           newCategoryPair.$2 //Immagine
-          ));
+        )
+      );
     }
   }
 
@@ -91,29 +106,22 @@ class _OrderPageState extends State<OrderPage> {
                     listener: (context, state) {
                       loading.value = false;
 
-                      if (state is CategoriesErrorState  && 
-                      state.event is! CategoryDeleteEvent) {
+                      if (state is CategoriesErrorState &&
+                          state.event is! CategoryDeleteEvent) {
+                            print(state.error);
                         DialogShower.showAlertDialog(
                             context,
                             "Attenzione!",
                             "Si è verificato un errore nella gesione dei dati\n"
-                                "Se il problema persiste contattaci!"
-                        );
+                                "Se il problema persiste contattaci!");
                       } else if (state is CategoryAlreadyExisting) {
-                        DialogShower.showAlertDialog(
-                          context, 
-                          "Attenzione!",
-                          "La categoria che stai cercando di creare esiste già."
-                        );
+                        DialogShower.showAlertDialog(context, "Attenzione!",
+                            "La categoria che stai cercando di creare esiste già.");
                       } else if (state is CategoryCreatedSuccesfully) {
-                        DialogShower.showAlertDialog(
-                          context, 
-                          "Fatto!", 
-                          "La categoria è stata creata correttamente"
-                        ).then((value) => updateCategories());                        
-                      }
-                      else if(state is CategoryDeletedSuccesfully)
-                      {
+                        DialogShower.showAlertDialog(context, "Fatto!",
+                                "La categoria è stata creata correttamente")
+                            .then((value) => updateCategories());
+                      } else if (state is CategoryDeletedSuccesfully) {
                         updateCategories();
                       }
                     },
@@ -143,7 +151,7 @@ class _OrderPageState extends State<OrderPage> {
                                   )
                                   .toList(),
                               if (hasPermission)
-                                AddCategoryWidget(
+                                AddElementWidget(
                                   onPressed: () {
                                     openCategoryPage(null, true, hasPermission);
                                   },
@@ -162,32 +170,6 @@ class _OrderPageState extends State<OrderPage> {
   }
 }
 
-class AddCategoryWidget extends StatelessWidget {
-  final VoidCallback onPressed;
-  const AddCategoryWidget({super.key, required this.onPressed});
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(15.0),
-      child: Material(
-        color: Theme.of(context).primaryColorLight,
-        clipBehavior: Clip.hardEdge,
-        borderRadius: BorderRadius.circular(defaultBorderRadius),
-        child: InkWell(
-          onTap: onPressed.call,
-          child: Center(
-            child: Icon(
-              Icons.add,
-              size: 40,
-              color: Theme.of(context).primaryColor,
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
 
 class CategoryWidget extends StatefulWidget {
   static const double imageSize = 80;
@@ -202,6 +184,8 @@ class CategoryWidget extends StatefulWidget {
 }
 
 class _CategoryWidgetState extends State<CategoryWidget> {
+  int count = 0;
+
   Widget categoryWidgetContent(BuildContext context,
       [Animation<double>? animation, HeroFlightDirection? flightDirection]) {
     return Material(
@@ -214,18 +198,17 @@ class _CategoryWidgetState extends State<CategoryWidget> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
-            Text(
-              widget.category.name,
-              style: Theme.of(context).textTheme.titleSmall,
+            CategoryInfo(
+              category: widget.category,
+              onCountChanged: (value) => count = value,
+              fixedCount: (animation!=null)? count : null,
             ),
-            Text("${widget.category.products.length} prodotti"),
             if (animation != null)
               SizeTransition(
                 sizeFactor:
-                    Tween<double>(begin: 0, end: CategoryPage.listHeight - 3)
+                    Tween<double>(begin: 0, end: CategoryPage.listHeight)
                         .animate(animation),
-                // axisAlignment: (2*flightDirection!.index - 1).toDouble(),
-                child: Material(
+                child: const Material(
                   child: SizedBox(height: 1),
                 ),
               )

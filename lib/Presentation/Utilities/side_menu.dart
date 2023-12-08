@@ -128,50 +128,47 @@ class _SideMenuViewState extends State<SideMenuView>
         return !isOpened;
       },
       child: Scaffold(
-        body: Container(
-          color: Theme.of(context).primaryColorDark,
-          child: SafeArea(
-            child: _SideMenuViewInherited(
-              lastActive: lastActive,
-              content: lastActive?.content ?? Container(),
-              child: Stack(
-                children: [
-                  SideMenu(groups: widget.groups),
-                  Positioned(
-                    left: menuLeftPositionOpened * animation.value,
-                    top: 0,
-                    width: MediaQuery.of(context).size.width,
-                    height: MediaQuery.of(context).size.height-
-                            MediaQuery.of(context).padding.top,
-                    child: Transform.scale(
+        body: SafeArea(
+          child: _SideMenuViewInherited(
+            lastActive: lastActive,
+            content: lastActive?.content ?? Container(),
+            child: Stack(
+              children: [
+                SideMenu(groups: widget.groups),
+                Positioned(
+                  left: menuLeftPositionOpened * animation.value,
+                  top: 0,
+                  width: MediaQuery.of(context).size.width,
+                  height: MediaQuery.of(context).size.height-
+                          MediaQuery.of(context).padding.top,
+                  child: Transform.scale(
+                    alignment: Alignment.center,
+                    scale: 1 - SideMenuView._scaleDownPercentage * animation.value,
+                    child: Transform(
+                      transform: Matrix4.identity()
+                      ..setEntry(3, 2, 0.0005)
+                      ..rotateY(widget.rotate3D? pi/5 * animation.value : 0),
                       alignment: Alignment.center,
-                      scale: 1 - SideMenuView._scaleDownPercentage * animation.value,
-                      child: Transform(
-                        transform: Matrix4.identity()
-                        ..setEntry(3, 2, 0.0005)
-                        ..rotateY(widget.rotate3D? pi/5 * animation.value : 0),
-                        alignment: Alignment.center,
-                        child: ContentVisualizer(
-                          key: contentKey,
-                          animation: animation,
-                          topBarActionWidget: widget.topBarActionWidget,
-                          borderRadius: widget.contentBorderRadius,
-                          onMenuButton: (bool state){
-                            if(state)
-                            {
-                              _controller.forward();
-                            }
-                            else{
-                              _controller.reverse();
-                            }
-                          },
-                        ),
+                      child: ContentVisualizer(
+                        key: contentKey,
+                        animation: animation,
+                        topBarActionWidget: widget.topBarActionWidget,
+                        borderRadius: widget.contentBorderRadius,
+                        onMenuButton: (bool state){
+                          if(state)
+                          {
+                            _controller.forward();
+                          }
+                          else{
+                            _controller.reverse();
+                          }
+                        },
                       ),
                     ),
-                  )
-                ],
-              ),
-            )
+                  ),
+                )
+              ],
+            ),
           ),
         ),
       ),

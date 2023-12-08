@@ -19,3 +19,10 @@ class CategoryDeleteEvent extends CategoriesEvent{
   final ProductsCategory category;
   const CategoryDeleteEvent(this.category);
 }
+
+class ProductCreateEvent extends CategoriesEvent{
+  final ProductsCategory category;
+  final Product product;
+  final XFile image;
+  const ProductCreateEvent(this.category, this.product, this.image);
+}

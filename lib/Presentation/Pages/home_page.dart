@@ -5,6 +5,7 @@ import 'package:food_delivery_app/Presentation/Pages/order_page.dart';
 import 'package:food_delivery_app/Presentation/Utilities/dialog_manager.dart';
 import 'package:food_delivery_app/Presentation/Utilities/side_menu.dart';
 import 'package:food_delivery_app/Presentation/Utilities/ui_utilities.dart';
+import 'package:food_delivery_app/bloc/cart_bloc.dart';
 import 'package:food_delivery_app/bloc/user_bloc.dart';
 
 class HomePage extends StatefulWidget {
@@ -26,11 +27,10 @@ class _HomePageState extends State<HomePage> {
     super.initState();
   }
 
-  void logOutProc()
-  {
+  void logOutProc() {
     DialogShower.showConfirmDenyDialog(
-      context, 
-      "Logout", 
+      context,
+      "Logout",
       "Sei sicuro di voler uscire?",
       confirmText: "Esci",
       denyText: "Resta",
@@ -45,19 +45,16 @@ class _HomePageState extends State<HomePage> {
     return BlocConsumer<UserBloc, UserState>(
       bloc: userBloc,
       listener: (context, state) {
-        if(state is FetchedUserInfoState)
-        {
+        if (state is FetchedUserInfoState) {
           userName = state.userInfo.name;
-        }
-        else {
+        } else {
           userName = null;
-          if(state is LoggedInState && !requestedUserInfo)
-          {
+          if (state is LoggedInState && !requestedUserInfo) {
             userBloc.add(const FetchUserInfoEvent());
-          }          
+          }
         }
       },
-      builder: (context, state) {     
+      builder: (context, state) {
         return SideMenuView(
             rotate3D: false,
             contentBorderRadius: defaultBorderRadius,
@@ -66,18 +63,19 @@ class _HomePageState extends State<HomePage> {
               name: userName,
             ),
             groups: [
-              SideMenuGroup(title: "Navigazione", buttons: [
-                SideMenuButton(
-                    icon: Icon(Icons.home),
-                    name: "Home",
-                    content: const OrderPage()),
-                SideMenuButton(
-                    icon: Icon(Icons.more),
-                    name: "More",
-                    onPressed: () {
-                      print("More");
-                    })
-              ]),
+              SideMenuGroup(
+                title: "Navigazione", 
+                buttons: [
+                  SideMenuButton(
+                      icon: const Icon(Icons.home),
+                      name: "Home",
+                      content: BlocProvider(
+                        create: (context) => CartBloc(),
+                        child: const OrderPage(),
+                      )
+                  ),
+                ]
+              ),
               if (userBloc.state is LoggedInState)
                 SideMenuGroup(title: "Account", buttons: [
                   SideMenuButton(
@@ -100,16 +98,19 @@ class TopBarUserStatus extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (!loggedIn) {
-      return ElevatedButton(
-        onPressed: () {
-          Navigator.of(context).push(PageRouteBuilder(
-            opaque: false,
-            pageBuilder: (context, animation, secondaryAnimation) {
-              return const LoginPage();
-            },
-          ));
-        },
-        child: const Text("Accedi"),
+      return Hero(
+        tag: "Login",
+        child: ElevatedButton(
+          onPressed: () {
+            Navigator.of(context).push(PageRouteBuilder(
+              opaque: false,
+              pageBuilder: (context, animation, secondaryAnimation) {
+                return const LoginPage();
+              },
+            ));
+          },
+          child: const Text("Accedi"),
+        ),
       );
     } else {
       return Text("Ciao, ${name ?? ""}");

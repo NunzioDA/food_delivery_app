@@ -1,5 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:food_delivery_app/Communication/http_communication.dart';
+import 'package:food_delivery_app/Data/Model/product.dart';
 import 'package:food_delivery_app/Data/Model/products_category.dart';
 import 'package:food_delivery_app/Data/Repositories/categories_repository.dart';
 import 'package:food_delivery_app/bloc/user_bloc.dart';
@@ -71,6 +72,27 @@ class CategoriesBloc extends Bloc<CategoriesEvent, CategoriesState> {
           }
           else{
             emit(CategoriesErrorState(
+              state.categories, 
+              "Some error occured : $result", 
+              event
+            ));
+          }
+        break;
+
+        case ProductCreateEvent():
+          String result = await _repository.createProduct(
+            event.category, 
+            event.product, 
+            event.image, 
+            _userBloc.state as LoggedInState
+          );
+
+          if(ErrorCodes.isSuccesfull(result))
+          {
+            emit(ProductCreatedSuccesfully(state.categories));
+          }
+          else{
+             emit(CategoriesErrorState(
               state.categories, 
               "Some error occured : $result", 
               event
