@@ -172,7 +172,7 @@ class _OrderPageState extends State<OrderPage> {
 
 
 class CategoryWidget extends StatefulWidget {
-  static const double imageSize = 80;
+  static const double imageSize = 90;
 
   final ProductsCategory category;
   final VoidCallback onPressed;
@@ -243,8 +243,8 @@ class _CategoryWidgetState extends State<CategoryWidget> {
           child: Hero(
             tag: "Image${widget.category.name}",
             child: SizedBox(
-              height: CategoryPage.imageSize,
-              width: CategoryPage.imageSize,
+              height: CategoryWidget.imageSize,
+              width: CategoryWidget.imageSize,
               child: FdaCachedNetworkImage(
                 url: FdaServerCommunication.getImageUrl(
                     widget.category.imageName),

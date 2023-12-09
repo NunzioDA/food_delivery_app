@@ -5,7 +5,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:food_delivery_app/Communication/http_communication.dart';
 import 'package:food_delivery_app/Data/Model/product.dart';
 import 'package:food_delivery_app/Data/Model/products_category.dart';
+import 'package:food_delivery_app/Presentation/Pages/image_show.dart';
 import 'package:food_delivery_app/Presentation/Pages/product_page.dart';
+import 'package:food_delivery_app/Presentation/Pages/to_visualizer_bridge.dart';
 import 'package:food_delivery_app/Presentation/Utilities/add_element.dart';
 import 'package:food_delivery_app/Presentation/Utilities/cached_image.dart';
 import 'package:food_delivery_app/Presentation/Utilities/category_info.dart';
@@ -20,7 +22,7 @@ import 'package:gap/gap.dart';
 import 'package:image_picker/image_picker.dart';
 
 class CategoryPage extends StatefulWidget {
-  static const double imageSize = 90;
+  static const double imageSize = 120;
   static const double listHeight = 500;
   static const double deleteIconSize = 25;
 
@@ -357,47 +359,86 @@ class _ProductItemState extends State<ProductItem> {
     return Material(
       elevation: 10,
       borderRadius: BorderRadius.circular(defaultBorderRadius),
+      clipBehavior: Clip.hardEdge,
       color: Theme.of(context).dialogBackgroundColor,
-      child: Padding(
-        padding: const EdgeInsets.all(10.0),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Align(
-              child: SizedBox(
-                height: ProductItem.imageSize,
-                width: ProductItem.imageSize,
-                child: FdaCachedNetworkImage(
-                    url: FdaServerCommunication.getImageUrl(widget.product.imageName)),
-              ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          // SizedBox(
+          //   height: ProductItem.imageSize,
+          //   child: GestureDetector(
+          //     onTap: (){
+          //       Navigator.of(context).push(
+          //         PageRouteBuilder(
+          //           opaque: false,
+          //           pageBuilder: (context, animation, secondaryAnimation) => ImageVisualizer(
+          //             image: FdaCachedNetworkImage(
+          //               url: FdaServerCommunication.getImageUrl(widget.product.imageName)
+          //             ).getImageProvider(),
+          //             heroTag: widget.product.name,
+          //           ),
+          //         )
+          //       );
+          //     },
+          //     child: FdaCachedNetworkImage(
+          //       url: FdaServerCommunication.getImageUrl(widget.product.imageName)
+          //     ),
+          //   ),
+          // ),
+          SizedBox(
+            height: ProductItem.imageSize,
+            child: ZoomableImage(
+              provider: FdaCachedNetworkImage(
+                url: FdaServerCommunication.getImageUrl(widget.product.imageName)
+              ).getImageProvider(),
             ),
-            Text(
-              widget.product.name,
-              style: Theme.of(context).textTheme.titleSmall,
-              textAlign: TextAlign.left,
-            ),
-            Text(
-              widget.product.description,
-            ),
-            Expanded(
-              child: Align(
-                alignment: Alignment.bottomRight,
-                child: BlocProvider(
-                  create: (context) => addRemoveCounterCubit,
-                  child: AddRemove(
-                    onAddPressed: () {
-                      cartBloc.add(AddProductToCart(widget.product));
-                    },
-                    onRemovePressed: () {
-                      cartBloc.add(RemoveProductFromCart(widget.product));
-                    },
+          ),
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Text(
+                    widget.product.name,
+                    style: Theme.of(context).textTheme.titleSmall,
+                    textAlign: TextAlign.left,
                   ),
-                )
+                  Expanded(
+                    child: Text(
+                      widget.product.description,
+                    ),
+                  ),
+                  Text(
+                    "${widget.product.price}€",
+                    textAlign: TextAlign.end,
+                    style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                      color: Theme.of(context).primaryColor
+                    ),
+                  ),
+                  Expanded(
+                    child: Align(
+                      alignment: Alignment.bottomRight,
+                      child: BlocProvider(
+                        create: (context) => addRemoveCounterCubit,
+                        child: AddRemove(
+                          onAddPressed: () {
+                            cartBloc.add(AddProductToCart(widget.product));
+                          },
+                          onRemovePressed: () {
+                            cartBloc.add(RemoveProductFromCart(widget.product));
+                          },
+                        ),
+                      )
+                    ),
+                  )
+                ],
               ),
-            )
-          ],
-        ),
+            ),
+          )
+        ],
       ),
     );
   }
