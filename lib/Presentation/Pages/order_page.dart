@@ -8,6 +8,7 @@ import 'package:food_delivery_app/Presentation/Utilities/cached_image.dart';
 import 'package:food_delivery_app/Presentation/Utilities/category_info.dart';
 import 'package:food_delivery_app/Presentation/Utilities/dialog_manager.dart';
 import 'package:food_delivery_app/Presentation/Utilities/loading.dart';
+import 'package:food_delivery_app/Presentation/Utilities/total_and_confirm.dart';
 import 'package:food_delivery_app/Presentation/Utilities/ui_utilities.dart';
 import 'package:food_delivery_app/bloc/cart_bloc.dart';
 import 'package:food_delivery_app/bloc/categories_bloc.dart';
@@ -26,6 +27,8 @@ class _OrderPageState extends State<OrderPage> {
   late CartBloc cartBloc;
 
   ValueNotifier<bool> loading = ValueNotifier(false);
+
+  GlobalKey<TotalAndConfirmState> totalAndConfirmKey = GlobalKey();
 
   @override
   void initState() {
@@ -64,12 +67,10 @@ class _OrderPageState extends State<OrderPage> {
     ));
 
     if (newCategoryPair != null) {
-      categoriesBloc.add(
-        CategoriesCreateEvent(
+      categoriesBloc.add(CategoriesCreateEvent(
           ProductsCategory(newCategoryPair.$1, "", []),
           newCategoryPair.$2 //Immagine
-        )
-      );
+          ));
     }
   }
 
@@ -80,96 +81,129 @@ class _OrderPageState extends State<OrderPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        body: SafeArea(
-      child: FdaLoading(
-        loadingNotifier: loading,
-        dynamicText: ValueNotifier("Sto caricando i dati.."),
-        child: Padding(
-          padding: const EdgeInsets.all(25.0),
-          child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Text(
-                  "Da te\nIn pochi passi",
-                  style: Theme.of(context).textTheme.headlineLarge,
-                ),
-                const Gap(20),
-                Text(
-                  "Ecco i nostri prodotti",
-                  style: Theme.of(context).textTheme.titleMedium,
-                ),
-                Expanded(
-                  child: BlocConsumer<CategoriesBloc, CategoriesState>(
-                    bloc: categoriesBloc,
-                    listener: (context, state) {
-                      loading.value = false;
-
-                      if (state is CategoriesErrorState &&
-                          state.event is! CategoryDeleteEvent) {
-                            print(state.error);
-                        DialogShower.showAlertDialog(
-                            context,
-                            "Attenzione!",
-                            "Si è verificato un errore nella gesione dei dati\n"
-                                "Se il problema persiste contattaci!");
-                      } else if (state is CategoryAlreadyExisting) {
-                        DialogShower.showAlertDialog(context, "Attenzione!",
-                            "La categoria che stai cercando di creare esiste già.");
-                      } else if (state is CategoryCreatedSuccesfully) {
-                        DialogShower.showAlertDialog(context, "Fatto!",
-                                "La categoria è stata creata correttamente")
-                            .then((value) => updateCategories());
-                      } else if (state is CategoryDeletedSuccesfully) {
-                        updateCategories();
-                      }
-                    },
-                    builder: (context, state) {
-                      return BlocBuilder<UserBloc, UserState>(
-                        builder: (context, state) {
-                          bool hasPermission = false;
-
-                          if (state is FetchedUserInfoState) {
-                            hasPermission = state.userInfo.hasPermission;
+    return WillPopScope(
+      onWillPop: () async{
+        if(totalAndConfirmKey.currentState?.isOpened() ?? false)
+        {
+          totalAndConfirmKey.currentState?.close();
+          return false;
+        }
+        else{
+          return true;
+        }
+      },
+      child: Scaffold(
+          body: SafeArea(
+        child: FdaLoading(
+          loadingNotifier: loading,
+          dynamicText: ValueNotifier("Sto caricando i dati.."),
+          child: Stack(
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(bottom: TotalAndConfirm.closedPanelHeight - defaultBorderRadius),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(top: 25, right: 25, left: 25),
+                      child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Text(
+                              "Da te\nIn pochi passi",
+                              style: Theme.of(context).textTheme.headlineLarge,
+                            ),
+                            const Gap(20),
+                            Text(
+                              "Ecco i nostri prodotti",
+                              style: Theme.of(context).textTheme.titleMedium,
+                            ),
+                          ]),
+                    ),
+                    const Gap(10),
+                    Expanded(
+                      child: BlocConsumer<CategoriesBloc, CategoriesState>(
+                        bloc: categoriesBloc,
+                        listener: (context, state) {
+                          loading.value = false;
+              
+                          if (state is CategoriesErrorState &&
+                              state.event is! CategoryDeleteEvent) {
+                            DialogShower.showAlertDialog(
+                                context,
+                                "Attenzione!",
+                                "Si è verificato un errore nella gesione dei dati\n"
+                                    "Se il problema persiste contattaci!");
+                          } else if (state is CategoryAlreadyExisting) {
+                            DialogShower.showAlertDialog(context, "Attenzione!",
+                                "La categoria che stai cercando di creare esiste già.");
+                          } else if (state is CategoryCreatedSuccesfully) {
+                            DialogShower.showAlertDialog(context, "Fatto!",
+                                    "La categoria è stata creata correttamente")
+                                .then((value) => updateCategories());
+                          } else if (state is CategoryDeletedSuccesfully) {
+                            updateCategories();
                           }
-
-                          return GridView.count(
-                            crossAxisCount: 2,
-                            mainAxisSpacing: 10,
-                            crossAxisSpacing: 10,
-                            children: [
-                              ...categoriesBloc.state.categories
-                                  .map(
-                                    (e) => CategoryWidget(
-                                      category: e,
+                        },
+                        builder: (context, state) {
+                          return BlocBuilder<UserBloc, UserState>(
+                            builder: (context, state) {
+                              bool hasPermission = false;
+              
+                              if (state is FetchedUserInfoState) {
+                                hasPermission = state.userInfo.hasPermission;
+                              }
+              
+                              return GridView.count(
+                                crossAxisCount: 2,
+                                mainAxisSpacing: 10,
+                                crossAxisSpacing: 10,
+                                padding: const EdgeInsets.all(25),
+                                children: [
+                                  ...categoriesBloc.state.categories
+                                      .map(
+                                        (e) => CategoryWidget(
+                                          category: e,
+                                          onPressed: () {
+                                            openCategoryPage(e, false, hasPermission);
+                                          },
+                                        ),
+                                      )
+                                      .toList(),
+                                  if (hasPermission)
+                                    AddElementWidget(
                                       onPressed: () {
-                                        openCategoryPage(
-                                            e, false, hasPermission);
+                                        openCategoryPage(null, true, hasPermission);
                                       },
-                                    ),
-                                  )
-                                  .toList(),
-                              if (hasPermission)
-                                AddElementWidget(
-                                  onPressed: () {
-                                    openCategoryPage(null, true, hasPermission);
-                                  },
-                                )
-                            ],
+                                    )
+                                ],
+                              );
+                            },
                           );
                         },
-                      );
-                    },
-                  ),
-                )
-              ]),
-        ),
+                      ),
+                    ),              
+                  ]
+                ),
+              ),
+              TotalAndConfirm(
+                key: totalAndConfirmKey,
+                confirmText: "Carrello",
+                maxHeight: 5 * MediaQuery.of(context).size.height / 6,
+                onContinuePressed: () {
+                  
+                },
+              )
+            ],
+          ),
+          ),
+        )
       ),
-    ));
+    );
   }
 }
-
 
 class CategoryWidget extends StatefulWidget {
   static const double imageSize = 90;
@@ -201,7 +235,7 @@ class _CategoryWidgetState extends State<CategoryWidget> {
             CategoryInfo(
               category: widget.category,
               onCountChanged: (value) => count = value,
-              fixedCount: (animation!=null)? count : null,
+              fixedCount: (animation != null) ? count : null,
             ),
             if (animation != null)
               SizeTransition(
@@ -256,3 +290,5 @@ class _CategoryWidgetState extends State<CategoryWidget> {
     );
   }
 }
+
+

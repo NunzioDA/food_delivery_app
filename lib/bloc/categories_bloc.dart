@@ -99,6 +99,25 @@ class CategoriesBloc extends Bloc<CategoriesEvent, CategoriesState> {
             ));
           }
         break;
+
+        case ProductDeleteEvent():
+          String result = await _repository.deleteProduct(
+            event.product, 
+            _userBloc.state as LoggedInState
+          );
+
+          if(ErrorCodes.isSuccesfull(result))
+          {
+            emit(ProductDeletedSuccesfully(state.categories));
+          }
+          else{
+            emit(CategoriesErrorState(
+              state.categories, 
+              "Some error occured : $result", 
+              event
+            ));
+          }
+        break;
       }
     });
   }

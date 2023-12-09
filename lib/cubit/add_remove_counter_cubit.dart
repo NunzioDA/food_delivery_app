@@ -4,7 +4,7 @@ import 'package:meta/meta.dart';
 part 'add_remove_counter_state.dart';
 
 class AddRemoveCounterCubit extends Cubit<AddRemoveCounterState> {
-  AddRemoveCounterCubit() : super(AddRemoveNewCounterState(count: 0));
+  AddRemoveCounterCubit([int init = 0]) : super(AddRemoveNewCounterState(count: init));
 
   void changeCounter(int count)
   {

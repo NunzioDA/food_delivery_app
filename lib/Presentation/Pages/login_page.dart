@@ -154,7 +154,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
       loadingNotifier: loading,
       dynamicText: dynamicLoadingText,
       child: Scaffold(
-        backgroundColor: Theme.of(context).primaryColor.withAlpha(110),
+        backgroundColor: defaultTransparentScaffoldBackgrounColor(context),
         body: SafeArea(
           child: Center(
             child: Padding(

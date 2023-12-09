@@ -76,4 +76,21 @@ class CategoryApi{
       return value.body;
     });
   }
+
+  static Future<String> deleteProduct(
+    String productId,
+    String username,
+    String token,
+  ) async{
+    return await FdaServerCommunication.getRequest(
+      "delete_product", 
+      {
+        "id":productId,
+        "username":username,
+        "token":token,
+      },
+    ).then((value) {
+      return value.body;
+    });
+  }
 }

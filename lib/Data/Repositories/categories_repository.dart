@@ -88,4 +88,17 @@ class CategoryRepository{
       return "Cant optimize image";
     }
   }
+
+  Future<String> deleteProduct(
+    Product product,  
+    LoggedInState user
+  ) async
+  {
+    String result = await CategoryApi.deleteProduct(
+      product.id!,
+      user.username,
+      user.token,
+    );
+    return result;    
+  }
 }

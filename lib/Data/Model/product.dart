@@ -1,19 +1,21 @@
 import 'dart:convert';
 
 class Product{
+  final String? id;
   final String name;
   final String description;
-  final String imageName;
+  final String? imageName;
   final double price;
 
   const Product(
     this.name, 
-    this.description,
-    this.imageName,
-    this.price
+    this.description,    
+    this.price,
+    [this.id,this.imageName,]
   );
 
   Product.fromJson(Map<String, dynamic> json):
+    id = json["id"].toString(),
     name = json["name"],
     description = json["description"],
     imageName = json["image"],

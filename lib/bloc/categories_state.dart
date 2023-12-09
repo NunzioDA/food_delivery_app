@@ -30,6 +30,10 @@ final class ProductCreatedSuccesfully extends CategoriesState{
   const ProductCreatedSuccesfully(super.categories);
 }
 
+final class ProductDeletedSuccesfully extends CategoriesState{
+  const ProductDeletedSuccesfully(super.categories);
+}
+
 final class CategoriesErrorState extends CategoriesState{
   final String error;
   final CategoriesEvent event;

@@ -8,15 +8,15 @@ import 'package:food_delivery_app/Utilities/credential_validation.dart';
 import 'package:gap/gap.dart';
 import 'package:image_picker/image_picker.dart';
 
-class ProductPage extends StatefulWidget{
+class CreateProductPage extends StatefulWidget{
   static const double imageSize = 90;
-  const ProductPage({super.key});
+  const CreateProductPage({super.key});
 
   @override
-  State<ProductPage> createState() => _ProductPageState();
+  State<CreateProductPage> createState() => _CreateProductPageState();
 }
 
-class _ProductPageState extends State<ProductPage> {
+class _CreateProductPageState extends State<CreateProductPage> {
 
   XFile? image;
 
@@ -47,8 +47,8 @@ class _ProductPageState extends State<ProductPage> {
                     children: [
                       Align(
                         child: ImageChooser(
-                          height: ProductPage.imageSize,
-                          width: ProductPage.imageSize,
+                          height: CreateProductPage.imageSize,
+                          width: CreateProductPage.imageSize,
                           onImageChanged: (value) {
                             image = value;
                           },
@@ -114,7 +114,6 @@ class _ProductPageState extends State<ProductPage> {
                                 var product = Product(
                                   name!, 
                                   description!,
-                                  "",
                                   price!
                                 );
 

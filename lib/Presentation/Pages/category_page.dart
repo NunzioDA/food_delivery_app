@@ -5,10 +5,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:food_delivery_app/Communication/http_communication.dart';
 import 'package:food_delivery_app/Data/Model/product.dart';
 import 'package:food_delivery_app/Data/Model/products_category.dart';
-import 'package:food_delivery_app/Presentation/Pages/image_show.dart';
 import 'package:food_delivery_app/Presentation/Pages/product_page.dart';
 import 'package:food_delivery_app/Presentation/Pages/to_visualizer_bridge.dart';
 import 'package:food_delivery_app/Presentation/Utilities/add_element.dart';
+import 'package:food_delivery_app/Presentation/Utilities/add_remove_selector.dart';
 import 'package:food_delivery_app/Presentation/Utilities/cached_image.dart';
 import 'package:food_delivery_app/Presentation/Utilities/category_info.dart';
 import 'package:food_delivery_app/Presentation/Utilities/dialog_manager.dart';
@@ -47,11 +47,27 @@ class _CategoryPageState extends State<CategoryPage> {
   GlobalKey<FormState> nameFormKey = GlobalKey<FormState>();
 
   late CategoriesBloc _categoriesBloc;
-  late StreamSubscription subscription;
+  late StreamSubscription categoriesSubscription;
 
   ProductsCategory? myCategory;
 
   ValueNotifier<bool> loading = ValueNotifier(false);
+
+  @override
+  void initState() {
+    myCategory = widget.category;
+
+    _categoriesBloc = BlocProvider.of<CategoriesBloc>(context);
+    categoriesSubscription =
+        _categoriesBloc.stream.listen(manageCategoryBlocEvent);
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    categoriesSubscription.cancel();
+    super.dispose();
+  }
 
   bool validateCategoryName() {
     return newCategoryName != null && newCategoryName!.isNotEmpty;
@@ -62,54 +78,55 @@ class _CategoryPageState extends State<CategoryPage> {
     return newCategoryImage != null && result != null && result;
   }
 
-  @override
-  void initState() {    
-
-    myCategory = widget.category;
-
-    _categoriesBloc = BlocProvider.of<CategoriesBloc>(context);
-    subscription = _categoriesBloc.stream.listen((event) {
-      loading.value = false;
-      if (event is CategoryDeletedSuccesfully) {
-        DialogShower.showAlertDialog(
-          context, 
-          "Fatto!",
-          "La categoria è stata eliminata correttamente"
-        ).then((value) => Navigator.of(context).pop());
-      } else if (event is CategoriesErrorState &&
-          event.event is CategoryDeleteEvent) {
-        DialogShower.showAlertDialog(
-          context, 
-          "Attenzione",
-          "Ho riscontrato un errore provando ad eliminare la categoria. Riprova."
-        );
-      }
-      else if(event is ProductCreatedSuccesfully)
-      {
-        _categoriesBloc.add(const CategoriesFetchEvent());
-      }
-      else if(event is CategoriesFetched)
-      {
-        setState(() {
-          myCategory = event.categories.firstWhere(
-            (element) => element.name == myCategory!.name
-          );
-        });
-      }
-    });
-    super.initState();
+  void updateCategory() {
+    loading.value = true;
+    _categoriesBloc.add(const CategoriesFetchEvent());
   }
 
-  @override
-  void dispose() {
-    subscription.cancel();
-    super.dispose();
+  void manageCategoryBlocEvent(event) {
+    loading.value = false;
+    if (event is CategoryDeletedSuccesfully) {
+      categoriesSubscription.cancel();
+      DialogShower.showAlertDialog(
+              context, "Fatto!", "La categoria è stata eliminata correttamente")
+          .then((value) {
+        Navigator.of(context).pop();
+      });
+    } else if (event is CategoriesErrorState &&
+        event.event is CategoryDeleteEvent) {
+      DialogShower.showAlertDialog(context, "Attenzione",
+          "Ho riscontrato un errore provando ad eliminare la categoria. Riprova.");
+    } else if (event is ProductCreatedSuccesfully ||
+        event is ProductDeletedSuccesfully) {
+      if (event is ProductDeletedSuccesfully) {
+        DialogShower.showAlertDialog(context, "Fatto!",
+                "Il prodotto è stato eliminato correttamente")
+            .then((value) {
+          updateCategory();
+        });
+      } else {
+        updateCategory();
+      }
+    } else if (event is CategoriesErrorState &&
+        event.event is ProductDeleteEvent) {
+      DialogShower.showAlertDialog(context, "Attenzione",
+          "Ho riscontrato un errore provando ad eliminare un prodotto. Riprova.");
+    } else if (event is CategoriesErrorState &&
+        event.event is ProductCreateEvent) {
+      DialogShower.showAlertDialog(context, "Attenzione",
+          "Ho riscontrato un errore provando a creare un prodotto. Riprova.");
+    } else if (event is CategoriesFetched) {
+      setState(() {
+        myCategory = event.categories
+            .firstWhere((element) => element.name == myCategory!.name);
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).primaryColor.withAlpha(110),
+      backgroundColor: defaultTransparentScaffoldBackgrounColor(context),
       body: SafeArea(
         child: FdaLoading(
           loadingNotifier: loading,
@@ -141,88 +158,109 @@ class _CategoryPageState extends State<CategoryPage> {
                                   mainAxisAlignment: MainAxisAlignment.end,
                                   children: [
                                     if (!widget.creationMode)
-                                    CategoryInfo(
-                                      category: myCategory!, 
-                                      onCountChanged: (value){},
-                                    ),
-                                    if (!widget.creationMode && widget.hasPermission)
-                                    Align(
-                                      alignment: Alignment.centerRight,
-                                      child: TextButton(
-                                        onPressed: (){
-                                          DialogShower.showConfirmDenyDialog(
-                                            context, 
-                                            "Eliminazione", 
-                                            "Sei sicuro di voler eliminare definitivamente questa categoria?",
-                                            onConfirmPressed: ()
-                                             => _categoriesBloc.add(CategoryDeleteEvent(myCategory!)),
-                                          );
-                                        },
-                                        child: Row(
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: [
-                                            Text(
-                                              "Elimina",
-                                              style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                                                color: Colors.red
+                                      CategoryInfo(
+                                        category: myCategory!,
+                                        onCountChanged: (value) {},
+                                      ),
+                                    if (!widget.creationMode &&
+                                        widget.hasPermission)
+                                      Align(
+                                        alignment: Alignment.centerRight,
+                                        child: TextButton(
+                                          onPressed: () {
+                                            DialogShower.showConfirmDenyDialog(
+                                                context,
+                                                "Eliminazione",
+                                                "Sei sicuro di voler eliminare definitivamente questa categoria?",
+                                                onConfirmPressed: () {
+                                              loading.value = true;
+                                              _categoriesBloc.add(
+                                                  CategoryDeleteEvent(
+                                                      myCategory!));
+                                            });
+                                          },
+                                          child: Row(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              Text(
+                                                "Elimina",
+                                                style: Theme.of(context)
+                                                    .textTheme
+                                                    .bodyMedium!
+                                                    .copyWith(
+                                                        color: Colors.red),
                                               ),
-                                            ),
-                                            const Icon(
-                                              Icons.delete_forever,
-                                              color: Colors.red,
-                                              size: CategoryPage.deleteIconSize,
-                                            ),
-                                          ],
+                                              const Icon(
+                                                Icons.delete_forever,
+                                                color: Colors.red,
+                                                size:
+                                                    CategoryPage.deleteIconSize,
+                                              ),
+                                            ],
+                                          ),
                                         ),
                                       ),
-                                    ),
-                                    if (!widget.creationMode && !widget.hasPermission) 
-                                    const Gap(20),
+                                    if (!widget.creationMode &&
+                                        !widget.hasPermission)
+                                      const Gap(20),
                                     if (!widget.creationMode)
-                                    ConstrainedBox(
-                                      constraints: const BoxConstraints(
-                                          maxHeight:CategoryPage.listHeight,
-                                          minHeight: 1
-                                      ),
-                                      child: GridView.count(
-                                        crossAxisCount: 2,
-                                        childAspectRatio: 0.75,
-                                        children: [
-                                          ...myCategory!.products
-                                            .map((product) => Padding(
-                                              padding: const EdgeInsets.all(5.0),
-                                              child: ProductItem(
-                                                  product: product
-                                                ),
-                                            )
-                                            ).toList(),
-                                          if(widget.hasPermission)
-                                          AddElementWidget(
-                                            onPressed: () async {
-                                              var productPair = await Navigator.of(context).push(
-                                                PageRouteBuilder(
-                                                  opaque: false,
-                                                  pageBuilder: (context, animation, secondaryAnimation) {
-                                                    return ProductPage();
-                                                  },
-                                                )
-                                              );
+                                      ConstrainedBox(
+                                          constraints: const BoxConstraints(
+                                              maxHeight:
+                                                  CategoryPage.listHeight,
+                                              minHeight: 1),
+                                          child: GridView.count(
+                                              crossAxisCount: 2,
+                                              childAspectRatio: 0.75,
+                                              children: [
+                                                ...myCategory!.products
+                                                    .map((product) => Padding(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                  .all(5.0),
+                                                          child: ProductItem(
+                                                            product: product,
+                                                            hasPermission: widget
+                                                                .hasPermission,
+                                                            onDeleteRequest:
+                                                                () {
+                                                              loading.value =
+                                                                  true;
+                                                              _categoriesBloc.add(
+                                                                  ProductDeleteEvent(
+                                                                      product));
+                                                            },
+                                                          ),
+                                                        ))
+                                                    .toList(),
+                                                if (widget.hasPermission)
+                                                  AddElementWidget(
+                                                    onPressed: () async {
+                                                      var productPair =
+                                                          await Navigator.of(
+                                                                  context)
+                                                              .push(
+                                                                  PageRouteBuilder(
+                                                        opaque: false,
+                                                        pageBuilder: (context,
+                                                            animation,
+                                                            secondaryAnimation) {
+                                                          return const CreateProductPage();
+                                                        },
+                                                      ));
 
-                                              if(productPair != null)
-                                              {
-                                                _categoriesBloc.add(
-                                                  ProductCreateEvent(
-                                                    myCategory!, 
-                                                    productPair.$1, 
-                                                    productPair.$2,
+                                                      if (productPair != null) {
+                                                        loading.value = true;
+                                                        _categoriesBloc.add(
+                                                            ProductCreateEvent(
+                                                          myCategory!,
+                                                          productPair.$1,
+                                                          productPair.$2,
+                                                        ));
+                                                      }
+                                                    },
                                                   )
-                                                );
-                                              }
-                                            },
-                                          )
-                                        ]
-                                      )
-                                    ),
+                                              ])),
                                     if (widget.creationMode) const Gap(50),
                                     if (widget.creationMode)
                                       Form(
@@ -294,7 +332,6 @@ class _CategoryPageState extends State<CategoryPage> {
                                 },
                               ),
                       ),
-                    
                     ],
                   ),
                 ],
@@ -311,7 +348,13 @@ class ProductItem extends StatefulWidget {
   static const double imageSize = 80;
 
   final Product product;
-  const ProductItem({super.key, required this.product});
+  final VoidCallback onDeleteRequest;
+  final bool hasPermission;
+  const ProductItem(
+      {super.key,
+      required this.product,
+      required this.hasPermission,
+      required this.onDeleteRequest});
 
   @override
   State<ProductItem> createState() => _ProductItemState();
@@ -325,32 +368,30 @@ class _ProductItemState extends State<ProductItem> {
 
   @override
   void initState() {
-    addRemoveCounterCubit = AddRemoveCounterCubit();
+    // addRemoveCounterCubit = AddRemoveCounterCubit();
     cartBloc = BlocProvider.of<CartBloc>(context);
 
-    // init product count
-    int? count = cartBloc.state.products[widget.product];
-    addRemoveCounterCubit.changeCounter(count ?? 0);
+    // // init product count
+    // int? count = cartBloc.state.products[widget.product];
+    // addRemoveCounterCubit.changeCounter(count ?? 0);
 
-    cartSubscription = cartBloc.stream.listen((event) { 
-      if(event is CartProductAdded && event.addedProduct == widget.product)
-      {
-        int count = event.products[widget.product]!;
-        addRemoveCounterCubit.changeCounter(count);
-      }
-      else if(event is CartProductRemoved && event.removedProduct == widget.product)
-      {
-        int? count = event.products[widget.product];
-        addRemoveCounterCubit.changeCounter(count ?? 0);
-      }
-    });
+    // cartSubscription = cartBloc.stream.listen((event) {
+    //   if (event is CartProductAdded && event.addedProduct == widget.product) {
+    //     int count = event.products[widget.product]!;
+    //     addRemoveCounterCubit.changeCounter(count);
+    //   } else if (event is CartProductRemoved &&
+    //       event.removedProduct == widget.product) {
+    //     int? count = event.products[widget.product];
+    //     addRemoveCounterCubit.changeCounter(count ?? 0);
+    //   }
+    // });
 
     super.initState();
   }
 
   @override
   void dispose() {
-    cartSubscription.cancel();
+    // cartSubscription.cancel();
     super.dispose();
   }
 
@@ -365,33 +406,13 @@ class _ProductItemState extends State<ProductItem> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          // SizedBox(
-          //   height: ProductItem.imageSize,
-          //   child: GestureDetector(
-          //     onTap: (){
-          //       Navigator.of(context).push(
-          //         PageRouteBuilder(
-          //           opaque: false,
-          //           pageBuilder: (context, animation, secondaryAnimation) => ImageVisualizer(
-          //             image: FdaCachedNetworkImage(
-          //               url: FdaServerCommunication.getImageUrl(widget.product.imageName)
-          //             ).getImageProvider(),
-          //             heroTag: widget.product.name,
-          //           ),
-          //         )
-          //       );
-          //     },
-          //     child: FdaCachedNetworkImage(
-          //       url: FdaServerCommunication.getImageUrl(widget.product.imageName)
-          //     ),
-          //   ),
-          // ),
           SizedBox(
             height: ProductItem.imageSize,
             child: ZoomableImage(
               provider: FdaCachedNetworkImage(
-                url: FdaServerCommunication.getImageUrl(widget.product.imageName)
-              ).getImageProvider(),
+                      url: FdaServerCommunication.getImageUrl(
+                          widget.product.imageName!))
+                  .getImageProvider(),
             ),
           ),
           Expanded(
@@ -414,24 +435,47 @@ class _ProductItemState extends State<ProductItem> {
                   Text(
                     "${widget.product.price}€",
                     textAlign: TextAlign.end,
-                    style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                      color: Theme.of(context).primaryColor
-                    ),
+                    style: Theme.of(context)
+                        .textTheme
+                        .bodyMedium!
+                        .copyWith(color: Theme.of(context).primaryColor),
                   ),
                   Expanded(
-                    child: Align(
-                      alignment: Alignment.bottomRight,
-                      child: BlocProvider(
-                        create: (context) => addRemoveCounterCubit,
-                        child: AddRemove(
-                          onAddPressed: () {
-                            cartBloc.add(AddProductToCart(widget.product));
-                          },
-                          onRemovePressed: () {
-                            cartBloc.add(RemoveProductFromCart(widget.product));
-                          },
+                    child: Row(
+                      children: [
+                        if (widget.hasPermission)
+                          GestureDetector(
+                            onTap: () {
+                              DialogShower.showConfirmDenyDialog(
+                                  context,
+                                  "Eliminazione",
+                                  "Vuoi davvero eliminare questo prodotto?",
+                                  confirmText: "Elimina",
+                                  denyText: "Annulla",
+                                  onConfirmPressed:
+                                      widget.onDeleteRequest.call);
+                            },
+                            child: const Icon(
+                              Icons.delete_forever_outlined,
+                              color: Colors.red,
+                            ),
+                          ),
+                        Expanded(
+                          child: Align(
+                            alignment: Alignment.centerRight,
+                            child: AddRemove<CartBloc, CartState>(
+                              bloc: cartBloc,
+                              stateToCount: (state) => state.products[widget.product] ?? 0,
+                              onAddPressed: () {
+                                cartBloc.add(AddProductToCart(widget.product));
+                              },
+                              onRemovePressed: () {
+                                cartBloc.add(RemoveProductFromCart(widget.product));
+                              },
+                            ),
+                          ),
                         ),
-                      )
+                      ],
                     ),
                   )
                 ],
@@ -440,80 +484,6 @@ class _ProductItemState extends State<ProductItem> {
           )
         ],
       ),
-    );
-  }
-}
-
-class AddRemove extends StatelessWidget {
-  final VoidCallback onAddPressed;
-  final VoidCallback onRemovePressed;
-
-  const AddRemove({
-    super.key,
-    required this.onAddPressed,
-    required this.onRemovePressed,
-  });
-
-  Widget createButton(
-      {required BuildContext context,
-      required Color backgroundColor,
-      required Color borderColor,
-      required Color iconColor,
-      required IconData icon,
-      required VoidCallback onPressed}) {
-    return Container(
-      decoration: BoxDecoration(
-        border: Border.all(color: borderColor),
-        borderRadius: BorderRadius.circular(defaultBorderRadius),
-      ),
-      child: Material(
-        clipBehavior: Clip.hardEdge,
-        borderRadius: BorderRadius.circular(defaultBorderRadius),
-        // border: Border.all(color: Theme.of(context).primaryColor),
-        color: backgroundColor,
-        child: InkWell(
-          onTap: onPressed.call,
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Icon(
-              icon,
-              color: iconColor,
-              size: 15,
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        createButton(
-            context: context,
-            backgroundColor: Colors.white,
-            borderColor: Theme.of(context).primaryColor,
-            iconColor: Theme.of(context).primaryColor,
-            icon: Icons.remove,
-            onPressed: onRemovePressed.call),
-        const Gap(10),
-        BlocBuilder<AddRemoveCounterCubit, AddRemoveCounterState>(
-          bloc: BlocProvider.of<AddRemoveCounterCubit>(context),
-          builder: (context, state) {
-            return Text("${(state as AddRemoveNewCounterState).count}x");
-          },
-        ),
-        const Gap(10),
-        createButton(
-            context: context,
-            backgroundColor: Theme.of(context).primaryColor,
-            borderColor: Colors.transparent,
-            iconColor: Colors.white,
-            icon: Icons.add,
-            onPressed: onAddPressed.call),
-      ],
     );
   }
 }
