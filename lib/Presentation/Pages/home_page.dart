@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:food_delivery_app/Presentation/Pages/login_page.dart';
 import 'package:food_delivery_app/Presentation/Pages/order_page.dart';
-import 'package:food_delivery_app/Presentation/Utilities/dialog_manager.dart';
-import 'package:food_delivery_app/Presentation/Utilities/side_menu.dart';
-import 'package:food_delivery_app/Presentation/Utilities/ui_utilities.dart';
+import 'package:food_delivery_app/Presentation/UIUtilities/dialog_manager.dart';
+import 'package:food_delivery_app/Presentation/UIUtilities/side_menu.dart';
+import 'package:food_delivery_app/Presentation/UIUtilities/ui_utilities.dart';
 import 'package:food_delivery_app/bloc/cart_bloc.dart';
 import 'package:food_delivery_app/bloc/user_bloc.dart';
 

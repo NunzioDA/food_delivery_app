@@ -5,7 +5,7 @@ import 'package:food_delivery_app/Communication/http_communication.dart';
 import 'package:food_delivery_app/Data/APIs/categories_api.dart';
 import 'package:food_delivery_app/Data/Model/product.dart';
 import 'package:food_delivery_app/Data/Model/products_category.dart';
-import 'package:food_delivery_app/Presentation/Utilities/image_optimizer.dart';
+import 'package:food_delivery_app/Presentation/UIUtilities/image_optimizer.dart';
 import 'package:food_delivery_app/bloc/user_bloc.dart';
 
 class CategoryRepository{

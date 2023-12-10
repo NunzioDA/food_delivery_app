@@ -36,7 +36,7 @@ class ErrorCodes
 
 class FdaServerCommunication
 {
-  static const String localServer = "192.168.1.40";
+  static const String localServer = "192.168.1.52";
   static const String externalServer = "www.coinquilinipercaso.altervista.org";
   static const bool serverDiscriminator = kDebugMode;
 

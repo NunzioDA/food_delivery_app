@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:food_delivery_app/Data/Model/product.dart';
-import 'package:food_delivery_app/Presentation/Utilities/dialog_manager.dart';
-import 'package:food_delivery_app/Presentation/Utilities/image_chooser.dart';
-import 'package:food_delivery_app/Presentation/Utilities/ui_utilities.dart';
+import 'package:food_delivery_app/Presentation/UIUtilities/dialog_manager.dart';
+import 'package:food_delivery_app/Presentation/UIUtilities/image_chooser.dart';
+import 'package:food_delivery_app/Presentation/UIUtilities/ui_utilities.dart';
 import 'package:food_delivery_app/Utilities/credential_validation.dart';
 import 'package:gap/gap.dart';
 import 'package:image_picker/image_picker.dart';

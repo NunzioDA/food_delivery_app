@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:food_delivery_app/Presentation/Pages/image_show.dart';
-import 'package:food_delivery_app/Presentation/Utilities/cached_image.dart';
+import 'package:food_delivery_app/Presentation/UIUtilities/cached_image.dart';
 import 'package:image_picker/image_picker.dart';
 
 class ImageChooser extends StatefulWidget

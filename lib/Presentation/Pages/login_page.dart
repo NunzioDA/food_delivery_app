@@ -2,9 +2,9 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:food_delivery_app/Presentation/Utilities/dialog_manager.dart';
-import 'package:food_delivery_app/Presentation/Utilities/loading.dart';
-import 'package:food_delivery_app/Presentation/Utilities/ui_utilities.dart';
+import 'package:food_delivery_app/Presentation/UIUtilities/dialog_manager.dart';
+import 'package:food_delivery_app/Presentation/UIUtilities/loading.dart';
+import 'package:food_delivery_app/Presentation/UIUtilities/ui_utilities.dart';
 import 'package:food_delivery_app/Utilities/credential_validation.dart';
 import 'package:food_delivery_app/bloc/user_bloc.dart';
 import 'package:food_delivery_app/cubit/credential_page_cubit.dart';

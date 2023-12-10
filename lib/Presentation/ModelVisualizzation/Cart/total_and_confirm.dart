@@ -1,21 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:food_delivery_app/Presentation/Pages/cart_page.dart';
-import 'package:food_delivery_app/Presentation/Utilities/ui_utilities.dart';
+import 'package:food_delivery_app/Presentation/ModelVisualizzation/Cart/cart_content.dart';
+import 'package:food_delivery_app/Presentation/UIUtilities/ui_utilities.dart';
 import 'package:food_delivery_app/bloc/cart_bloc.dart';
 
 class TotalAndConfirm extends StatefulWidget {
   static const double closedPanelHeight = 90;
 
   final String confirmText;
-  final VoidCallback onContinuePressed;
   final double maxHeight;
+  final VoidCallback onCompleteOrderRequest;
 
   const TotalAndConfirm({
     super.key,
     required this.confirmText,
-    required this.onContinuePressed,
     required this.maxHeight,
+    required this.onCompleteOrderRequest
     });
 
   @override
@@ -133,8 +133,10 @@ class TotalAndConfirmState extends State<TotalAndConfirm>
                 ],
               ),
               if(animation.value != 0)
-              const Expanded(
-                child: CartPage()
+              Expanded(
+                child: CartContent(
+                  onCompleteOrderRequest: widget.onCompleteOrderRequest,
+                )
               )
             ],
           ),

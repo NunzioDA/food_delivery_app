@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:food_delivery_app/Presentation/Utilities/ui_utilities.dart';
+import 'package:food_delivery_app/Presentation/UIUtilities/ui_utilities.dart';
 
 class AddElementWidget extends StatelessWidget {
   final VoidCallback onPressed;
