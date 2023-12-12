@@ -118,14 +118,13 @@ class _SideMenuViewState extends State<SideMenuView>
   Widget build(BuildContext context) {    
     menuLeftPositionOpened = MediaQuery.of(context).size.width / 3;
 
-    return WillPopScope(
-      onWillPop: () async {
-        bool isOpened = animation.isCompleted;
-        if(isOpened)
+    return PopScope(
+      canPop: animation.value == 0,
+      onPopInvoked: (didPop) {
+        if(!didPop && animation.value != 0)
         {
           contentKey.currentState?.topBarState.currentState?.menuPressed();
         }
-        return !isOpened;
       },
       child: Scaffold(
         body: SafeArea(

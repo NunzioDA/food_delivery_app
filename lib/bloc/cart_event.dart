@@ -14,3 +14,8 @@ class RemoveProductFromCart extends CartEvent{
   final Product product;
   const RemoveProductFromCart(this.product);
 }
+
+class FetchCart extends CartEvent{
+  final Cart? previewsCart;
+  const FetchCart([this.previewsCart]);
+}

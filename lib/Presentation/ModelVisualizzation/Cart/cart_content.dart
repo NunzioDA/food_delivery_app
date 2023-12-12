@@ -28,7 +28,7 @@ class CartContent extends StatelessWidget {
           child: BlocBuilder<CartBloc, CartState>(
             bloc: BlocProvider.of<CartBloc>(context),
             builder: (context, state) {
-              List<Product> productsInCart = state.products.keys.toList();
+              List<Product> productsInCart = state.cart.keys.toList();
               if (productsInCart.isNotEmpty) {
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,

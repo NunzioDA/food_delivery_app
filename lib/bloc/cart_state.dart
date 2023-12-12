@@ -1,9 +1,11 @@
 part of 'cart_bloc.dart';
 
+typedef Cart = Map<Product, int>;
+
 @immutable
 sealed class CartState {
-  final Map<Product, int> products;
-  const CartState(this.products);
+  final Cart cart;
+  const CartState(this.cart);
 }
 
 class CartInitial extends CartState
@@ -14,21 +16,27 @@ class CartInitial extends CartState
 class CartProductAdded extends CartState
 {
   final Product addedProduct;
-  const CartProductAdded(this.addedProduct, super.products);
+  const CartProductAdded(this.addedProduct, super.cart);
 }
 
 class CartProductRemoved extends CartState
 {
   final Product removedProduct;
-  const CartProductRemoved(this.removedProduct, super.products);
+  const CartProductRemoved(this.removedProduct, super.cart);
 }
+
+class CartFetched extends CartState
+{
+  const CartFetched(super.cart);
+}
+
 
 class CartError extends CartState
 {
   final String error;
   final CartEvent event;
   const CartError(
-    super.products,
+    super.cart,
     {
       required this.error,
       required this.event,

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:food_delivery_app/Presentation/ModelVisualizzation/Cart/cart_content.dart';
 import 'package:food_delivery_app/Presentation/UIUtilities/ui_utilities.dart';
+import 'package:food_delivery_app/Utilities/compute_total.dart';
 import 'package:food_delivery_app/bloc/cart_bloc.dart';
 
 class TotalAndConfirm extends StatefulWidget {
@@ -37,14 +38,7 @@ class TotalAndConfirmState extends State<TotalAndConfirm>
 
     animation = Tween<double>(begin: 0, end: 1).animate(controller);
     super.initState();
-  }
-
-  double getTotal(CartState state) {
-    return state.products.entries.fold(
-        0,
-        (previousValue, element) =>
-            previousValue + (element.value * element.key.price));
-  }
+  }  
 
   bool isOpened()
   {

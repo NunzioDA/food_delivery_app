@@ -6,6 +6,7 @@ class AddRemove<B extends StateStreamable<S>, S> extends StatelessWidget {
   final VoidCallback onAddPressed;
   final VoidCallback onRemovePressed;
   final int Function(S state) stateToCount;
+  final void Function(BuildContext context, S state)? listener;
   final B bloc;
 
   const AddRemove({
@@ -13,7 +14,8 @@ class AddRemove<B extends StateStreamable<S>, S> extends StatelessWidget {
     required this.bloc,
     required this.onAddPressed,
     required this.onRemovePressed,
-    required this.stateToCount
+    required this.stateToCount,
+    this.listener
   });
 
   Widget createButton(
@@ -63,8 +65,11 @@ class AddRemove<B extends StateStreamable<S>, S> extends StatelessWidget {
             icon: Icons.remove,
             onPressed: onRemovePressed.call),
         const Gap(10),
-        BlocBuilder<B,S>(
+        BlocConsumer<B,S>(
           bloc: bloc,
+          listener: (context, state) {
+            listener?.call(context, state);
+          },
           builder: (context, state) {
             int count = stateToCount(state);
             return Text("${count}x");

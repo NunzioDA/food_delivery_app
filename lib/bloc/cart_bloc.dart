@@ -1,44 +1,99 @@
 import 'package:bloc/bloc.dart';
 import 'package:food_delivery_app/Data/Model/product.dart';
+import 'package:food_delivery_app/Data/Repositories/cart_repository.dart';
+import 'package:food_delivery_app/bloc/categories_bloc.dart';
+import 'package:food_delivery_app/bloc/user_bloc.dart';
 import 'package:meta/meta.dart';
 
 part 'cart_event.dart';
 part 'cart_state.dart';
 
 class CartBloc extends Bloc<CartEvent, CartState> {
-  CartBloc() : super(CartInitial()) {
-    on<CartEvent>((event, emit) {
+  final UserBloc _userBloc;
+  final CategoriesBloc _categoriesBloc;
+  final CartRepository _cartRepository = CartRepository();
+
+  CartBloc(this._userBloc, this._categoriesBloc) : super(CartInitial()) {
+
+    _userBloc.stream.listen((event) { 
+
+      Cart? previewsCart;
+
+      if(event is LoggedInState && 
+      event is! FetchedUserInfoState &&
+      event is! UserErrorLoggedInState
+      )      
+      {
+        previewsCart = state.cart;        
+      }
+      
+      add(FetchCart(previewsCart));
+    });
+
+    on<CartEvent>((event, emit) async{
       switch(event)
       {        
         case AddProductToCart():
-          var products = state.products;
 
-          if(products.containsKey(event.product))
-          {
-            products[event.product] = products[event.product]! + 1; 
+          try{
+            Cart cart = await _cartRepository.addProduct(
+              event.product, 
+              _userBloc.state, 
+              state.cart,
+              _categoriesBloc.state.categories
+            );  
+
+            emit(CartProductAdded(event.product, cart));
           }
-          else {
-            products[event.product] = 1;
+          catch(e){
+            emit(CartError(
+                state.cart, 
+                error: e.toString(), 
+                event: event
+              )
+            );
           }
 
-          emit(CartProductAdded(event.product, products));
-
-          break;
+          break;  
         case RemoveProductFromCart():
-          var products = state.products;
+          
+          try{
+            Cart cart = await _cartRepository.removeProduct(
+              event.product, 
+              _userBloc.state, 
+              state.cart,
+              _categoriesBloc.state.categories
+            );
 
-          if(products.containsKey(event.product))
-          {
-            if(products[event.product]! > 1)
-            {
-              products[event.product] = products[event.product]! - 1;
-            }
-            else {
-              products.remove(event.product);
-            }
+            emit(CartProductRemoved(event.product, cart));
           }
+          catch(e){
+            emit(CartError(
+                state.cart, 
+                error: e.toString(), 
+                event: event
+              )
+            );
+          }
+          break;
 
-          emit(CartProductRemoved(event.product, products));
+        case FetchCart():
+          try{
+            Cart cart = await _cartRepository.fetchCart(
+              _userBloc.state, 
+              _categoriesBloc.state.categories,
+              event.previewsCart
+            );
+            
+            emit(CartFetched(cart));
+          }
+          catch(e){
+            emit(CartError(
+              state.cart, 
+              error: e.toString(), 
+              event: event
+            ));
+          }
           break;
       }
     });

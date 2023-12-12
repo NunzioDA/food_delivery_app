@@ -5,7 +5,6 @@ import 'package:food_delivery_app/Presentation/Pages/order_page.dart';
 import 'package:food_delivery_app/Presentation/UIUtilities/dialog_manager.dart';
 import 'package:food_delivery_app/Presentation/UIUtilities/side_menu.dart';
 import 'package:food_delivery_app/Presentation/UIUtilities/ui_utilities.dart';
-import 'package:food_delivery_app/bloc/cart_bloc.dart';
 import 'package:food_delivery_app/bloc/user_bloc.dart';
 
 class HomePage extends StatefulWidget {
@@ -63,16 +62,13 @@ class _HomePageState extends State<HomePage> {
               name: userName,
             ),
             groups: [
-              SideMenuGroup(
+              const SideMenuGroup(
                 title: "Navigazione", 
                 buttons: [
                   SideMenuButton(
-                      icon: const Icon(Icons.home),
+                      icon: Icon(Icons.home),
                       name: "Home",
-                      content: BlocProvider(
-                        create: (context) => CartBloc(),
-                        child: const OrderPage(),
-                      )
+                      content: OrderPage()
                   ),
                 ]
               ),

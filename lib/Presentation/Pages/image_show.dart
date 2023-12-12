@@ -10,39 +10,33 @@ class ImageVisualizer extends StatelessWidget
   @override
   Widget build(BuildContext context) {
 
-    return WillPopScope(
-      onWillPop: () async {
-        Navigator.of(context).pop();
-        return false;
-      },
-      child: Scaffold(
-        backgroundColor: Colors.transparent,
-        body: Stack(
-          children: [
-            PhotoView(
-              imageProvider: image, 
-              gestureDetectorBehavior: HitTestBehavior.translucent, 
-              heroAttributes: PhotoViewHeroAttributes(
-                tag: heroTag
-              ),
-              backgroundDecoration: BoxDecoration(
-                color: Colors.black.withAlpha(230)                      
-              ),
-              minScale: PhotoViewComputedScale.contained,
-              maxScale: 1.5,
+    return Scaffold(
+      backgroundColor: Colors.transparent,
+      body: Stack(
+        children: [
+          PhotoView(
+            imageProvider: image, 
+            gestureDetectorBehavior: HitTestBehavior.translucent, 
+            heroAttributes: PhotoViewHeroAttributes(
+              tag: heroTag
             ),
-            SafeArea(
-              child: Align(
-                alignment: Alignment.topLeft,
-                child: IconButton(
-                  iconSize: 30,
-                  onPressed: ()=>Navigator.of(context).pop(), 
-                  icon: const Icon(Icons.arrow_back, color: Colors.white,)
-                ),
+            backgroundDecoration: BoxDecoration(
+              color: Colors.black.withAlpha(230)                      
+            ),
+            minScale: PhotoViewComputedScale.contained,
+            maxScale: 1.5,
+          ),
+          SafeArea(
+            child: Align(
+              alignment: Alignment.topLeft,
+              child: IconButton(
+                iconSize: 30,
+                onPressed: ()=>Navigator.of(context).pop(), 
+                icon: const Icon(Icons.arrow_back, color: Colors.white,)
               ),
-            )
-          ],
-        ),
+            ),
+          )
+        ],
       ),
     );
   }

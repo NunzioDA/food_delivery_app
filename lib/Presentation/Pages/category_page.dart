@@ -3,21 +3,17 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:food_delivery_app/Communication/http_communication.dart';
-import 'package:food_delivery_app/Data/Model/product.dart';
 import 'package:food_delivery_app/Data/Model/products_category.dart';
-import 'package:food_delivery_app/Presentation/Pages/product_page.dart';
-import 'package:food_delivery_app/Presentation/Pages/to_visualizer_bridge.dart';
-import 'package:food_delivery_app/Presentation/UIUtilities/add_element.dart';
-import 'package:food_delivery_app/Presentation/UIUtilities/add_remove_selector.dart';
-import 'package:food_delivery_app/Presentation/UIUtilities/cached_image.dart';
 import 'package:food_delivery_app/Presentation/ModelVisualizzation/Category/category_info.dart';
+import 'package:food_delivery_app/Presentation/ModelVisualizzation/Product/product_item.dart';
+import 'package:food_delivery_app/Presentation/Pages/product_page.dart';
+import 'package:food_delivery_app/Presentation/UIUtilities/add_element.dart';
+import 'package:food_delivery_app/Presentation/UIUtilities/cached_image.dart';
 import 'package:food_delivery_app/Presentation/UIUtilities/dialog_manager.dart';
 import 'package:food_delivery_app/Presentation/UIUtilities/image_chooser.dart';
 import 'package:food_delivery_app/Presentation/UIUtilities/loading.dart';
 import 'package:food_delivery_app/Presentation/UIUtilities/ui_utilities.dart';
-import 'package:food_delivery_app/bloc/cart_bloc.dart';
 import 'package:food_delivery_app/bloc/categories_bloc.dart';
-import 'package:food_delivery_app/cubit/add_remove_counter_cubit.dart';
 import 'package:gap/gap.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -210,8 +206,8 @@ class _CategoryPageState extends State<CategoryPage> {
                                                   CategoryPage.listHeight,
                                               minHeight: 1),
                                           child: GridView.count(
-                                              crossAxisCount: 2,
-                                              childAspectRatio: 0.75,
+                                              crossAxisCount: 1,
+                                              childAspectRatio: 2.5,
                                               children: [
                                                 ...myCategory!.products
                                                     .map((product) => Padding(
@@ -339,150 +335,6 @@ class _CategoryPageState extends State<CategoryPage> {
             ),
           ),
         ),
-      ),
-    );
-  }
-}
-
-class ProductItem extends StatefulWidget {
-  static const double imageSize = 80;
-
-  final Product product;
-  final VoidCallback onDeleteRequest;
-  final bool hasPermission;
-  const ProductItem(
-      {super.key,
-      required this.product,
-      required this.hasPermission,
-      required this.onDeleteRequest});
-
-  @override
-  State<ProductItem> createState() => _ProductItemState();
-}
-
-class _ProductItemState extends State<ProductItem> {
-  late CartBloc cartBloc;
-  late StreamSubscription cartSubscription;
-
-  late AddRemoveCounterCubit addRemoveCounterCubit;
-
-  @override
-  void initState() {
-    // addRemoveCounterCubit = AddRemoveCounterCubit();
-    cartBloc = BlocProvider.of<CartBloc>(context);
-
-    // // init product count
-    // int? count = cartBloc.state.products[widget.product];
-    // addRemoveCounterCubit.changeCounter(count ?? 0);
-
-    // cartSubscription = cartBloc.stream.listen((event) {
-    //   if (event is CartProductAdded && event.addedProduct == widget.product) {
-    //     int count = event.products[widget.product]!;
-    //     addRemoveCounterCubit.changeCounter(count);
-    //   } else if (event is CartProductRemoved &&
-    //       event.removedProduct == widget.product) {
-    //     int? count = event.products[widget.product];
-    //     addRemoveCounterCubit.changeCounter(count ?? 0);
-    //   }
-    // });
-
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    // cartSubscription.cancel();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      elevation: 10,
-      borderRadius: BorderRadius.circular(defaultBorderRadius),
-      clipBehavior: Clip.hardEdge,
-      color: Theme.of(context).dialogBackgroundColor,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          SizedBox(
-            height: ProductItem.imageSize,
-            child: ZoomableImage(
-              provider: FdaCachedNetworkImage(
-                      url: FdaServerCommunication.getImageUrl(
-                          widget.product.imageName!))
-                  .getImageProvider(),
-            ),
-          ),
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.all(10.0),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Text(
-                    widget.product.name,
-                    style: Theme.of(context).textTheme.titleSmall,
-                    textAlign: TextAlign.left,
-                  ),
-                  Expanded(
-                    child: Text(
-                      widget.product.description,
-                    ),
-                  ),
-                  Text(
-                    "${widget.product.price}€",
-                    textAlign: TextAlign.end,
-                    style: Theme.of(context)
-                        .textTheme
-                        .bodyMedium!
-                        .copyWith(color: Theme.of(context).primaryColor),
-                  ),
-                  Expanded(
-                    child: Row(
-                      children: [
-                        if (widget.hasPermission)
-                          GestureDetector(
-                            onTap: () {
-                              DialogShower.showConfirmDenyDialog(
-                                  context,
-                                  "Eliminazione",
-                                  "Vuoi davvero eliminare questo prodotto?",
-                                  confirmText: "Elimina",
-                                  denyText: "Annulla",
-                                  onConfirmPressed:
-                                      widget.onDeleteRequest.call);
-                            },
-                            child: const Icon(
-                              Icons.delete_forever_outlined,
-                              color: Colors.red,
-                            ),
-                          ),
-                        Expanded(
-                          child: Align(
-                            alignment: Alignment.centerRight,
-                            child: AddRemove<CartBloc, CartState>(
-                              bloc: cartBloc,
-                              stateToCount: (state) => state.products[widget.product] ?? 0,
-                              onAddPressed: () {
-                                cartBloc.add(AddProductToCart(widget.product));
-                              },
-                              onRemovePressed: () {
-                                cartBloc.add(RemoveProductFromCart(widget.product));
-                              },
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  )
-                ],
-              ),
-            ),
-          )
-        ],
       ),
     );
   }

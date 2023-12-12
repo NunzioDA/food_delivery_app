@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
@@ -45,6 +47,15 @@ class _FdaLoadingVisualizer extends StatefulWidget {
 
 class _FdaLoadingVisualizerState extends State<_FdaLoadingVisualizer> {
 
+  final double defaultSize = 100;
+  final double spacing = 30;
+  final double minPadding = 20;
+
+  double getMinSize(Size size)
+  {
+    return min(size.width, size.height);
+  }
+
   void action() {
     if(mounted) setState(() {});
   }
@@ -71,21 +82,32 @@ class _FdaLoadingVisualizerState extends State<_FdaLoadingVisualizer> {
       color: Theme.of(context).primaryColorDark.withAlpha(110),
       child: Align(
         alignment: Alignment.center,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            LoadingAnimationWidget.twoRotatingArc(
-              color: Theme.of(context).primaryColor, 
-              size: 100
-            ),
-            const Gap(30),                
-            Text(
-              widget.dynamicText.value,                  
-              style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                color: Colors.white
-              )
-            ),
-          ],
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            double minSide = getMinSize(constraints.biggest);
+            double maxLoadingSize = minSide 
+            - (minPadding + (widget.dynamicText.value.isNotEmpty ? spacing : 0));
+            return Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                LoadingAnimationWidget.twoRotatingArc(
+                  color: Theme.of(context).primaryColor, 
+                  size: defaultSize < maxLoadingSize? 
+                    defaultSize : 
+                    maxLoadingSize
+                ),
+                if(widget.dynamicText.value.isNotEmpty)
+                Gap(spacing),
+                if(widget.dynamicText.value.isNotEmpty)         
+                Text(
+                  widget.dynamicText.value,                  
+                  style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                    color: Colors.white
+                  )
+                ),
+              ],
+            );
+          }
         ),
       ),
     ):

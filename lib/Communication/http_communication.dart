@@ -36,7 +36,7 @@ class ErrorCodes
 
 class FdaServerCommunication
 {
-  static const String localServer = "192.168.1.52";
+  static const String localServer = "192.168.1.19";
   static const String externalServer = "www.coinquilinipercaso.altervista.org";
   static const bool serverDiscriminator = kDebugMode;
 
@@ -99,7 +99,7 @@ class FdaServerCommunication
     return parametersString;
   }
 
-  static Future<http.Response> getRequest(String phpFile, Map<String, String> parameters) {    
+  static Future<http.Response> getRequest(String phpFile, Map<String, String> parameters) {
     return http.get(geBackendUri(phpFile, parameters));
   }
 

@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:food_delivery_app/Data/Model/products_category.dart';
@@ -23,14 +21,13 @@ class CategoryInfo extends StatefulWidget{
 
 class _CategoryInfoState extends State<CategoryInfo> {
   CartBloc? cartBloc;
-  StreamSubscription? cartSubscription;
   int count = 0;
 
   void countCategoryProductsInCart() {
     count = widget.category.products.fold(
         0,
         (previousValue, product) =>
-            previousValue + (cartBloc?.state.products[product] ?? 0));
+            previousValue + (cartBloc?.state.cart[product] ?? 0));
 
     widget.onCountChanged.call(count);
   }
@@ -38,17 +35,8 @@ class _CategoryInfoState extends State<CategoryInfo> {
   @override
   void initState() {
     if(widget.fixedCount == null)
-    {
-      cartBloc = BlocProvider.of<CartBloc>(context);
-      cartSubscription = cartBloc?.stream.listen((event) {
-        if ((event is CartProductAdded &&
-            widget.category.products.contains(event.addedProduct)) ||
-
-            event is CartProductRemoved &&
-            widget.category.products.contains(event.removedProduct)) {
-          countCategoryProductsInCart();
-        }
-      });      
+    {        
+      cartBloc = BlocProvider.of<CartBloc>(context); 
       countCategoryProductsInCart();
     }
     else {
@@ -57,9 +45,17 @@ class _CategoryInfoState extends State<CategoryInfo> {
     super.initState();
   }
 
+  bool shouldReact(CartState state)
+  {
+    return (state is CartProductAdded &&
+              widget.category.products.contains(state.addedProduct)) ||
+              (state is CartProductRemoved &&
+              widget.category.products.contains(state.removedProduct)) ||
+              state is CartFetched;
+  }
+
   @override
   void dispose() {
-    cartSubscription?.cancel();
     super.dispose();
   }
 
@@ -76,7 +72,12 @@ class _CategoryInfoState extends State<CategoryInfo> {
         ),
         child: Align(
           alignment: Alignment.center,
-          child: Text("$count")
+          child: Text(
+            "$count",
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+              color: Colors.white
+            ),
+          )
         ),
       );
     }
@@ -107,13 +108,14 @@ class _CategoryInfoState extends State<CategoryInfo> {
           ),
         ),
         if(widget.fixedCount==null)
-        BlocBuilder<CartBloc, CartState>(
+        BlocConsumer<CartBloc, CartState>(
           bloc: cartBloc,
-          buildWhen: (previous, current) => 
-            (current is CartProductAdded &&
-            widget.category.products.contains(current.addedProduct))
-            || (current is CartProductRemoved &&
-            widget.category.products.contains(current.removedProduct)),
+          listener: (context, state) {
+            if (shouldReact(state)) {
+              countCategoryProductsInCart();
+            }
+          },
+          buildWhen: (previous, current) => shouldReact(current),
           builder: (context, state) {
             return counterWidget();
           },
