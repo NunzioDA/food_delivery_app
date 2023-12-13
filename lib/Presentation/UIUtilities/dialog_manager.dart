@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:food_delivery_app/Presentation/UIUtilities/ui_utilities.dart';
+import 'package:gap/gap.dart';
 
 
 class DialogOption
@@ -42,6 +44,44 @@ class DialogShower
         );
       },
     );
+  }
+
+  static Future<void> showTaskCompletedDialog(BuildContext context, String task, {String? confirmText, VoidCallback? onConfirmPressed}) {
+    AssetImage asset = const AssetImage("assets/complete.gif");
+    return showDialog<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(defaultBorderRadius)
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: Image(image: asset),
+              ),
+              Text(task, textAlign: TextAlign.center,),
+              const Gap(20),              
+            ],
+          ),
+          actions: [
+            TextButton(
+              style: TextButton.styleFrom(
+                textStyle: Theme.of(context).textTheme.labelLarge,
+              ),
+              child: Text((confirmText != null)? confirmText : "Ok"),
+              onPressed: () {
+                onConfirmPressed?.call();
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    ).then((value) => asset.evict());
   }
 
   static Future<void> showConfirmDenyDialog(BuildContext context, String title, String text, {String? confirmText, VoidCallback? onConfirmPressed, String? denyText, VoidCallback? onDenyPressed}) {

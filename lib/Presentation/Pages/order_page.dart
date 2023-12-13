@@ -13,6 +13,7 @@ import 'package:food_delivery_app/Presentation/ModelVisualizzation/Cart/total_an
 import 'package:food_delivery_app/Presentation/UIUtilities/ui_utilities.dart';
 import 'package:food_delivery_app/bloc/cart_bloc.dart';
 import 'package:food_delivery_app/bloc/categories_bloc.dart';
+import 'package:food_delivery_app/bloc/order_bloc.dart';
 import 'package:food_delivery_app/bloc/user_bloc.dart';
 import 'package:gap/gap.dart';
 
@@ -226,12 +227,21 @@ class _OrderPageState extends State<OrderPage> {
                       confirmText: "Carrello",
                       maxHeight: 5 * MediaQuery.of(context).size.height / 6,
                       onCompleteOrderRequest: () {
-                        Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) => BlocProvider.value(
-                            value: cartBloc,
-                            child: CompleteOrderPage(),
+                        Navigator.of(context).push(
+                          PageRouteBuilder(
+                            pageBuilder: (newC, animation, secondaryAnimation) => MultiBlocProvider(
+                            providers: [
+                              BlocProvider.value(
+                                value: cartBloc,
+                              ),
+                              BlocProvider.value(
+                                value: BlocProvider.of<OrderBloc>(context),
+                              )
+                            ],
+                            child: const CompleteOrderPage(),
                           ),
-                        ));
+                          )
+                        );
                       },
                     )
                   ],
