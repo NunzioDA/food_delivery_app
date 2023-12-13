@@ -239,7 +239,7 @@ class _DeliveryInfoManagementState extends State<DeliveryInfoManagement> {
                           ),
                           onChanged: (value) => houseNumber = value,
                         ),
-                      ),                      
+                      ),
                     ],
                   ),
                 ],
@@ -282,7 +282,7 @@ class OrderSummary extends StatelessWidget{
               style: Theme.of(context).textTheme.titleMedium,
             ),
             Text(
-              "${getTotal(cartBloc.state)}€",
+              "${getTotal(cartBloc.state.cart)}€",
               style: Theme.of(context).textTheme.titleMedium,
             )
           ],

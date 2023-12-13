@@ -25,4 +25,21 @@ class OrderApi
       return value.body;
     });
   } 
+
+  static Future<String> fetchOrders(
+    String username,
+    String token,
+    String type,
+  ) async
+  {
+     return await FdaServerCommunication.getRequest(
+      "fetch_orders", 
+      {
+        "username": username,
+        "token": token,
+      },
+    ).then((value) {
+      return value.body;
+    });
+  } 
 }

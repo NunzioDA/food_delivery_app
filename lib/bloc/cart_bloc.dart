@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bloc/bloc.dart';
 import 'package:food_delivery_app/Data/Model/product.dart';
 import 'package:food_delivery_app/Data/Repositories/cart_repository.dart';
@@ -12,10 +14,12 @@ class CartBloc extends Bloc<CartEvent, CartState> {
   final UserBloc _userBloc;
   final CategoriesBloc _categoriesBloc;
   final CartRepository _cartRepository = CartRepository();
+  
+  late final StreamSubscription userSubscription;
 
   CartBloc(this._userBloc, this._categoriesBloc) : super(CartInitial()) {
 
-    _userBloc.stream.listen((event) { 
+    userSubscription = _userBloc.stream.listen((event) { 
 
       Cart? previewsCart;
 
@@ -97,5 +101,11 @@ class CartBloc extends Bloc<CartEvent, CartState> {
           break;
       }
     });
+  }
+
+  @override
+  Future<void> close() {
+    userSubscription.cancel();
+    return super.close();
   }
 }

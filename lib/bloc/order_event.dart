@@ -4,7 +4,9 @@ part of 'order_bloc.dart';
 sealed class OrderEvent {
 }
 
-
+class FetchMyOrders extends OrderEvent{
+  FetchMyOrders();
+}
 
 class ConfirmOrderEvent extends OrderEvent{
   final DeliveryInfo deliveryInfo;

@@ -24,6 +24,9 @@ class DialogShower
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
+          shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(defaultBorderRadius)
+          ),
           title: Text(
             title, 
             style: Theme.of(context).textTheme.titleLarge,
@@ -89,6 +92,9 @@ class DialogShower
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
+          shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(defaultBorderRadius)
+          ),
           title: Text(
             title, 
             style: Theme.of(context).textTheme.titleLarge,
@@ -124,6 +130,9 @@ class DialogShower
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
+          shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(defaultBorderRadius)
+          ),
           title: Row(
             children: [
               GestureDetector(

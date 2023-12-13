@@ -17,17 +17,17 @@ import 'package:food_delivery_app/bloc/order_bloc.dart';
 import 'package:food_delivery_app/bloc/user_bloc.dart';
 import 'package:gap/gap.dart';
 
-class OrderPage extends StatefulWidget {
-  const OrderPage({super.key});
+class MakeOrderPage extends StatefulWidget {
+  const MakeOrderPage({super.key});
   @override
-  State<OrderPage> createState() => _OrderPageState();
+  State<MakeOrderPage> createState() => _MakeOrderPageState();
 }
 
-class _OrderPageState extends State<OrderPage> {
+class _MakeOrderPageState extends State<MakeOrderPage> {
   late CategoriesBloc categoriesBloc;
   late UserBloc userBloc;
   late CartBloc cartBloc;
-  late StreamSubscription cartSubscription, userSubscription;
+  late StreamSubscription cartSubscription;
 
   ValueNotifier<bool> loading = ValueNotifier(false);
 
@@ -39,8 +39,7 @@ class _OrderPageState extends State<OrderPage> {
     categoriesBloc = CategoriesBloc(userBloc);
     cartBloc = CartBloc(userBloc, categoriesBloc);
 
-    updateCategories();  
-    
+    updateCategories();      
 
     
     cartSubscription = cartBloc.stream.listen((event) {
@@ -61,7 +60,6 @@ class _OrderPageState extends State<OrderPage> {
   @override
   void dispose() {
     cartSubscription.cancel();
-    userSubscription.cancel();
     super.dispose();
   }
 

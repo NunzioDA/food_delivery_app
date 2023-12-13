@@ -84,7 +84,7 @@ class TotalAndConfirmState extends State<TotalAndConfirm>
                         bloc: BlocProvider.of<CartBloc>(context),
                         builder: (context, state) {
                           return Text(
-                            "${getTotal(state)}€",
+                            "${getTotal(state.cart)}€",
                             style: Theme.of(context).textTheme.titleMedium?.copyWith(
                                 fontWeight: FontWeight.w700,
                                 color: Theme.of(context).primaryColor),

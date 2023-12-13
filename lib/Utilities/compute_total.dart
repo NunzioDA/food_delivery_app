@@ -1,7 +1,7 @@
-import 'package:food_delivery_app/bloc/cart_bloc.dart';
+import 'package:food_delivery_app/Data/Model/product.dart';
 
-double getTotal(CartState state) {
-  return state.cart.entries.fold(
+double getTotal(Map<Product, int> product) {
+  return product.entries.fold(
       0,
       (previousValue, element) =>
           previousValue + (element.value * element.key.price));

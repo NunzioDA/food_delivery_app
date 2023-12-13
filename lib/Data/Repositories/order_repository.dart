@@ -1,6 +1,9 @@
+import 'dart:convert';
+
 import 'package:food_delivery_app/Communication/http_communication.dart';
 import 'package:food_delivery_app/Data/APIs/order_api.dart';
 import 'package:food_delivery_app/Data/Model/delivery_info.dart';
+import 'package:food_delivery_app/Data/Model/order.dart';
 import 'package:food_delivery_app/bloc/user_bloc.dart';
 
 class OrderRepository
@@ -19,5 +22,23 @@ class OrderRepository
       info.houseNumber
     );
     return FdaResponse(ErrorCodes.isSuccesfull(response), response);
+  } 
+
+  
+  Future<List<Order>> fetchMyOrders(
+    LoggedInState user
+  ) async
+  {
+    String json = await OrderApi.fetchOrders(
+      user.username, 
+      user.token,
+      ""
+    );
+    print(json);
+    return (jsonDecode(json) as List)
+          .map((e){
+            return Order.fromJson(e);
+          })
+          .toList();
   } 
 }
