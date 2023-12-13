@@ -88,8 +88,9 @@ class _SideMenuViewState extends State<SideMenuView>
       }
       catch(e){
         throw Exception(
-          "No content found. "
-          "At least one button should have content to visualize."
+          "No content found at index ${widget.initialContentIndex}. "
+          "At least ${widget.initialContentIndex + 1} "
+          "button${widget.initialContentIndex != 0? "s":""} should have content to visualize."
         );
       }
       
