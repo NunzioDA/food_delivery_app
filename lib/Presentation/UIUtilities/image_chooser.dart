@@ -6,6 +6,15 @@ import 'package:food_delivery_app/Presentation/Pages/image_show.dart';
 import 'package:food_delivery_app/Presentation/UIUtilities/cached_image.dart';
 import 'package:image_picker/image_picker.dart';
 
+/// Widget che permette di slezionare un'immagine dalla galleria/file system
+/// del dispositivo tramite [ImagePicker].
+/// Permette inolte di visualizzare un immagine o widget di background di default
+/// prima che l'immagine venga effettivamente selezionata.
+/// Può entrare in modalità modifica [editable], dove se non è in modalità modifica
+/// si comporterà come una normale immagine.
+/// Altrimenti visualizzera un pulsante che permetterà all'utente di aprire
+/// [ImagePicker] e selezionare l'immagine come [XFile].
+
 class ImageChooser extends StatefulWidget
 {
   final double? width;

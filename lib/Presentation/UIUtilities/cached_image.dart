@@ -1,6 +1,10 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
+/// Usufruisce di [CachedNetworkImage] dandone un'aspetto standartzzato e 
+/// mettendo a disposizione il metodo [getImageProvider] per generare un 
+/// provider dell'url specificato.
+
 class FdaCachedNetworkImage extends StatelessWidget
 {
   final String url;

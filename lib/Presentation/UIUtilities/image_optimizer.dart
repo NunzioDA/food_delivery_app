@@ -15,6 +15,8 @@ class FdaImage
   const FdaImage(this.image, this.extension);
 }
 
+// Permette di ottimizzare le immagini dandone una risoluzione massima (FHD di default)
+// e formato png, prima che queste vengano inviate al server remoto.
 class FdaImageOptimizer
 { 
   static Future<FdaImage?> optimize(XFile imageFile, [int maxWidthHeigth = 1920]) async {

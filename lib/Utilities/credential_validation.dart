@@ -1,3 +1,4 @@
+// Serie di strumenti che permette la validazione delle credenziali
 
 const String specialChars = "~`!@#\$%^&*()_-+={[}]|:;\\\"'<,>.?/";
 

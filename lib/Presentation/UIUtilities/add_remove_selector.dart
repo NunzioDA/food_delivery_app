@@ -2,11 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 
+/// Questo widget si basa su [Bloc]. Permette di visualizzare un selettore
+/// per aumentare o ridurre le occorrenze di un elemento generico.
+/// Resta in ascolto di un [Bloc] generico specificato, e ad un suo evento
+/// richiede la traduzione del nuovo stato in un valore numerico da visualizzare
+/// tramite la funzione [stateToCount].
+
 class AddRemove<B extends StateStreamable<S>, S> extends StatelessWidget {
   final VoidCallback onAddPressed;
   final VoidCallback onRemovePressed;
   final int Function(S state) stateToCount;
   final void Function(BuildContext context, S state)? listener;
+  final bool Function(S previous, S current)? buildWhen;
   final B bloc;
 
   const AddRemove({
@@ -15,7 +22,8 @@ class AddRemove<B extends StateStreamable<S>, S> extends StatelessWidget {
     required this.onAddPressed,
     required this.onRemovePressed,
     required this.stateToCount,
-    this.listener
+    this.listener,
+    this.buildWhen
   });
 
   Widget createButton(
@@ -77,6 +85,7 @@ class AddRemove<B extends StateStreamable<S>, S> extends StatelessWidget {
               const Gap(10),
               BlocConsumer<B,S>(
                 bloc: bloc,
+                buildWhen: buildWhen,
                 listener: (context, state) {
                   listener?.call(context, state);
                 },

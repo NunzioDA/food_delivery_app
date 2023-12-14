@@ -4,6 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 
+/// Permete di ricoprire il widget figlio con un overlay di caricamento
+/// [_FdaLoadingVisualizer] disabilitando temporaneamente l'input.
+/// La visualizzazione dell'overlay viene guitata dal [ValueNotifier]
+/// [loadingNotifier] booleano, che quando settato a vero renderà l'overlay 
+/// visibile. Mentre tramite [dynamicText] si può eventualmente cambiare il testo
+/// di caricamento per visualizzare progressi e cambiamenti.
 class FdaLoading extends StatelessWidget
 {
   final ValueNotifier<bool> loadingNotifier;
@@ -39,6 +45,13 @@ class FdaLoading extends StatelessWidget
     );
   }
 }
+
+/// L'overlay si adatterà al widget figlio di [FdaLoading]
+/// evitando che lo [Stack] prenda tutto lo spazio a sua disposizione
+/// mantenendosi esclusivamente nei confini del widget figlio.
+/// 
+/// Per farlo aspetterà la costruzione per ricavare dal widget figlio
+/// le informazioni riguardanti le sue dimensioni.
 
 class _FdaLoadingVisualizer extends StatefulWidget {
 

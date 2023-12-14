@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:food_delivery_app/Presentation/UIUtilities/ui_utilities.dart';
 
+/// Widget che può essere visualizzato in Layout a scorrimento 
+/// per aggiungere un elmento generico.
+
 class AddElementWidget extends StatelessWidget {
   final VoidCallback onPressed;
   const AddElementWidget({super.key, required this.onPressed});
