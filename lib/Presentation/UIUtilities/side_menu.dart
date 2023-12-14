@@ -32,22 +32,20 @@ class _SideMenuViewState extends State<SideMenuView>
 
   SideMenuButton? lastActive;
 
-  late AnimationController _controller;
+  AnimationController? _controller;
   late Animation<double> animation;
 
   GlobalKey<_ContentVisualizerState> contentKey = GlobalKey(); 
 
-  void changeState(SideMenuButton? newButton)
+  bool currentPageStillExists()
   {
-    setState(() {
-      lastActive = newButton;
-    });
-  }
+    return widget.groups.any((group) => 
+      group.buttons.any((button) => button.content == lastActive!.content)
+    );
+  } 
 
-  @override
-  void initState() {
-    super.initState();
-
+  void checkAndFetchContent()
+  {
     // Multiple buttons name check
     Map<String, int> namesOccurrences = {};
     for(SideMenuGroup group in widget.groups){ 
@@ -98,6 +96,24 @@ class _SideMenuViewState extends State<SideMenuView>
     });
 
     changeState(buttonWithContent);
+  }
+
+  void changeState(SideMenuButton? newButton)
+  {
+    setState(() {
+      lastActive = newButton;
+      if(isOpened())
+      {
+        _controller!.reverse();
+      }
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();   
+
+    checkAndFetchContent();
 
     _controller = AnimationController(
       vsync: this,
@@ -106,30 +122,53 @@ class _SideMenuViewState extends State<SideMenuView>
       setState(() {});
     });
 
-    animation = Tween<double>(begin: 0, end: 1).animate(_controller);    
+    animation = Tween<double>(begin: 0, end: 1).animate(_controller!);    
   }
 
   @override
   void dispose() {
-    _controller.dispose();
+    _controller?.dispose();
     super.dispose();
+  }
+
+  bool isOpened()
+  {
+    return _controller != null && _controller?.value != 0 ;
+  }
+
+  void close()
+  {
+    _controller?.reverse();
+  }
+
+  void open()
+  {
+    _controller?.forward();
   }
 
   @override
   Widget build(BuildContext context) {    
+    if(!currentPageStillExists())
+    {
+      checkAndFetchContent();
+    }
+
     menuLeftPositionOpened = MediaQuery.of(context).size.width / 3;
 
     return PopScope(
       canPop: animation.value == 0,
       onPopInvoked: (didPop) {
-        if(!didPop && animation.value != 0)
+        if(!didPop && isOpened())
         {
-          contentKey.currentState?.topBarState.currentState?.menuPressed();
+          close();
         }
       },
       child: Scaffold(
         body: SafeArea(
-          child: _SideMenuViewInherited(
+          child: SideMenuViewInherited(
+            opened: isOpened(),
+            onCloseRequest: close,
+            onOpenRequest: open,
             lastActive: lastActive,
             content: lastActive?.content ?? Container(),
             child: Stack(
@@ -150,17 +189,16 @@ class _SideMenuViewState extends State<SideMenuView>
                       ..rotateY(widget.rotate3D? pi/5 * animation.value : 0),
                       alignment: Alignment.center,
                       child: ContentVisualizer(
-                        key: contentKey,
                         animation: animation,
                         topBarActionWidget: widget.topBarActionWidget,
                         borderRadius: widget.contentBorderRadius,
-                        onMenuButton: (bool state){
-                          if(state)
+                        onMenuButton: (){
+                          if(isOpened())
                           {
-                            _controller.forward();
+                            close();
                           }
                           else{
-                            _controller.reverse();
+                            open();
                           }
                         },
                       ),
@@ -176,32 +214,45 @@ class _SideMenuViewState extends State<SideMenuView>
   }  
 }
 
-class _SideMenuViewInherited extends InheritedWidget{   
+class SideMenuViewInherited extends InheritedWidget{   
 
   final SideMenuButton? lastActive;
   final Widget content;
+  final bool opened;
+
+  final VoidCallback onCloseRequest;
+  final VoidCallback onOpenRequest;
 
 
-  const _SideMenuViewInherited({
+  const SideMenuViewInherited({
     this.lastActive,
     required this.content,
-    required super.child
+    required this.opened,
+    required this.onCloseRequest,
+    required this.onOpenRequest,
+    required super.child,
   });
   
 
-  static _SideMenuViewInherited? _maybeOf(BuildContext context) {
-    return context.dependOnInheritedWidgetOfExactType<_SideMenuViewInherited>();
+  static SideMenuViewInherited? _maybeOf(BuildContext context) {
+    return context.dependOnInheritedWidgetOfExactType<SideMenuViewInherited>();
   }
 
-  static _SideMenuViewInherited of(BuildContext context) {
-    final _SideMenuViewInherited? result = _maybeOf(context);
+  static SideMenuViewInherited of(BuildContext context) {
+    final SideMenuViewInherited? result = _maybeOf(context);
     assert(result != null, 'No _SideMenuViewInherited found in context');
     return result!;
   }
 
+  void close() => onCloseRequest.call();
+  void open() => onOpenRequest.call();
+  
+
   @override
-  bool updateShouldNotify(covariant InheritedWidget oldWidget) {
-    return true;
+  bool updateShouldNotify(covariant SideMenuViewInherited oldWidget) {
+    return lastActive != oldWidget.lastActive ||
+    content != oldWidget.content ||
+    opened != oldWidget.opened;
   }
 
 }
@@ -255,10 +306,11 @@ class SideMenuGroup extends StatelessWidget
         Padding(
           padding: const EdgeInsets.only(left: 10.0, top: 10),
           child: Text(
-            title,
-            style: Theme.of(context).textTheme.bodySmall!.copyWith(
+            title.toUpperCase(),
+            style: Theme.of(context).textTheme.bodyMedium!.copyWith(
               color: Theme.of(context).colorScheme.onPrimary,
-              fontWeight: FontWeight.w600
+              fontWeight: FontWeight.w600,
+              fontSize: 12
             ),
           ),
         ),        
@@ -316,7 +368,7 @@ class _SideMenuButtonState extends State<_SideMenuButton> {
 
   @override
   Widget build(BuildContext context) {
-    SideMenuButton? lastActive = _SideMenuViewInherited.of(context).lastActive;
+    SideMenuButton? lastActive = SideMenuViewInherited.of(context).lastActive;
 
 
     if(lastActive != null)
@@ -325,7 +377,7 @@ class _SideMenuButtonState extends State<_SideMenuButton> {
     }
       
     return Material(
-      color: !_isActive? Colors.transparent : Theme.of(context).primaryColorLight,
+      color: !_isActive? Colors.transparent : Theme.of(context).primaryColorDark,
       child: InkWell(
         onTap: (){
           if(widget.button.content!=null)
@@ -364,7 +416,7 @@ class _SideMenuButtonState extends State<_SideMenuButton> {
 class ContentVisualizer extends StatefulWidget{
 
   final Animation<double> animation;
-  final void Function(bool state) onMenuButton;
+  final VoidCallback onMenuButton;
   final Widget? topBarActionWidget;
   final double borderRadius;
 
@@ -381,7 +433,6 @@ class ContentVisualizer extends StatefulWidget{
 }
 
 class _ContentVisualizerState extends State<ContentVisualizer> {
-  GlobalKey<_ContentVisualizerTopBarState> topBarState = GlobalKey();
 
   @override
   void initState() {
@@ -406,21 +457,18 @@ class _ContentVisualizerState extends State<ContentVisualizer> {
           Column(
             children: [
               ContentVisualizerTopBar(
-                key: topBarState,
-                onMenuButton: (bool state){
-                  widget.onMenuButton(state);
-                },
+                onMenuButton: widget.onMenuButton,
                 topBarActionWidget: widget.topBarActionWidget,
               ),
               Expanded(
-                child: _SideMenuViewInherited.of(context).content,
+                child: SideMenuViewInherited.of(context).content,
               )
             ],
           ),
-          if(topBarState.currentState?.menuOpened ?? false)
+          if(SideMenuViewInherited.of(context).opened)
           GestureDetector(
             onTap: () {
-              topBarState.currentState?.menuPressed();
+              SideMenuViewInherited.of(context).close();
             },
             child: Container(color: Colors.black.withAlpha(1)),
           )
@@ -433,7 +481,7 @@ class _ContentVisualizerState extends State<ContentVisualizer> {
 class ContentVisualizerTopBar extends StatefulWidget{
   static const double barHeight = 65;
 
-  final void Function(bool state) onMenuButton;
+  final VoidCallback onMenuButton;
   final Widget? topBarActionWidget;
   
   const ContentVisualizerTopBar({
@@ -448,17 +496,14 @@ class ContentVisualizerTopBar extends StatefulWidget{
 
 class _ContentVisualizerTopBarState extends State<ContentVisualizerTopBar> {
 
-  bool menuOpened = false;
-
   void menuPressed()
   {
-    menuOpened = !menuOpened;
-    widget.onMenuButton.call(menuOpened);
+    widget.onMenuButton.call();
   }
 
   @override
   Widget build(BuildContext context) {
-    String? title = _SideMenuViewInherited.of(context).lastActive?.name;
+    String? title = SideMenuViewInherited.of(context).lastActive?.name;
 
     return Container(
       height: ContentVisualizerTopBar.barHeight,

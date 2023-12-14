@@ -29,7 +29,7 @@ class OrderApi
   static Future<String> fetchOrders(
     String username,
     String token,
-    String type,
+    String mode,
   ) async
   {
      return await FdaServerCommunication.getRequest(
@@ -37,6 +37,27 @@ class OrderApi
       {
         "username": username,
         "token": token,
+        "mode": mode
+      },
+    ).then((value) {
+      return value.body;
+    });
+  } 
+
+  static Future<String> updateOrder(
+    String username,
+    String token,
+    String orderId,
+    String newStatus,
+  ) async
+  {
+     return await FdaServerCommunication.getRequest(
+      "change_order_status", 
+      {
+        "username": username,
+        "token": token,
+        "order_id": orderId,
+        "new_status": newStatus,
       },
     ).then((value) {
       return value.body;

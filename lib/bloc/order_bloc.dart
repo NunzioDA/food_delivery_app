@@ -44,15 +44,40 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
           
           break;
         case FetchMyOrders():
+        case FetchReceivedOrders():
             try{
-              List<Order> myOrders = 
-              await _orderRepository.fetchMyOrders(_userBloc.state as LoggedInState);
+              List<Order> myOrders;
+              if(event is FetchMyOrders)
+              {
+                myOrders = await _orderRepository
+                .fetchMyOrders(_userBloc.state as LoggedInState);
+              }
+              else{
+                myOrders = await _orderRepository
+                .fetchReceivedOrders(_userBloc.state as LoggedInState);
+              }              
 
               emit(OrdersFetched(myOrders));
             }
-            catch(e){
+            catch(e){              
               emit(OrderError(e.toString(), event));
             }
+          break;
+
+        
+        case UpdateOrder():
+          try{
+            List<Order> myOrders = await _orderRepository.updateOrder(
+              _userBloc.state as LoggedInState,
+              event.order,
+              event.newStatus
+            );
+            emit(OrderUpdated(myOrders));
+          }
+          catch(e)
+          {
+            emit(OrderError(e.toString(), event));
+          }
           break;
       }
     });

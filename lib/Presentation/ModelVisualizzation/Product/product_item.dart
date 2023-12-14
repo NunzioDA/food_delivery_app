@@ -19,12 +19,18 @@ class ProductItem extends StatefulWidget {
   final Product product;
   final bool hasPermission;
   final VoidCallback? onDeleteRequest;
+  final bool canModifyCart;
+  final int? fixedCount;
+
   const ProductItem({
     super.key,
     required this.product,
     this.hasPermission = false,
-    this.onDeleteRequest
-  }) : assert(!hasPermission || onDeleteRequest!=null);
+    this.onDeleteRequest,
+    this.canModifyCart = true,
+    this.fixedCount
+  }) : assert(!hasPermission || onDeleteRequest!=null), 
+      assert(canModifyCart || fixedCount != null);
 
   @override
   State<ProductItem> createState() => _ProductItemState();
@@ -44,7 +50,10 @@ class _ProductItemState extends State<ProductItem> {
 
   @override
   void initState() {
-    cartBloc = BlocProvider.of<CartBloc>(context);
+    if(widget.canModifyCart)
+    {
+      cartBloc = BlocProvider.of<CartBloc>(context);
+    }
     super.initState();
   }
 
@@ -98,15 +107,24 @@ class _ProductItemState extends State<ProductItem> {
                           widget.product.description,
                         ),
                       ),
-                      Text(
-                        "${widget.product.price}€",
-                        textAlign: TextAlign.end,
-                        style: Theme.of(context)
-                            .textTheme
-                            .bodyMedium!
-                            .copyWith(
-                                color: Theme.of(context).primaryColor),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          Text(
+                            "${widget.product.price}€",
+                            textAlign: TextAlign.end,
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium!
+                                .copyWith(
+                                    color: Theme.of(context).primaryColor),
+                          ),
+                          const Gap(20),
+                          if(!widget.canModifyCart)
+                          Text("x${widget.fixedCount.toString()}")
+                        ],
                       ),
+                      if(widget.canModifyCart)
                       Expanded(
                         child: Row(
                           children: [
@@ -122,7 +140,7 @@ class _ProductItemState extends State<ProductItem> {
                                   ),
                                 ),
                               ],
-                            ),
+                            ),                            
                             Expanded(
                               child: Align(
                                 alignment: Alignment.centerRight,
@@ -145,6 +163,7 @@ class _ProductItemState extends State<ProductItem> {
                                 ),
                               ),
                             ),
+                            
                           ],
                         ),
                       )

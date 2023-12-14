@@ -24,21 +24,58 @@ class OrderRepository
     return FdaResponse(ErrorCodes.isSuccesfull(response), response);
   } 
 
-  
-  Future<List<Order>> fetchMyOrders(
-    LoggedInState user
+  Future<List<Order>> _fetchOrders(
+    LoggedInState user,
+    String mode
   ) async
   {
     String json = await OrderApi.fetchOrders(
       user.username, 
       user.token,
-      ""
+      mode
     );
-    print(json);
-    return (jsonDecode(json) as List)
-          .map((e){
-            return Order.fromJson(e);
-          })
-          .toList();
+    var orders = (jsonDecode(json) as List).map((e){
+      return Order.fromJson(e);
+    }).toList();
+
+    orders.sort((a, b) => b.dateTime.compareTo(a.dateTime),);
+
+    return orders;
+  }
+
+  
+  Future<List<Order>> fetchMyOrders(
+    LoggedInState user
+  ) async
+  {
+    return _fetchOrders(user, "normal");
+  }
+
+  Future<List<Order>> fetchReceivedOrders(
+    LoggedInState user
+  ) async
+  {
+    return _fetchOrders(user, "management");
   } 
+
+  Future<List<Order>> updateOrder(
+    LoggedInState user,
+    Order order,
+    OrderStatus newStatus
+  ) async
+  {
+    String response = await OrderApi.updateOrder(
+      user.username, 
+      user.token, 
+      order.id, 
+      newStatus.name
+    );
+
+    if(ErrorCodes.isSuccesfull(response))
+    {
+      return fetchReceivedOrders(user);
+    }
+    
+    throw Exception(response);
+  }
 }

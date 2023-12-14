@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:food_delivery_app/Presentation/Pages/login_page.dart';
 import 'package:food_delivery_app/Presentation/Pages/my_orders_page.dart';
 import 'package:food_delivery_app/Presentation/Pages/make_order_page.dart';
+import 'package:food_delivery_app/Presentation/Pages/received_orders_page.dart';
 import 'package:food_delivery_app/Presentation/UIUtilities/dialog_manager.dart';
 import 'package:food_delivery_app/Presentation/UIUtilities/side_menu.dart';
 import 'package:food_delivery_app/Presentation/UIUtilities/ui_utilities.dart';
@@ -85,7 +86,7 @@ class _HomePageState extends State<HomePage> {
                     const SideMenuButton(
                       icon: Icon(Icons.home),
                       name: "Ordini ricevuti",
-                      content: MyOrdersPage()
+                      content: ReceivedOrdersPage()
                     ),
                 ]
                 ),

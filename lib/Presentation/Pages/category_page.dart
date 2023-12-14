@@ -223,8 +223,10 @@ class _CategoryPageState extends State<CategoryPage> {
                                                               loading.value =
                                                                   true;
                                                               _categoriesBloc.add(
-                                                                  ProductDeleteEvent(
-                                                                      product));
+                                                                ProductDeleteEvent(
+                                                                  product
+                                                                )
+                                                              );
                                                             },
                                                           ),
                                                         ))

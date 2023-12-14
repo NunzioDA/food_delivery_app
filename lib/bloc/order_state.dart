@@ -10,12 +10,15 @@ final class OrderInitial extends OrderState {
   OrderInitial();
 }
 
-final class OrderPlaced extends OrderState{
-}
+final class OrderPlaced extends OrderState{}
 
 final class OrdersFetched extends OrderState{
   final List<Order> orders;
   OrdersFetched(this.orders);
+}
+
+final class OrderUpdated extends OrdersFetched{
+  OrderUpdated(super.orders);
 }
 
 final class OrderError extends OrderState{
