@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:food_delivery_app/Presentation/Pages/image_show.dart';
 
-// Permette di effettuare l'animazione di visualizzazione di un immagine
-// con Hero evitando la restrizione di discendenza tra widget Hero
-// utilizzando una pagina che fa da ponte [_ToVisualizerBridge]
+/// Permette di effettuare l'animazione di visualizzazione di un immagine
+/// con [Hero] evitando la restrizione di discendenza tra widget [Hero]
+/// utilizzando una pagina che fa da ponte [_ToVisualizerBridge]
 
 class ZoomableImage extends StatelessWidget
 {
@@ -41,14 +41,15 @@ class ZoomableImage extends StatelessWidget
   }
 }
 
-// Questa pagina è il ponte tra [ZoomableImage] e [ImageVisualizer]
-// andando a visualizzare un'immagine identica a quella precedente da zoommare
-// usando uno stack e le informazioni ricavate dalla chiave appartenente al container
-// nel widget [ZoomableImage].
-// Quando il widget è stato costruito questo procede al push di [ImageVisualizer]
-// per avviare l'animazione di transizione tramite [Hero].
-// Resta poi in attesa del pop dell'[ImageVisualizer] per effettuare a sua volta
-// il pop tornando alla pagina chiamante.
+/// Questa pagina è il ponte tra [ZoomableImage] e [ImageVisualizer]
+/// andando a visualizzare un'immagine identica a quella contenuta 
+/// in [ZoomableImage] nella stessa posizione e con le stesse dimensioni usando 
+/// uno [Stack] e le informazioni ricavate dalla chiave appartenente al 
+/// container nel widget [ZoomableImage].
+/// Quando il widget è stato costruito questo procede al push di [ImageVisualizer]
+/// per avviare l'animazione di transizione tramite [Hero].
+/// Resta poi in attesa del pop dell'[ImageVisualizer] per effettuare a sua volta
+/// il pop tornando alla pagina chiamante.
 class _ToVisualizerBridge extends StatefulWidget
 {
   final ImageProvider imageProvider;

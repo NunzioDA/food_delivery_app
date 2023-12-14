@@ -1,6 +1,11 @@
 import 'package:food_delivery_app/Data/Model/delivery_info.dart';
 import 'package:food_delivery_app/Data/Model/product.dart';
 
+/// [OrderStatus] permette di rappresentare in ordine tutti i
+/// possibili stati di un ordine.
+/// Inoltre, è dotato di un getter [visualize] che permette di 
+/// ottenere la stringa visualizzabile per ognuno degli stati dell'ordine.
+
 enum OrderStatus
 {
   placed,
@@ -22,9 +27,12 @@ enum OrderStatus
         return "Annullato";
     }
   }
-
-
 }
+
+/// Questa classe contiene tutte le informazioni riduardanti
+/// un ordine effettuato da un utente. 
+/// Inoltre, è dotata di un costruttore [Order.fromJson] che 
+/// permette di creare un oggetto [Order] partendo da una mappa json.
 
 class Order{
   final String id;
@@ -43,9 +51,12 @@ class Order{
     this.status
   );
 
+  @override
+  int get hashCode => "$id$username$dateTime".hashCode;
+
+  @override
   bool operator ==(Object other)
   {
-
     return other is Order &&
       (other.id == id || (
         other.username == username &&
@@ -68,5 +79,7 @@ class Order{
     },
     status = OrderStatus.values.firstWhere(
       (element) => element.name == json["status"]
-    );
+    );    
+  
+    
 }

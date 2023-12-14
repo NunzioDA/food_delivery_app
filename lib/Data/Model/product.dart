@@ -1,5 +1,10 @@
 import 'dart:convert';
 
+/// Questa classe contiene tutte le informazioni riduardanti
+/// un prodotto che un utente può ordinare. 
+/// Inoltre, è dotata di un costruttore [Product.fromJson] che 
+/// permette di creare un oggetto [Product] partendo da una mappa json.
+
 class Product{
   final String? id;
   final String name;
@@ -32,7 +37,7 @@ class Product{
   }
 
   @override
-  int get hashCode => "$name$price$imageName".hashCode;
+  int get hashCode => "$id$name$price$imageName".hashCode;
   
   @override
   bool operator ==(Object other) {

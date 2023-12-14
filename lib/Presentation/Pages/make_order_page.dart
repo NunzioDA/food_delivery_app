@@ -17,6 +17,16 @@ import 'package:food_delivery_app/bloc/order_bloc.dart';
 import 'package:food_delivery_app/bloc/user_bloc.dart';
 import 'package:gap/gap.dart';
 
+/// Questa pagina permette di creare l'ordine
+/// da confermare successivamente, mostrando all'utente
+/// tutti i prodotti tra cui è possibile scegliere dividendo
+/// il tutto in categorie.
+/// Ha inoltre la modalità gestione permettendo agli utenti con permessi
+/// di gestire categorie e prodotti tra cui gli utenti potranno ordinare.
+
+/// Fornisce un accesso diretto al carrello che permetterà successivamente di
+/// passare alla pagina di completamento ordine [CompleteOrderPage]
+
 class MakeOrderPage extends StatefulWidget {
   const MakeOrderPage({super.key});
   @override
@@ -31,16 +41,16 @@ class _MakeOrderPageState extends State<MakeOrderPage> {
 
   ValueNotifier<bool> loading = ValueNotifier(false);
 
-  GlobalKey<TotalAndConfirmState> totalAndConfirmKey = GlobalKey();
+  late GlobalKey<TotalAndConfirmState> totalAndConfirmKey;
 
   @override
   void initState() {
     userBloc = BlocProvider.of<UserBloc>(context);
     categoriesBloc = CategoriesBloc(userBloc);
     cartBloc = CartBloc(userBloc, categoriesBloc);
+    totalAndConfirmKey = GlobalKey();
 
-    updateCategories();      
-
+    updateCategories();
     
     cartSubscription = cartBloc.stream.listen((event) {
       if(event is CartError && event.event is FetchCart)
@@ -225,21 +235,31 @@ class _MakeOrderPageState extends State<MakeOrderPage> {
                       confirmText: "Carrello",
                       maxHeight: 5 * MediaQuery.of(context).size.height / 6,
                       onCompleteOrderRequest: () {
-                        Navigator.of(context).push(
-                          PageRouteBuilder(
-                            pageBuilder: (newC, animation, secondaryAnimation) => MultiBlocProvider(
-                            providers: [
-                              BlocProvider.value(
-                                value: cartBloc,
-                              ),
-                              BlocProvider.value(
-                                value: BlocProvider.of<OrderBloc>(context),
-                              )
-                            ],
-                            child: const CompleteOrderPage(),
-                          ),
-                          )
-                        );
+                        if(userBloc.state is LoggedInState)
+                        {
+                          Navigator.of(context).push(
+                            PageRouteBuilder(
+                              pageBuilder: (newC, animation, secondaryAnimation) => MultiBlocProvider(
+                              providers: [
+                                BlocProvider.value(
+                                  value: cartBloc,
+                                ),
+                                BlocProvider.value(
+                                  value: BlocProvider.of<OrderBloc>(context),
+                                )
+                              ],
+                              child: const CompleteOrderPage(),
+                            ),
+                            )
+                          );
+                        }
+                        else {
+                          DialogShower.showAlertDialog(
+                            context, 
+                            "Login", 
+                            "Effettua il login prima di completare l'ordine."
+                          );
+                        }
                       },
                     )
                   ],

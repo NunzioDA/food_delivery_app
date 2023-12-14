@@ -7,6 +7,13 @@ import 'package:food_delivery_app/Presentation/UIUtilities/loading.dart';
 import 'package:food_delivery_app/Presentation/UIUtilities/ui_utilities.dart';
 import 'package:food_delivery_app/Utilities/compute_total.dart';
 
+/// Questa pagina permette di visualizzare tutti i dettagli di un ordine
+/// rappresentato dalla calsse [Order] visualizzandone anche i prodotti
+/// che questo contiene rappresentati dalla classe [Product].
+/// 
+/// Inoltre, è dotata di una modalità di gestione che permette di gestire
+/// lo stato di un ordine rappresentato dall'enum [OrderStatus].
+
 class OrderDetailsPage extends StatelessWidget
 {
   final bool hasPermission;

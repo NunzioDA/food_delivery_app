@@ -10,6 +10,13 @@ import 'package:food_delivery_app/Presentation/UIUtilities/ui_utilities.dart';
 import 'package:food_delivery_app/bloc/order_bloc.dart';
 import 'package:food_delivery_app/bloc/user_bloc.dart';
 
+/// Pagina principale dell'app che mostra un menu a scorrimento laterale
+/// tramite la vista [SideMenuView]. Permettendo all'utente di navigare 
+/// tra le schermate [MakeOrderPage] per creare un nuovo ordine
+/// la pagina [MyOrdersPage] per visualizzare i propri ordini
+/// e [ReceivedOrdersPage] per visualizzare, nel caso di utenti con 
+/// permessi, tutti li ordini ricevuti ed eventualmente gestirli.
+
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
@@ -120,7 +127,7 @@ class TopBarUserStatus extends StatelessWidget {
             Navigator.of(context).push(PageRouteBuilder(
               opaque: false,
               pageBuilder: (context, animation, secondaryAnimation) {
-                return const LoginPage();
+                return const LoginSignupPage();
               },
             ));
           },

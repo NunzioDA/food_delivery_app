@@ -7,6 +7,15 @@ import 'package:food_delivery_app/Presentation/ModelVisualizzation/Order/order_i
 import 'package:food_delivery_app/Presentation/UIUtilities/dialog_manager.dart';
 import 'package:food_delivery_app/bloc/order_bloc.dart';
 
+
+/// Questa pagina permette di visualizzare tutti gli ordini 
+/// effettuati mostrandone le informazioni tramite [OrderItem]
+/// e successivamente visualizzarne i dettagli tramite [OrderDetailsPage]
+/// 
+/// E' inoltre dotata di un timer di aggiornamento periodico che permette 
+/// all'utente con permessi di essere sempre aggiornato sui nuovi ordini in arrivo
+/// potendoli gestire in tempo reale.
+
 class ReceivedOrdersPage extends StatefulWidget
 {
   const ReceivedOrdersPage({

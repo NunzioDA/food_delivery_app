@@ -8,6 +8,12 @@ import 'package:food_delivery_app/Utilities/credential_validation.dart';
 import 'package:gap/gap.dart';
 import 'package:image_picker/image_picker.dart';
 
+/// Questa pagina permette di creare un nuovo [Product]
+/// inserendo un'immagine e tutti i dettagli necessari.
+/// Qualora l'utente completi con successo la creazione,
+/// restituirà il nuovo [Product] tramite [Navigator]
+/// alla pagina chiamante.
+
 class CreateProductPage extends StatefulWidget{
   static const double imageSize = 90;
   const CreateProductPage({super.key});

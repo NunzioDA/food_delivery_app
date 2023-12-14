@@ -14,6 +14,11 @@ import 'package:food_delivery_app/bloc/user_bloc.dart';
 import 'package:food_delivery_app/cubit/delivery_info_cubit.dart';
 import 'package:gap/gap.dart';
 
+/// Questa pagina permette all'utente di completare l'ordine,
+/// proponendo un riepilogo ordine tramite la classe [OrderSummary]
+/// e permette di scegliere un indirizzo precedentemente usato o inserirne
+/// uno nuovo, gestendo gli indirizzi con la classe [DeliveryInfoManagement]
+
 class CompleteOrderPage extends StatefulWidget{
   const CompleteOrderPage({super.key});
 

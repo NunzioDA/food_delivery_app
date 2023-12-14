@@ -2,8 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:food_delivery_app/Data/Model/order.dart';
 import 'package:food_delivery_app/Presentation/ModelVisualizzation/Order/order_item.dart';
+import 'package:food_delivery_app/Presentation/Pages/order_details_page.dart';
 import 'package:food_delivery_app/Presentation/UIUtilities/dialog_manager.dart';
 import 'package:food_delivery_app/bloc/order_bloc.dart';
+
+/// Questa pagina permette di visualizzare tutti gli ordini 
+/// effettuati mostrandone le informazioni tramite [OrderItem]
+/// e successivamente visualizzarne i dettagli tramite [OrderDetailsPage]
 
 class MyOrdersPage extends StatefulWidget
 {

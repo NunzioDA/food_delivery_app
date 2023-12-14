@@ -10,18 +10,21 @@ import 'package:food_delivery_app/bloc/user_bloc.dart';
 import 'package:food_delivery_app/cubit/credential_page_cubit.dart';
 import 'package:gap/gap.dart';
 
-class LoginPage extends StatefulWidget {
+/// Questa pagina permette all'utente di accedere o 
+/// registrarsi effettuando tutte le opportune 
+/// verifiche e validazioni. 
 
+class LoginSignupPage extends StatefulWidget {
   
-  const LoginPage({
+  const LoginSignupPage({
     super.key,
   });
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  State<LoginSignupPage> createState() => _LoginSignupPageState();
 }
 
-class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMixin{
+class _LoginSignupPageState extends State<LoginSignupPage> with SingleTickerProviderStateMixin{
   final CredentialPageCubit credentialPageCubit = CredentialPageCubit();
   late UserBloc userBloc;
 

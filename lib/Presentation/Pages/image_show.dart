@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:photo_view/photo_view.dart';
 
+/// Questa pagina permete di visualizzare in primo piano
+/// un'immagine, potendola zoommare liberamente.
+/// Si avvale, inoltre, di [Hero] per effettuare un'eventuale
+/// animaizone da un'immagine nella pagina chiamante.
+
 class ImageVisualizer extends StatelessWidget
 {
   final ImageProvider image;

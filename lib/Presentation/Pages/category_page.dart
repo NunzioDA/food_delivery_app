@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:food_delivery_app/Communication/http_communication.dart';
+import 'package:food_delivery_app/Data/Model/product.dart';
 import 'package:food_delivery_app/Data/Model/products_category.dart';
 import 'package:food_delivery_app/Presentation/ModelVisualizzation/Category/category_info.dart';
 import 'package:food_delivery_app/Presentation/ModelVisualizzation/Product/product_item.dart';
@@ -16,6 +17,12 @@ import 'package:food_delivery_app/Presentation/UIUtilities/ui_utilities.dart';
 import 'package:food_delivery_app/bloc/categories_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:image_picker/image_picker.dart';
+
+/// Questa pagina permette all'utente di visualizzare tutti i [Product]
+/// contenuti in una [ProductsCategory] tramite [ProductItem].
+/// In questo modo l'utente potrà selezionare i prodotti inserendoli nel carrello.
+/// Ha inoltre una modalità di gestione in cui utenti con permessi potranno
+/// gestire la categoria eliminandola, o creando/eliminando prodotti.
 
 class CategoryPage extends StatefulWidget {
   static const double imageSize = 120;
@@ -167,7 +174,8 @@ class _CategoryPageState extends State<CategoryPage> {
                                             DialogShower.showConfirmDenyDialog(
                                                 context,
                                                 "Eliminazione",
-                                                "Sei sicuro di voler eliminare definitivamente questa categoria?",
+                                                "Sei sicuro di voler eliminare "
+                                                "definitivamente questa categoria?",
                                                 onConfirmPressed: () {
                                               loading.value = true;
                                               _categoriesBloc.add(
