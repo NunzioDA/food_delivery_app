@@ -65,7 +65,7 @@ class _FdaLoadingVisualizerState extends State<_FdaLoadingVisualizer> {
   final double minPadding = 20;  
   late Size mySize;
 
-  Size? getChildSizeAndPosition()
+  Size? getChildSize()
   {
     return widget.childKey.currentContext!.size;
   }
@@ -86,9 +86,12 @@ class _FdaLoadingVisualizerState extends State<_FdaLoadingVisualizer> {
     widget.loadingNotifier.addListener(action);
     widget.dynamicText.addListener(action);
 
+    // Ricava le dimensioni del widget figlio
+    // dopo la costruzione degl widget
+    // per adattare l'overlay di caricamento a quest'ultimo
     WidgetsBinding.instance.addPostFrameCallback((_) => 
       setState(() {
-        mySize = getChildSizeAndPosition()!;
+        mySize = getChildSize()!;
       })
     );
     super.initState();
