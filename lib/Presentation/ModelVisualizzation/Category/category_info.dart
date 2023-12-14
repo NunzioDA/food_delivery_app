@@ -1,7 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:food_delivery_app/Data/Model/products_category.dart';
+import 'package:food_delivery_app/Presentation/Pages/category_page.dart';
 import 'package:food_delivery_app/bloc/cart_bloc.dart';
+
+/// Questo widget permette di visualizzare informazioni base
+/// di un [ProductsCategory] e il numero di prodotti in essa contenuti
+/// attualmente presenti all'interno del carrello [CartBloc].
+/// Permette inoltre di navigare verso la pagina [CategoryPage].
+/// 
+/// Questo widget viene utilizzato per visualizzare informazioni in [CategoryInfo]
+/// e [CategoryPage] e deve contribuire all'animaizone [Hero].
+/// Per questo motivo permette di fissare il numero diùù occorrenze di prodotti 
+/// nel carrello tramite [fixedCount]. 
+/// Così facendo possiamo evitare l'errore dovuto alla mancanza di 
+/// [CartBloc] nel contesto dell'animazione [Hero].
 
 class CategoryInfo extends StatefulWidget{
   final ProductsCategory category;

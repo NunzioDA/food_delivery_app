@@ -7,6 +7,10 @@ import 'package:food_delivery_app/Presentation/UIUtilities/cached_image.dart';
 import 'package:food_delivery_app/Presentation/UIUtilities/ui_utilities.dart';
 import 'package:gap/gap.dart';
 
+/// Questo widget può essere usato in layout a scorrimento
+/// per la visualizzazione delle informazioni riguardanti
+/// una collezione di [ProductsCategory].
+
 class CategoryItem extends StatefulWidget {
   static const double imageSize = 90;
 

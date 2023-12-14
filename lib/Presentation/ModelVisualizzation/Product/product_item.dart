@@ -13,6 +13,14 @@ import 'package:food_delivery_app/bloc/cart_bloc.dart';
 import 'package:food_delivery_app/cubit/add_remove_counter_cubit.dart';
 import 'package:gap/gap.dart';
 
+/// Questo widget può essere usato in layout a scorrimento
+/// per la visualizzazione delle informazioni riguardanti
+/// una collezione di [Product].
+/// 
+/// Permette inoltre tramite il widget [AddRemove] di aggiungere e 
+/// rimuovere il prodotto rappresentato al carrello il cui stato 
+/// è contenuto in [CartBloc].
+
 class ProductItem extends StatefulWidget {
   static const double imageSize = 80;
   static const double rowHeight = 150;

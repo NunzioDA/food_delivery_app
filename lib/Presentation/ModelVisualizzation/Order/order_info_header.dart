@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:food_delivery_app/Data/Model/delivery_info.dart';
 import 'package:food_delivery_app/Data/Model/order.dart';
 import 'package:food_delivery_app/Presentation/UIUtilities/dialog_manager.dart';
 import 'package:food_delivery_app/Presentation/UIUtilities/ui_utilities.dart';
 import 'package:food_delivery_app/bloc/order_bloc.dart';
 
+/// Questo widget rappresenta un header raffigurante informazioni base
+/// riguardanti un [Order] tra cui le informazioni di consegna [DeliveryInfo]
+/// Permette inoltre di interagire con [OrderBloc] andando a modificare lo stato 
+/// dell'ordines.
 class OrderInfoHeader extends StatefulWidget
 {
   final Order order;

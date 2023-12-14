@@ -8,7 +8,7 @@ import 'package:food_delivery_app/Utilities/compute_total.dart';
 import 'package:food_delivery_app/bloc/order_bloc.dart';
 
 /// Questo widget può essere usato in layout a scorrimento
-/// per la visualizzazione dei informazioni riguardanti
+/// per la visualizzazione delle informazioni riguardanti
 /// una collezione di ordini definiti tramite la classe [Order].
 
 /// Se la variabile [hasPermission] dovesse essere vera permetterebbe

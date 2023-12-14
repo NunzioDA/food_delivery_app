@@ -5,6 +5,11 @@ import 'package:food_delivery_app/Presentation/ModelVisualizzation/Product/produ
 import 'package:food_delivery_app/bloc/cart_bloc.dart';
 import 'package:gap/gap.dart';
 
+/// Questa classe permette di visualizzare il contenuto del carrello
+/// rappresentato da [CartBloc].
+/// Permetterà anche da qui, utilizzando [ProductItem], di modificare il numero
+/// di prodotti contenuti nel carrello.
+
 class CartContent extends StatelessWidget {
 
   final VoidCallback onCompleteOrderRequest;

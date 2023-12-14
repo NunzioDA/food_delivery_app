@@ -5,6 +5,14 @@ import 'package:food_delivery_app/Presentation/UIUtilities/ui_utilities.dart';
 import 'package:food_delivery_app/Utilities/compute_total.dart';
 import 'package:food_delivery_app/bloc/cart_bloc.dart';
 
+/// Questo widget permette di visualizzare il totale dei prodotti 
+/// attualmente in [CartBloc] e di visualizzare su richiesta il carrello
+/// tramite [CartContent].
+/// 
+/// Il carrello verrà mostrato cliccando sull'apposito pulsante, che avvierà
+/// un'animazione. Questo richiede che il widget venga usato all'interno di uno
+/// [Stack] per permettere il libero spostamento tramite [Positioned].
+
 class TotalAndConfirm extends StatefulWidget {
   static const double closedPanelHeight = 90;
 
