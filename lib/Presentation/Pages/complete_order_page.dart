@@ -70,19 +70,19 @@ class _CompleteOrderPageState extends State<CompleteOrderPage> {
               bottom: 80,
               width: MediaQuery.of(context).size.width,
               child: SingleChildScrollView(
-                child: Padding(
-                  padding: const EdgeInsets.all(20),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    mainAxisSize: MainAxisSize.min,               
-                    children: [
-                      const OrderSummary(),
-                      const Gap(20),
-                      DeliveryInfoManagement(
-                        key: deliveryInfoManaement,
-                      ),
-                    ],
-                  ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  mainAxisSize: MainAxisSize.min,               
+                  children: [
+                    const Padding(
+                      padding: EdgeInsets.all(20),
+                      child: OrderSummary(),
+                    ),
+                    const Gap(20),
+                    DeliveryInfoManagement(
+                      key: deliveryInfoManaement,
+                    ),
+                  ],
                 ),
               ),
             ),            
@@ -179,191 +179,223 @@ class _DeliveryInfoManagementState extends State<DeliveryInfoManagement>
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      elevation: 0,
-      borderRadius: BorderRadius.circular(defaultBorderRadius),
-      child: Padding(
-        padding: const EdgeInsets.all(0.0),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Text(
-              "Informazioni di consegna",
-              style: Theme.of(context).textTheme.titleMedium,
-            ),           
-            // if(widget.previews.isEmpty)
-            BlocConsumer<DeliveryInfoCubit, DeliveryInfoState>(
-              bloc: deliveryInfoCubit,
-              listener: (context, state) {
-                if(state is DeliveryInfoError)
-                {
-                  DialogShower.showAlertDialog(
-                    context, 
-                    "Attenzione", 
-                    "Non è stato possibile ottenere le tue informazioni di consegna"
-                  );
-                  debugPrint(state.error);
-                }
-                else if(state is DeliveryInfoStateFetched && 
-                state is! DeliveryInfoSelectionChanged &&
-                state.myDeliveryInfos.isNotEmpty)
-                {
-                  deliveryInfoCubit.selectDeliveryInfo(state.myDeliveryInfos[0]);
-                }
-              },
-              buildWhen: (previous, current) => current is! DeliveryInfoSelectionChanged ||
-                current.selected != null,
-              builder: (context, state) => 
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children:[
-                  SizeTransition(
-                    sizeFactor: 
-                      state is DeliveryInfoStateFetched && state.myDeliveryInfos.isNotEmpty?
-                        animation : animationInverse,
-                    child: Form(
-                      key: formKey,
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          const Text(
-                            "Inserisci di seguito le tue informazioni di consegna",
-                          ),
-                          const Gap(10),
-                          TextFormField(
-                            validator: (value){
-                              if(value == null || value.isEmpty)
-                              {
-                                return "Inserisci un nome";
-                              }
-                              return null;
-                            },
-                            decoration: const InputDecoration(
-                              label: Text("Nome sul citofono")
-                            ),
-                            onChanged: (value) => name = value,
-                          ),
-                          const Gap(20),
-                          TextFormField(
-                            validator: (value){
-                              if(value == null || value.isEmpty)
-                              {
-                                return "Inserisci una città";
-                              }
-                              return null;
-                            },
-                            decoration: const InputDecoration(
-                              label: Text("Città")
-                            ),
-                            onChanged: (value) => city = value,
-                          ),
-                          const Gap(20),
-                          Row(
-                            children: [
-                              Expanded(
-                                flex: 2,
-                                child: TextFormField(
-                                  validator: (value){
-                                    if(value == null || value.isEmpty)
-                                    {
-                                      return "Inserisci un indirizzo";
-                                    }
-                                    return null;
-                                  },
-                                  decoration: const InputDecoration(
-                                    label: Text("Indirizzo")
-                                  ),
-                                  onChanged: (value) => address = value,
-                                ),
-                              ),
-                              const Gap(10),
-                              Expanded(
-                                flex: 1,
-                                child: TextFormField(
-                                  validator: (value){
-                                    if(value == null || value.isEmpty)
-                                    {
-                                      return "Inserisci n.civ";
-                                    }
-                                    return null;
-                                  },
-                                  keyboardType: TextInputType.number,
-                                  inputFormatters: [
-                                    FilteringTextInputFormatter.digitsOnly
-                                  ],
-                                  decoration: const InputDecoration(
-                                    label: Text("N.civ")
-                                  ),
-                                  onChanged: (value) => houseNumber = value,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  if(state is DeliveryInfoStateFetched && state.myDeliveryInfos.isNotEmpty)
-                  SizeTransition(
-                    sizeFactor: animationInverse,
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(left:20.0),
+          child: Text(
+            "Informazioni di consegna",
+            style: Theme.of(context).textTheme.titleMedium,
+          ),
+        ),           
+        BlocConsumer<DeliveryInfoCubit, DeliveryInfoState>(
+          bloc: deliveryInfoCubit,
+          listener: (context, state) {
+            if(state is DeliveryInfoError)
+            {
+              DialogShower.showAlertDialog(
+                context, 
+                "Attenzione", 
+                "Non è stato possibile ottenere le tue informazioni di consegna"
+              );
+              debugPrint(state.error);
+            }
+            else if(state is DeliveryInfoStateFetched && 
+            state is! DeliveryInfoSelectionChanged &&
+            state.myDeliveryInfos.isNotEmpty)
+            {
+              deliveryInfoCubit.selectDeliveryInfo(state.myDeliveryInfos[0]);
+            }
+          },
+          buildWhen: (previous, current) => current is! DeliveryInfoSelectionChanged ||
+            current.selected != null,
+          builder: (context, state) => 
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children:[
+              SizeTransition(
+                sizeFactor: 
+                  state is DeliveryInfoStateFetched && state.myDeliveryInfos.isNotEmpty?
+                    animation : animationInverse,
+                child: Form(
+                  key: formKey,
+                  child: Padding(
+                    padding: const EdgeInsets.only(left:20.0, right: 20),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
+                      mainAxisSize: MainAxisSize.min,
                       children: [
                         const Text(
-                          "Seleziona le tue informazioni di consegna",
+                          "Inserisci di seguito le tue informazioni di consegna",
                         ),
                         const Gap(10),
-                        Text(
-                          "Spediremo a questo indirizzo",
-                          style: Theme.of(context).textTheme.titleMedium,
+                        TextFormField(
+                          validator: (value){
+                            if(value == null || value.isEmpty)
+                            {
+                              return "Inserisci un nome";
+                            }
+                            return null;
+                          },
+                          decoration: const InputDecoration(
+                            label: Text("Nome sul citofono")
+                          ),
+                          onChanged: (value) => name = value,
                         ),
-                        if(state is DeliveryInfoSelectionChanged && state.selected != null) 
-                        DeliveryInfoWidget(deliveryInfo: state.selected!),
                         const Gap(20),
-                        Text(
-                          "Indirizzi recenti",
-                          style: Theme.of(context).textTheme.titleMedium,
+                        TextFormField(
+                          validator: (value){
+                            if(value == null || value.isEmpty)
+                            {
+                              return "Inserisci una città";
+                            }
+                            return null;
+                          },
+                          decoration: const InputDecoration(
+                            label: Text("Città")
+                          ),
+                          onChanged: (value) => city = value,
                         ),
-                        const Gap(10),                      
-                        SizedBox(
-                          height: 150,
-                          child: ListView.builder(
-                            itemCount: state.myDeliveryInfos.length,
-                            itemBuilder: (context, index) => Padding(
-                              padding: const EdgeInsets.only(bottom: 10),
-                              child: InkWell(
-                                onTap: () => deliveryInfoCubit.selectDeliveryInfo(state.myDeliveryInfos[index]),
-                                child: DeliveryInfoWidget(
-                                  deliveryInfo: state.myDeliveryInfos[index],
-                                )
+                        const Gap(20),
+                        Row(
+                          children: [
+                            Expanded(
+                              flex: 2,
+                              child: TextFormField(
+                                validator: (value){
+                                  if(value == null || value.isEmpty)
+                                  {
+                                    return "Inserisci un indirizzo";
+                                  }
+                                  return null;
+                                },
+                                decoration: const InputDecoration(
+                                  label: Text("Indirizzo")
+                                ),
+                                onChanged: (value) => address = value,
                               ),
                             ),
-                          ),
+                            const Gap(10),
+                            Expanded(
+                              flex: 1,
+                              child: TextFormField(
+                                validator: (value){
+                                  if(value == null || value.isEmpty)
+                                  {
+                                    return "Inserisci n.civ";
+                                  }
+                                  return null;
+                                },
+                                keyboardType: TextInputType.number,
+                                inputFormatters: [
+                                  FilteringTextInputFormatter.digitsOnly
+                                ],
+                                decoration: const InputDecoration(
+                                  label: Text("N.civ")
+                                ),
+                                onChanged: (value) => houseNumber = value,
+                              ),
+                            ),
+                          ],
                         ),
                       ],
                     ),
                   ),
-                  if(state is DeliveryInfoStateFetched && state.myDeliveryInfos.isNotEmpty)
-                  TextButton(
-                    onPressed: (){
-                      if(_controller.isCompleted)
-                      {
-                        _controller.reverse();
-                      }
-                      else{
-                        deliveryInfoCubit.selectDeliveryInfo(null);
-                        _controller.forward();
-                      }
-                    }, 
-                    child: Text("Nuovo indirizzo")
-                  )
-                ]
+                ),
+              ),
+              if(state is DeliveryInfoStateFetched && state.myDeliveryInfos.isNotEmpty)
+              SizeTransition(
+                sizeFactor: animationInverse,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    const Padding(
+                      padding: EdgeInsets.only(left:20),
+                      child: Text(
+                        "Seleziona le tue informazioni di consegna",
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(20.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [         
+                          Material(
+                            borderRadius: BorderRadius.circular(defaultBorderRadius),
+                            elevation: 10,
+                            child: Padding(
+                              padding: const EdgeInsets.all(20.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                children: [
+                                  Text(
+                                    "Spediremo a questo indirizzo",
+                                    style: Theme.of(context).textTheme.titleMedium,
+                                  ),    
+                                  if(state is DeliveryInfoSelectionChanged && state.selected != null)                     
+                                  DeliveryInfoWidget(deliveryInfo: state.selected!),
+                                ],
+                              ),
+                            ),
+                          ),
+                          const Gap(10),
+                          Padding(
+                            padding: const EdgeInsets.all(10.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                Text(
+                                  "Indirizzi recenti",
+                                  style: Theme.of(context).textTheme.titleMedium,
+                                ),
+                                const Gap(10),                      
+                                SizedBox(
+                                  height: 150,
+                                  child: ListView.builder(
+                                    itemCount: state.myDeliveryInfos.length,
+                                    itemBuilder: (context, index) => Padding(
+                                      padding: const EdgeInsets.only(bottom: 10),
+                                      child: InkWell(
+                                        onTap: () => deliveryInfoCubit.selectDeliveryInfo(state.myDeliveryInfos[index]),
+                                        child: DeliveryInfoWidget(
+                                          deliveryInfo: state.myDeliveryInfos[index],
+                                        )
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              if(state is DeliveryInfoStateFetched && state.myDeliveryInfos.isNotEmpty)
+              TextButton(
+                onPressed: (){
+                  if(_controller.isCompleted && deliveryInfoCubit.state is DeliveryInfoStateFetched)
+                  {
+                    deliveryInfoCubit.selectDeliveryInfo(
+                      (deliveryInfoCubit.state as DeliveryInfoStateFetched).myDeliveryInfos[0]
+                    );
+                    _controller.reverse();
+                  }
+                  else{
+                    deliveryInfoCubit.selectDeliveryInfo(null);
+                    _controller.forward();
+                  }
+                }, 
+                child: Text("Nuovo indirizzo")
               )
-            )
-          ],
-        ),
-      ),
+            ]
+          )
+        )
+      ],
     );
   }
 }

@@ -48,31 +48,22 @@ class OrderItem extends StatelessWidget
             padding: const EdgeInsets.all(20.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                OrderInfoHeader(order: order),
-                Row(
+                OrderInfoHeader(order: order),                           
+                Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
+                    const Text("Totale"),
                     Text(
-                      order.status.visualize,
-                      style: Theme.of(context).textTheme.titleMedium,
-                    ),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        const Text("Totale"),
-                        Text(
-                          "${getTotal(order.content)}€",
-                          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.w700,
-                            color: Theme.of(context).primaryColor,
-                          )
-                        )
-                      ],
-                    ),
+                      "${getTotal(order.content)}€",
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w700,
+                        color: Theme.of(context).primaryColor,
+                      )
+                    )
                   ],
-                )
+                ),
               ],
             ),
           ),
