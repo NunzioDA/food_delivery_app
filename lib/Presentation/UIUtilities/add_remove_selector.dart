@@ -24,7 +24,9 @@ class AddRemove<B extends StateStreamable<S>, S> extends StatelessWidget {
       required Color borderColor,
       required Color iconColor,
       required IconData icon,
-      required VoidCallback onPressed}) {
+      required VoidCallback onPressed,
+      required BoxConstraints constraints
+}) {
     return Container(
       decoration: BoxDecoration(
         border: Border.all(
@@ -39,11 +41,11 @@ class AddRemove<B extends StateStreamable<S>, S> extends StatelessWidget {
           child: InkWell(
             onTap: onPressed.call,
             child: Padding(
-              padding: const EdgeInsets.all(8.0),
+              padding: const EdgeInsets.all(5.0),
               child: Icon(
                 icon,
                 color: iconColor,
-                size: 15,
+                size: constraints.maxWidth / 3 - 20,
               ),
             ),
           ),
@@ -54,36 +56,49 @@ class AddRemove<B extends StateStreamable<S>, S> extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        createButton(
-            context: context,
-            backgroundColor: Colors.white,
-            borderColor: Theme.of(context).primaryColor,
-            iconColor: Theme.of(context).primaryColor,
-            icon: Icons.remove,
-            onPressed: onRemovePressed.call),
-        const Gap(10),
-        BlocConsumer<B,S>(
-          bloc: bloc,
-          listener: (context, state) {
-            listener?.call(context, state);
-          },
-          builder: (context, state) {
-            int count = stateToCount(state);
-            return Text("${count}x");
-          },
-        ),
-        const Gap(10),
-        createButton(
-            context: context,
-            backgroundColor: Theme.of(context).primaryColor,
-            borderColor: Colors.transparent,
-            iconColor: Colors.white,
-            icon: Icons.add,
-            onPressed: onAddPressed.call),
-      ],
+    return ConstrainedBox(
+      constraints: const BoxConstraints(
+        maxWidth: 100,
+      ),
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          return Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              createButton(
+                context: context,
+                backgroundColor: Colors.white,
+                borderColor: Theme.of(context).primaryColor,
+                iconColor: Theme.of(context).primaryColor,
+                icon: Icons.remove,
+                onPressed: onRemovePressed.call,
+                constraints:constraints
+              ),
+              const Gap(10),
+              BlocConsumer<B,S>(
+                bloc: bloc,
+                listener: (context, state) {
+                  listener?.call(context, state);
+                },
+                builder: (context, state) {
+                  int count = stateToCount(state);
+                  return Text("${count}x");
+                },
+              ),
+              const Gap(10),
+              createButton(
+                context: context,
+                backgroundColor: Theme.of(context).primaryColor,
+                borderColor: Colors.transparent,
+                iconColor: Colors.white,
+                icon: Icons.add,
+                onPressed: onAddPressed.call,
+                constraints:constraints
+              ),
+            ],
+          );
+        }
+      ),
     );
   }
 }

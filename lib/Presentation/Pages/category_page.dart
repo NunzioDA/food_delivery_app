@@ -201,70 +201,72 @@ class _CategoryPageState extends State<CategoryPage> {
                                       const Gap(20),
                                     if (!widget.creationMode)
                                       ConstrainedBox(
-                                          constraints: const BoxConstraints(
-                                              maxHeight:
-                                                  CategoryPage.listHeight,
-                                              minHeight: 1),
-                                          child: GridView.count(
-                                              crossAxisCount: 1,
-                                              childAspectRatio: 2.5,
-                                              children: [
-                                                ...myCategory!.products
-                                                .map((product) => 
-                                                  Padding(
-                                                    padding:const EdgeInsets.all(5.0),
-                                                    child: ProductItem(
-                                                      product: product,
-                                                      hasPermission: widget.hasPermission,
-                                                      onDeleteRequest: () {
-                                                        DialogShower.showConfirmDenyDialog(
-                                                          context, 
-                                                          "Eliminazione", 
-                                                          "Sei sicuro di voler "
-                                                          "eliminare questo prodotto?",
-                                                          confirmText: "Elimina",
-                                                          denyText: "Annulla",
-                                                          onConfirmPressed: (){
-                                                            loading.value =true;
-                                                            _categoriesBloc.add(
-                                                              ProductDeleteEvent(
-                                                                product
-                                                              )
-                                                            );
-                                                          }
-                                                        );
-                                                      },
-                                                    ),
-                                                  )
-                                                ).toList(),
-                                                if (widget.hasPermission)
-                                                  AddElementWidget(
-                                                    onPressed: () async {
-                                                      var productPair =
-                                                          await Navigator.of(
-                                                                  context)
-                                                              .push(
-                                                                  PageRouteBuilder(
-                                                        opaque: false,
-                                                        pageBuilder: (context,
-                                                            animation,
-                                                            secondaryAnimation) {
-                                                          return const CreateProductPage();
-                                                        },
-                                                      ));
-
-                                                      if (productPair != null) {
-                                                        loading.value = true;
-                                                        _categoriesBloc.add(
-                                                            ProductCreateEvent(
-                                                          myCategory!,
-                                                          productPair.$1,
-                                                          productPair.$2,
-                                                        ));
-                                                      }
-                                                    },
-                                                  )
-                                              ])),
+                                        constraints: const BoxConstraints(
+                                          maxHeight:CategoryPage.listHeight,
+                                          minHeight: 1
+                                        ),
+                                        child: ListView.builder(
+                                          itemCount: myCategory!.products.length +
+                                            (widget.hasPermission? 1: 0),
+                                          itemBuilder: (context, index) => 
+                                          index < myCategory!.products.length?
+                                          Padding(
+                                            padding: const EdgeInsets.only(bottom: 20),
+                                            child: ProductItem(
+                                              product: myCategory!.products[index],
+                                              hasPermission: widget.hasPermission,
+                                              onDeleteRequest: () {
+                                                DialogShower.showConfirmDenyDialog(
+                                                  context, 
+                                                  "Eliminazione", 
+                                                  "Sei sicuro di voler "
+                                                  "eliminare questo prodotto?",
+                                                  confirmText: "Elimina",
+                                                  denyText: "Annulla",
+                                                  onConfirmPressed: (){
+                                                    loading.value =true;
+                                                    _categoriesBloc.add(
+                                                      ProductDeleteEvent(
+                                                        myCategory!.products[index]
+                                                      )
+                                                    );
+                                                  }
+                                                );
+                                              },
+                                            ),
+                                          ):
+                                          SizedBox(
+                                            height: 150,
+                                            child: AddElementWidget(
+                                              onPressed: () async {
+                                                var productPair =
+                                                    await Navigator.of(
+                                                            context)
+                                                        .push(
+                                                            PageRouteBuilder(
+                                                  opaque: false,
+                                                  pageBuilder: (context,
+                                                      animation,
+                                                      secondaryAnimation) {
+                                                    return const CreateProductPage();
+                                                  },
+                                                ));
+                                            
+                                                if (productPair != null) {
+                                                  loading.value = true;
+                                                  _categoriesBloc.add(
+                                                      ProductCreateEvent(
+                                                    myCategory!,
+                                                    productPair.$1,
+                                                    productPair.$2,
+                                                  ));
+                                                }
+                                              },
+                                            ),
+                                          ),
+                                               
+                                        )
+                                      ),
                                     if (widget.creationMode) const Gap(50),
                                     if (widget.creationMode)
                                       Form(

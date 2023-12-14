@@ -77,20 +77,21 @@ class _ProductItemState extends State<ProductItem> {
           child: Padding(
             padding: EdgeInsets.all(internalPadding),
             child: Row(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Container(                  
-                  width: imageWidth,
-                  clipBehavior: Clip.hardEdge,
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(
-                          defaultBorderRadius - internalPadding / 2)),
-                  child: ZoomableImage(
-                    provider: FdaCachedNetworkImage(
-                      url: FdaServerCommunication.getImageUrl(
-                        widget.product.imageName!
-                      )
-                    ).getImageProvider(),
+                IntrinsicHeight(
+                  child: Container(                                      
+                    width: imageWidth,
+                    clipBehavior: Clip.hardEdge,
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(
+                            defaultBorderRadius - internalPadding / 2)),
+                    child: ZoomableImage(
+                      provider: FdaCachedNetworkImage(
+                        url: FdaServerCommunication.getImageUrl(
+                          widget.product.imageName!
+                        )
+                      ).getImageProvider(),
+                    ),
                   ),
                 ),
                 const Gap(20),
@@ -107,9 +108,11 @@ class _ProductItemState extends State<ProductItem> {
                       Expanded(
                         child: Text(
                           widget.product.description,
+                          overflow: TextOverflow.fade,
                         ),
                       ),
                       Row(
+                        mainAxisSize: MainAxisSize.max,
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
                           Text(
@@ -121,6 +124,7 @@ class _ProductItemState extends State<ProductItem> {
                                 .copyWith(
                                     color: Theme.of(context).primaryColor),
                           ),
+                          if(!widget.canModifyCart)
                           const Gap(20),
                           if(!widget.canModifyCart)
                           Text("x${widget.fixedCount.toString()}")
