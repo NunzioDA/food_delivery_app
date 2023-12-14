@@ -77,8 +77,9 @@ class _ProductItemState extends State<ProductItem> {
           child: Padding(
             padding: EdgeInsets.all(internalPadding),
             child: Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Container(
+                Container(                  
                   width: imageWidth,
                   clipBehavior: Clip.hardEdge,
                   decoration: BoxDecoration(

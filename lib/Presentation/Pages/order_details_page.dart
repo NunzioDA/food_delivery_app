@@ -140,7 +140,7 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
                         child: ConstrainedBox(
                           constraints: BoxConstraints(
                             maxHeight: (order.content.length < 3? 
-                              ProductItem.rowHeight : 3.0) * order.content.length + 
+                              order.content.length : 2.5) * ProductItem.rowHeight + 
                               (order.content.length < 3? 20 * order.content.length + 5 : 60)
                           ),
                           child: ListView.builder(
