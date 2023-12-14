@@ -5,7 +5,8 @@ enum OrderStatus
 {
   placed,
   left,
-  delivered;
+  delivered,
+  canceled;
 
   String get visualize
   {
@@ -17,6 +18,8 @@ enum OrderStatus
         return "Partito";
       case OrderStatus.delivered:
         return "Consegnato";
+      case OrderStatus.canceled:
+        return "Annullato";
     }
   }
 

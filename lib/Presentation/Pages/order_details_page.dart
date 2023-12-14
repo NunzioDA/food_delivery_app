@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:food_delivery_app/Data/Model/order.dart';
 import 'package:food_delivery_app/Data/Model/product.dart';
+import 'package:food_delivery_app/Presentation/ModelVisualizzation/Order/order_info_header.dart';
 import 'package:food_delivery_app/Presentation/ModelVisualizzation/Product/product_item.dart';
 import 'package:food_delivery_app/Presentation/UIUtilities/dialog_manager.dart';
 import 'package:food_delivery_app/Presentation/UIUtilities/loading.dart';
@@ -39,8 +40,6 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
 
   @override
   Widget build(BuildContext context) {
-
-    var finalV = order.content.entries.length != 1? "i":"o";
     List<MapEntry<Product, int>> content = order.content.entries.toList();
 
     return Scaffold(
@@ -50,7 +49,7 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
           padding: const EdgeInsets.all(20),
           child: Center(
             child: Hero(
-              tag: order,
+              tag: order.id,
               child: Material(
                 elevation: 10,
                 color: Theme.of(context).dialogBackgroundColor,
@@ -70,36 +69,7 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
-                            Text(
-                              "Ordine per ${order.deliveryInfo.intercom}",
-                              style: Theme.of(context).textTheme.titleMedium,
-                            ),
-                            Row(
-                              children: [
-                                Text("${order.deliveryInfo.city}, ${order.deliveryInfo.address}, ${order.deliveryInfo.houseNumber}"),
-                                Icon(
-                                  Icons.location_on_rounded, 
-                                  color: Theme.of(context).primaryColor,
-                                  size: 20,
-                                ),
-                              ],
-                            ),
-                            Row(
-                              children: [
-                                 Text(
-                                  "Data: ${order.dateTime.day}-${order.dateTime.month}-${order.dateTime.year} "
-                                  "${order.dateTime.hour.toString().padLeft(2,'0')}:"
-                                  "${order.dateTime.minute.toString().padLeft(2,'0')}"
-                                ),     
-                                Icon(
-                                  Icons.access_time_outlined, 
-                                  color: Theme.of(context).primaryColor,
-                                  size: 20,
-                                ),
-                              ],
-                            ),
-                                  
-                            Text("${order.content.entries.length} prodott$finalV ordinat$finalV"),
+                            OrderInfoHeader(order: order),
                             Row(
                               mainAxisSize: MainAxisSize.max,
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -168,12 +138,15 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
                       Padding(
                         padding: const EdgeInsets.only(bottom:20.0),
                         child: ConstrainedBox(
-                          constraints: const BoxConstraints(maxHeight: 300),
+                          constraints: BoxConstraints(
+                            maxHeight: (order.content.length < 3? 
+                              ProductItem.rowHeight : 3.0) * order.content.length + 
+                              (order.content.length < 3? 20 * order.content.length + 5 : 60)
+                          ),
                           child: ListView.builder(
                             padding: const EdgeInsets.only(left: 20, right: 20, top: 5),
                             itemCount: content.length,
                             itemBuilder: (context, index) {
-                              
                               return Padding(
                                 padding: const EdgeInsets.only(bottom:20.0),
                                 child: ProductItem(

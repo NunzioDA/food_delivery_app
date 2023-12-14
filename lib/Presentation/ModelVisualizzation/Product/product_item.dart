@@ -15,6 +15,7 @@ import 'package:gap/gap.dart';
 
 class ProductItem extends StatefulWidget {
   static const double imageSize = 80;
+  static const double rowHeight = 150;
 
   final Product product;
   final bool hasPermission;
@@ -44,7 +45,6 @@ class _ProductItemState extends State<ProductItem> {
 
   final double internalPadding = 10;
   final double imageWidth = 100;
-  final double rowHeight = 150;
 
   ValueNotifier<bool> loading = ValueNotifier(false);
 
@@ -65,7 +65,7 @@ class _ProductItemState extends State<ProductItem> {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: rowHeight,
+      height: ProductItem.rowHeight,
       child: Material(
         elevation: 10,
         borderRadius: BorderRadius.circular(defaultBorderRadius),
