@@ -210,27 +210,33 @@ class _CategoryPageState extends State<CategoryPage> {
                                               childAspectRatio: 2.5,
                                               children: [
                                                 ...myCategory!.products
-                                                    .map((product) => Padding(
-                                                          padding:
-                                                              const EdgeInsets
-                                                                  .all(5.0),
-                                                          child: ProductItem(
-                                                            product: product,
-                                                            hasPermission: widget
-                                                                .hasPermission,
-                                                            onDeleteRequest:
-                                                                () {
-                                                              loading.value =
-                                                                  true;
-                                                              _categoriesBloc.add(
-                                                                ProductDeleteEvent(
-                                                                  product
-                                                                )
-                                                              );
-                                                            },
-                                                          ),
-                                                        ))
-                                                    .toList(),
+                                                .map((product) => 
+                                                  Padding(
+                                                    padding:const EdgeInsets.all(5.0),
+                                                    child: ProductItem(
+                                                      product: product,
+                                                      hasPermission: widget.hasPermission,
+                                                      onDeleteRequest: () {
+                                                        DialogShower.showConfirmDenyDialog(
+                                                          context, 
+                                                          "Eliminazione", 
+                                                          "Sei sicuro di voler "
+                                                          "eliminare questo prodotto?",
+                                                          confirmText: "Elimina",
+                                                          denyText: "Annulla",
+                                                          onConfirmPressed: (){
+                                                            loading.value =true;
+                                                            _categoriesBloc.add(
+                                                              ProductDeleteEvent(
+                                                                product
+                                                              )
+                                                            );
+                                                          }
+                                                        );
+                                                      },
+                                                    ),
+                                                  )
+                                                ).toList(),
                                                 if (widget.hasPermission)
                                                   AddElementWidget(
                                                     onPressed: () async {
@@ -317,7 +323,8 @@ class _CategoryPageState extends State<CategoryPage> {
                                   width: CategoryPage.imageSize,
                                   child: FdaCachedNetworkImage(
                                     url: FdaServerCommunication.getImageUrl(
-                                        myCategory!.imageName),
+                                      myCategory!.imageName
+                                    ),
                                   ),
                                 ))
                             : ImageChooser(

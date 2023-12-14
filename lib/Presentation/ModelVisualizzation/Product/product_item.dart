@@ -86,9 +86,10 @@ class _ProductItemState extends State<ProductItem> {
                           defaultBorderRadius - internalPadding / 2)),
                   child: ZoomableImage(
                     provider: FdaCachedNetworkImage(
-                            url: FdaServerCommunication.getImageUrl(
-                                widget.product.imageName!))
-                        .getImageProvider(),
+                      url: FdaServerCommunication.getImageUrl(
+                        widget.product.imageName!
+                      )
+                    ).getImageProvider(),
                   ),
                 ),
                 const Gap(20),
@@ -129,17 +130,22 @@ class _ProductItemState extends State<ProductItem> {
                         child: Row(
                           children: [
                             if(widget.hasPermission)
-                            Row(
-                              children: [
-                                const Text("Elimina"),
-                                GestureDetector(
-                                  onTap: widget.onDeleteRequest,
-                                  child: const Icon(
-                                    Icons.delete_forever_rounded,
-                                    color: Colors.red,
+                            GestureDetector(
+                              onTap: widget.onDeleteRequest,
+                              child: Row(
+                                children: [
+                                  Text(
+                                    "Elimina",
+                                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                      color: Colors.red
+                                    ),
                                   ),
-                                ),
-                              ],
+                                  const Icon(
+                                      Icons.delete_forever_rounded,
+                                      color: Colors.red,
+                                    ),
+                                ],
+                              ),
                             ),                            
                             Expanded(
                               child: Align(

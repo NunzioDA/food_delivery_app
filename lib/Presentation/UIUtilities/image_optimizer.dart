@@ -42,11 +42,15 @@ class FdaImageOptimizer
 
     Uint8List? optimizedSize = bytes;
 
-    if(maxDimension > maxWidthHeigth || s == null)
+    if(maxDimension > maxWidthHeigth || s != ".png")
     {
       s = ".png";
       ImageProvider provider = Image.memory(bytes).image;
-      ResizeImage resized = ResizeImage(provider, height: maxDimension == image.height? maxWidthHeigth : null,  width: maxDimension == image.width? maxWidthHeigth : null,);
+      ResizeImage resized = ResizeImage(
+        provider, 
+        height: maxDimension == image.height? maxWidthHeigth : null,  
+        width: maxDimension == image.width? maxWidthHeigth : null,
+      );
       final Completer<Uint8List?> completer = Completer<Uint8List?>();
 
       resized.resolve(ImageConfiguration.empty).addListener(
@@ -61,6 +65,6 @@ class FdaImageOptimizer
       optimizedSize = await completer.future;
     }
     
-    return FdaImage(optimizedSize!, s);
+    return FdaImage(optimizedSize!, s!);
   }
 }
