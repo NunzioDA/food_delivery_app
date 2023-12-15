@@ -319,9 +319,8 @@ class SideMenu extends StatelessWidget{
 
 }
 
-/// Visualizza tutti i [SideMenuButton] al suo interno tramite la 
-/// classe [_SideMenuButton] con un [title] in maiuscolo a capo di tutti
-/// i pulsanti.
+/// Visualizza tutti i [SideMenuButton] al suo interno  un [title] in maiuscolo 
+/// a capo di tutti i pulsanti del gruppo.
 
 class SideMenuGroup extends StatelessWidget
 {

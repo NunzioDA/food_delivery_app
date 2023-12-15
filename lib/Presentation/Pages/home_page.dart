@@ -78,20 +78,29 @@ class _HomePageState extends State<HomePage> {
                   title: "Navigazione",
                    buttons: [
                     const SideMenuButton(
-                      icon: Icon(Icons.home),
-                      name: "Home",
+                      icon: ImageIcon(
+                        AssetImage('assets/icons/order.png'),
+                        color: Colors.white,
+                      ),
+                      name: "Ordina ora",
                       content: MakeOrderPage()
                     ),
                     if (userBloc.state is LoggedInState)
                     const SideMenuButton(
-                      icon: Icon(Icons.home),
+                      icon: ImageIcon(
+                        AssetImage('assets/icons/myorders.png'),
+                        color: Colors.white,
+                      ),
                       name: "I miei ordini",
                       content: MyOrdersPage()
                     ),
                     if (userBloc.state is FetchedUserInfoState && 
                     (userBloc.state as FetchedUserInfoState).userInfo.hasPermission)
                     const SideMenuButton(
-                      icon: Icon(Icons.home),
+                      icon: ImageIcon(
+                        AssetImage('assets/icons/manage_order.png'),
+                        color: Colors.white,
+                      ),
                       name: "Ordini ricevuti",
                       content: ReceivedOrdersPage()
                     ),
@@ -100,7 +109,10 @@ class _HomePageState extends State<HomePage> {
                 if (userBloc.state is LoggedInState)
                   SideMenuGroup(title: "Account", buttons: [
                     SideMenuButton(
-                      icon: const Icon(Icons.logout),
+                      icon: const Icon(
+                        Icons.logout,
+                        color: Colors.white,
+                      ),
                       name: "Logout",
                       onPressed: logOutProc,
                     )
