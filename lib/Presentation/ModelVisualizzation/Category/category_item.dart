@@ -33,11 +33,12 @@ class _CategoryItemState extends State<CategoryItem> {
       color: Theme.of(context).dialogBackgroundColor,
       borderRadius: BorderRadius.circular(defaultBorderRadius),
       child: Padding(
-        padding: const EdgeInsets.all(20.0),
+        padding: const EdgeInsets.only(left:20.0, right: 20, bottom: 20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
+            const Gap(CategoryPage.imageSize / 2),
             CategoryInfo(
               category: widget.category,
               onCountChanged: (value) => count = value,
