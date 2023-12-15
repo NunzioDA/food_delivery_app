@@ -65,9 +65,12 @@ class TotalAndConfirmState extends State<TotalAndConfirm>
 
   @override
   Widget build(BuildContext context) {
+
+    double bottomDistance = -(widget.maxHeight - TotalAndConfirm.closedPanelHeight) 
+    + (animation.value * (widget.maxHeight - TotalAndConfirm.closedPanelHeight));
+
     return Positioned(
-      bottom: -widget.maxHeight + TotalAndConfirm.closedPanelHeight + 
-      (animation.value * (widget.maxHeight - TotalAndConfirm.closedPanelHeight)),
+      bottom: bottomDistance,
       width: MediaQuery.of(context).size.width,
       height: widget.maxHeight ,
       child: Container(

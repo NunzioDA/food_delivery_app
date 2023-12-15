@@ -3,13 +3,13 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:food_delivery_app/Data/Model/products_category.dart';
+import 'package:food_delivery_app/Presentation/ModelVisualizzation/Cart/total_and_confirm.dart';
 import 'package:food_delivery_app/Presentation/ModelVisualizzation/Category/category_item.dart';
 import 'package:food_delivery_app/Presentation/Pages/category_page.dart';
 import 'package:food_delivery_app/Presentation/Pages/complete_order_page.dart';
 import 'package:food_delivery_app/Presentation/UIUtilities/add_element.dart';
 import 'package:food_delivery_app/Presentation/UIUtilities/dialog_manager.dart';
 import 'package:food_delivery_app/Presentation/UIUtilities/loading.dart';
-import 'package:food_delivery_app/Presentation/ModelVisualizzation/Cart/total_and_confirm.dart';
 import 'package:food_delivery_app/Presentation/UIUtilities/side_menu.dart';
 import 'package:food_delivery_app/Presentation/UIUtilities/ui_utilities.dart';
 import 'package:food_delivery_app/bloc/cart_bloc.dart';
@@ -130,109 +130,117 @@ class _MakeOrderPageState extends State<MakeOrderPage> {
                 loadingNotifier: loading,
                 dynamicText: ValueNotifier("Sto caricando i dati.."),
                 child: Stack(
+                  fit: StackFit.expand,
                   children: [
                     Padding(
                       padding: const EdgeInsets.only(
                           bottom: TotalAndConfirm.closedPanelHeight -
                               defaultBorderRadius),
-                      child: SingleChildScrollView(
-                        child: SizedBox(
-                          height: MediaQuery.of(context).size.height 
-                          - ContentVisualizerTopBar.barHeight -TotalAndConfirm.closedPanelHeight,
-                          child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.stretch,
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.only(top: 25, right: 25, left: 25),
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                                    children: [
-                                      const HeaderMakeOrderPage(),
-                                      const Gap(20),
-                                      Text(
-                                        "Il nostro menu",
-                                        style: Theme.of(context).textTheme.titleMedium,
-                                      ),
-                                    ],
-                                  )
-                                ),        
-                                const Gap(10),
-                                Expanded(
-                                  child: BlocConsumer<CategoriesBloc, CategoriesState>(
-                                    bloc: categoriesBloc,
-                                    listener: (context, state) {
-                                      loading.value = false;
-                                          
-                                      if (state is CategoriesErrorState &&
-                                          state.event is! CategoryDeleteEvent) {
-                                        DialogShower.showAlertDialog(
-                                            context,
-                                            "Attenzione!",
-                                            "Si è verificato un errore nella gesione dei dati\n"
-                                                "Se il problema persiste contattaci!");
-                                      } else if (state is CategoryAlreadyExisting) {
-                                        DialogShower.showAlertDialog(
-                                            context,
-                                            "Attenzione!",
-                                            "La categoria che stai cercando di creare esiste già.");
-                                      } else if (state is CategoryCreatedSuccesfully) {
-                                        DialogShower.showAlertDialog(context, "Fatto!",
-                                                "La categoria è stata creata correttamente")
-                                            .then((value) => updateCategories());
-                                      } else if (state is CategoryDeletedSuccesfully) {
-                                        updateCategories();
-                                      }
-                                      else if(state is CategoriesFetched)
-                                      {
-                                        cartBloc.add(const FetchCart());
-                                      }
-                                    },
-                                    builder: (context, state) {
-                                      return BlocBuilder<UserBloc, UserState>(
-                                        builder: (context, state) {
-                                          bool hasPermission = false;
-                                          
-                                          if (state is FetchedUserInfoState) {
-                                            hasPermission = state.userInfo.hasPermission;
-                                          }
-                                          
-                                          return GridView.count(
-                                            crossAxisCount: 2,
-                                            mainAxisSpacing: 10,
-                                            crossAxisSpacing: 10,
-                                            physics: const NeverScrollableScrollPhysics(),
-                                            padding: const EdgeInsets.only(
-                                              left:25,
-                                              right: 25
-                                            ),
-                                            children: [
-                                              ...categoriesBloc.state.categories
-                                                  .map(
-                                                    (e) => CategoryItem(
-                                                      category: e,
-                                                      onPressed: () {
-                                                        openCategoryPage(
-                                                            e, false, hasPermission);
-                                                      },
-                                                    ),
-                                                  )
-                                                  .toList(),
-                                              if (hasPermission)
-                                                AddElementWidget(
-                                                  onPressed: () {
-                                                    openCategoryPage(
-                                                        null, true, hasPermission);
-                                                  },
-                                                )
-                                            ],
-                                          );
-                                        },
-                                      );
-                                    },
+                      child: SizedBox(
+                        height: MediaQuery.of(context).size.height 
+                        - ContentVisualizerTopBar.barHeight -TotalAndConfirm.closedPanelHeight - 50,
+                        child: SingleChildScrollView(
+                          child: SizedBox(
+                            height: MediaQuery.of(context).size.height ,
+                            child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  HeaderMakeOrderPage(
+                                    expanded: MediaQuery.of(context).size.width > 680,
+                                    padding: const EdgeInsets.only(top: 25, right: 25, left: 25),
                                   ),
-                                ),
-                              ]),
+                                  Padding(
+                                    padding: const EdgeInsets.only(top: 25, right: 25, left: 25),
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                                      children: [                                      
+                                        const Gap(20),
+                                        Text(
+                                          "Il nostro menu",
+                                          style: Theme.of(context).textTheme.titleMedium,
+                                        ),
+                                      ],
+                                    )
+                                  ),        
+                                  const Gap(10),
+                                  Expanded(
+                                    child: BlocConsumer<CategoriesBloc, CategoriesState>(
+                                      bloc: categoriesBloc,
+                                      listener: (context, state) {
+                                        loading.value = false;
+                                            
+                                        if (state is CategoriesErrorState &&
+                                            state.event is! CategoryDeleteEvent) {
+                                          DialogShower.showAlertDialog(
+                                              context,
+                                              "Attenzione!",
+                                              "Si è verificato un errore nella gesione dei dati\n"
+                                                  "Se il problema persiste contattaci!");
+                                        } else if (state is CategoryAlreadyExisting) {
+                                          DialogShower.showAlertDialog(
+                                              context,
+                                              "Attenzione!",
+                                              "La categoria che stai cercando di creare esiste già.");
+                                        } else if (state is CategoryCreatedSuccesfully) {
+                                          DialogShower.showAlertDialog(context, "Fatto!",
+                                                  "La categoria è stata creata correttamente")
+                                              .then((value) => updateCategories());
+                                        } else if (state is CategoryDeletedSuccesfully) {
+                                          updateCategories();
+                                        }
+                                        else if(state is CategoriesFetched)
+                                        {
+                                          cartBloc.add(const FetchCart());
+                                        }
+                                      },
+                                      builder: (context, state) {
+                                        return BlocBuilder<UserBloc, UserState>(
+                                          builder: (context, state) {
+                                            bool hasPermission = false;
+                                            
+                                            if (state is FetchedUserInfoState) {
+                                              hasPermission = state.userInfo.hasPermission;
+                                            }
+                                          
+                                            return GridView.count(
+                                              crossAxisCount: MediaQuery.of(context).size.width ~/ 192,
+                                              mainAxisSpacing: 10,
+                                              crossAxisSpacing: 10,
+                                              physics: const NeverScrollableScrollPhysics(),
+                                              padding: const EdgeInsets.only(
+                                                left:25,
+                                                right: 25
+                                              ),
+                                              children: [
+                                                ...categoriesBloc.state.categories
+                                                    .map(
+                                                      (e) => CategoryItem(
+                                                        category: e,
+                                                        onPressed: () {
+                                                          openCategoryPage(
+                                                              e, false, hasPermission);
+                                                        },
+                                                      ),
+                                                    )
+                                                    .toList(),
+                                                if (hasPermission)
+                                                  AddElementWidget(
+                                                    onPressed: () {
+                                                      openCategoryPage(
+                                                          null, true, hasPermission);
+                                                    },
+                                                  )
+                                              ],
+                                            );
+                                          },
+                                        );
+                                      },
+                                    ),
+                                  ),
+                                ]),
+                          ),
                         ),
                       ),
                     ),
@@ -279,67 +287,110 @@ class _MakeOrderPageState extends State<MakeOrderPage> {
 
 class HeaderMakeOrderPage extends StatelessWidget
 {
-  static const double containerHeight = 200;
+  static const double bannerHeight = 200;
   static const double imageSize = 120;
   static const double imageFractionOut = 1/5;
-  const HeaderMakeOrderPage({super.key});
+
+  final EdgeInsets padding;
+  final bool expanded;
+
+  const HeaderMakeOrderPage({
+    super.key,
+    required this.expanded,
+    required this.padding
+  });
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        return Stack(
-          children: [
-            Container(
-              height: containerHeight,
-              width: constraints.maxWidth - imageSize  * imageFractionOut,
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.primary,
-                borderRadius: BorderRadius.circular(defaultBorderRadius)
-              ),
-              child: Padding(
-                padding: const EdgeInsets.only(
-                  left:20,
-                  top: 20,
-                  bottom: 20,
-                  right: 20 + imageSize * (1 - imageFractionOut),
-                ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      "I nostri piatti",
-                      style:Theme.of(context)
-                      .textTheme.headlineMedium?.copyWith(
-                        color: Theme.of(context).colorScheme.secondary
+    return Padding(
+      padding: expanded? EdgeInsets.zero : padding,
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          double margin = (expanded? 0 : imageSize  * imageFractionOut);
+          return SizedBox(
+            height: bannerHeight,
+            child: Stack(
+              children: [
+                Container(
+                  height: bannerHeight - margin,
+                  width: constraints.maxWidth - margin,
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.primary,
+                    borderRadius: expanded? null : BorderRadius.circular(defaultBorderRadius)
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.only(
+                      left:20,
+                      top: 20,
+                      bottom: 20,
+                      right: 20 + imageSize * (1 - imageFractionOut),
+                    ),
+                    child: IntrinsicHeight(
+                      child: Align(
+                        alignment: Alignment.centerLeft,
+                        child: ConstrainedBox(
+                          constraints: const BoxConstraints(
+                            maxWidth: 700
+                          ),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Expanded(
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      "I nostri piatti",
+                                      style:Theme.of(context)
+                                      .textTheme.headlineMedium?.copyWith(
+                                        color: Theme.of(context).colorScheme.secondary
+                                      ),
+                                    ),
+                                    Text(
+                                      "Direttamente a casa tua "
+                                      "in pochi, semplici, passi. ",
+                                      style:Theme.of(context)
+                                      .textTheme.titleMedium?.copyWith(
+                                        color: Colors.white
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              if(expanded)
+                              SizedBox(
+                                height: bannerHeight,
+                                width: imageSize,
+                                child: Image.asset(
+                                  "assets/delivery.png",
+                                  alignment: Alignment.center,
+                                ),
+                              )
+                            ],
+                          ),
+                        ),
                       ),
                     ),
-                    Text(
-                      "Direttamente a casa tua "
-                      "in pochi, semplici, passi. ",
-                      style:Theme.of(context)
-                      .textTheme.titleMedium?.copyWith(
-                        color: Colors.white
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
-              ),
+                if(!expanded)
+                Positioned(
+                  right: 0,
+                  height: bannerHeight,
+                  width: imageSize,
+                  child: Image.asset(
+                    "assets/delivery.png",
+                    alignment: Alignment.bottomCenter,
+                  )
+                )
+              ],
             ),
-            Positioned(
-              right: 0,
-              height: containerHeight,
-              width: imageSize,
-              child: Image.asset(
-                "assets/delivery.png",
-                alignment: Alignment.center,
-              )
-            )
-          ],
-        );
-      }
+          );
+        }
+      ),
     );
   }
 
