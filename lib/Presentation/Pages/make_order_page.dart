@@ -144,24 +144,19 @@ class _MakeOrderPageState extends State<MakeOrderPage> {
                               mainAxisAlignment: MainAxisAlignment.start,
                               children: [
                                 Padding(
-                                  padding:
-                                      const EdgeInsets.only(top: 25, right: 25, left: 25),
+                                  padding: const EdgeInsets.only(top: 25, right: 25, left: 25),
                                   child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                                      mainAxisAlignment: MainAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          "Da te\nIn pochi passi",
-                                          style:
-                                              Theme.of(context).textTheme.headlineLarge,
-                                        ),
-                                        const Gap(20),
-                                        Text(
-                                          "Ecco i nostri prodotti",
-                                          style: Theme.of(context).textTheme.titleMedium,
-                                        ),
-                                      ]),
-                                ),
+                                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                                    children: [
+                                      const HeaderMakeOrderPage(),
+                                      const Gap(20),
+                                      Text(
+                                        "Il nostro menu",
+                                        style: Theme.of(context).textTheme.titleMedium,
+                                      ),
+                                    ],
+                                  )
+                                ),        
                                 const Gap(10),
                                 Expanded(
                                   child: BlocConsumer<CategoriesBloc, CategoriesState>(
@@ -207,7 +202,10 @@ class _MakeOrderPageState extends State<MakeOrderPage> {
                                             mainAxisSpacing: 10,
                                             crossAxisSpacing: 10,
                                             physics: const NeverScrollableScrollPhysics(),
-                                            padding: const EdgeInsets.all(25),
+                                            padding: const EdgeInsets.only(
+                                              left:25,
+                                              right: 25
+                                            ),
                                             children: [
                                               ...categoriesBloc.state.categories
                                                   .map(
@@ -277,4 +275,72 @@ class _MakeOrderPageState extends State<MakeOrderPage> {
           )),
     );
   }
+}
+
+class HeaderMakeOrderPage extends StatelessWidget
+{
+  static const double containerHeight = 200;
+  static const double imageSize = 120;
+  static const double imageFractionOut = 1/5;
+  const HeaderMakeOrderPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return Stack(
+          children: [
+            Container(
+              height: containerHeight,
+              width: constraints.maxWidth - imageSize  * imageFractionOut,
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.primary,
+                borderRadius: BorderRadius.circular(defaultBorderRadius)
+              ),
+              child: Padding(
+                padding: const EdgeInsets.only(
+                  left:20,
+                  top: 20,
+                  bottom: 20,
+                  right: 20 + imageSize * (1 - imageFractionOut),
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      "I nostri piatti",
+                      style:Theme.of(context)
+                      .textTheme.headlineMedium?.copyWith(
+                        color: Theme.of(context).colorScheme.secondary
+                      ),
+                    ),
+                    Text(
+                      "Direttamente a casa tua "
+                      "in pochi, semplici, passi. ",
+                      style:Theme.of(context)
+                      .textTheme.titleMedium?.copyWith(
+                        color: Colors.white
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            Positioned(
+              right: 0,
+              height: containerHeight,
+              width: imageSize,
+              child: Image.asset(
+                "assets/delivery.png",
+                alignment: Alignment.center,
+              )
+            )
+          ],
+        );
+      }
+    );
+  }
+
 }

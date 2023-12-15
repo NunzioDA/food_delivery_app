@@ -558,7 +558,7 @@ class _ContentVisualizerTopBarState extends State<ContentVisualizerTopBar> {
                 ),
                 Text(
                   title ?? "Vuoto",
-                  style: Theme.of(context).textTheme.headlineMedium,
+                  style: Theme.of(context).textTheme.labelLarge,
                 ),
                 const Icon(Icons.menu, color: Colors.transparent,),
               ],

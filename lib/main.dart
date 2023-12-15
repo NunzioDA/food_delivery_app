@@ -78,16 +78,27 @@ class _MyAppState extends State<MyApp> {
           primaryColorLight: Palette.primary.shade100,
           primaryColorDark: Palette.primary.shade800,
           colorScheme: ColorScheme.fromSeed(
-              seedColor: Palette.primary,
               primary: Palette.primary,
+              secondary: Palette.secondary,
+              seedColor: Palette.primary,
               onPrimary: Palette.onPrimaryText,
               inversePrimary: Palette.primary.shade100,
               primaryContainer: Colors.black),
           textTheme: textTheme.copyWith(
             headlineLarge: textTheme.headlineLarge!.copyWith(
-                fontSize: 40,
+                fontSize: 35,
                 fontWeight: FontWeight.w900,
                 color: Palette.primary.shade800),
+            headlineMedium: textTheme.headlineMedium!.copyWith(
+              fontSize: 30, 
+              fontWeight: FontWeight.w800, 
+              color: Palette.primary.shade800
+            ),
+            headlineSmall: textTheme.headlineSmall!.copyWith(
+              fontSize: 25, 
+              fontWeight: FontWeight.w100, 
+              color: Palette.primary.shade800
+            ),
             titleLarge: textTheme.titleLarge!.copyWith(
                 fontSize: 25,
                 fontWeight: FontWeight.w800,
@@ -102,7 +113,7 @@ class _MyAppState extends State<MyApp> {
                 color: Palette.primary.shade800),
             bodyMedium: textTheme.bodySmall!.copyWith(
                 fontSize: 15, fontWeight: FontWeight.w200, color: Colors.grey),
-            headlineMedium: textTheme.bodyMedium!.copyWith(
+            labelLarge: textTheme.bodyMedium!.copyWith(
                 fontSize: 20, fontWeight: FontWeight.w100, color: Colors.grey),
           ),
           useMaterial3: false,
