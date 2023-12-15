@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:food_delivery_app/Data/Model/order.dart';
 import 'package:food_delivery_app/Presentation/ModelVisualizzation/Order/order_item.dart';
 import 'package:food_delivery_app/Presentation/UIUtilities/dialog_manager.dart';
+import 'package:food_delivery_app/Presentation/UIUtilities/loading.dart';
 import 'package:food_delivery_app/bloc/order_bloc.dart';
 
 
@@ -42,6 +43,8 @@ class _ShowOrdersPageState extends State<ShowOrdersPage> {
   // Oppure quando il fetching avviene correttamente la variabile viene azzerata.
   int errorShowCountDown = 0;
 
+  ValueNotifier<bool> loading = ValueNotifier(true);
+
   late OrderEvent fetchEvent;
   List<Order> orders = [];
 
@@ -52,6 +55,12 @@ class _ShowOrdersPageState extends State<ShowOrdersPage> {
     }
     else {
       fetchEvent = FetchMyOrders();
+    }
+    loading.value = true;
+    orderBloc.add(fetchEvent);
+    if(orderBloc.state is OrdersFetched)
+    {
+      orders = (orderBloc.state as OrdersFetched).orders;
     }
   }
 
@@ -87,89 +96,93 @@ class _ShowOrdersPageState extends State<ShowOrdersPage> {
   @override
   Widget build(BuildContext context) {
     updateFetchEvent();
-    orderBloc.add(fetchEvent);
+    
     return Scaffold(
       body: SafeArea(
-        child: BlocConsumer<OrderBloc, OrderState>(
-          bloc: orderBloc,
-          listener: (context, state) {
-            if(state is OrderError && 
-            (state.event is FetchReceivedOrders ||
-              state.event is FetchMyOrders
-            ) &&
-            errorShowCountDown == 0)
-            {              
-              errorShowCountDown = -1;
-              DialogShower.showAlertDialog(
-                context, 
-                "Attenzione", 
-                "Si è verificato un problema nel caricamento degli ordini.\nRiprova."
-              ).then((value) => errorShowCountDown = 10);              
-            }
-            else if(state is OrderError && 
-            state.event is FetchReceivedOrders){
-              errorShowCountDown--;
-            }
-            else if(state is OrdersFetched)
-            {
-              orders = state.orders;
-              errorShowCountDown = 0;
-            }
-          },
-          buildWhen: (previous, current) => (current is OrdersFetched
-          && (previous is! OrdersFetched ||
-          previous.orders.length != current.orders.length ||
-          anyOrderChanged(previous.orders, current.orders))),
-          builder: (context, state) {          
-
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(
-                    left: 20, 
-                    right: 20, 
-                    top: 20,
-                    bottom: 10
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Text(
-                        !widget.hasPermission? "I tuoi ordini" : "Ordini ricevuti",
-                        style: Theme.of(context).textTheme.titleLarge,
-                      ),
-                      Text(
-                        !widget.hasPermission? 
-                        "Qui puoi visualizzare lo stato di tutti gli ordini da"
-                        " te effettuati." : 
-                        "Qui puoi visualizzare tutti gli ordini dei tuoi clienti"
-                        " gestendone lo stato." ,
-                      ),
-                    ],
-                  ),
-                ),
-                Expanded(
-                  child: ListView.builder(
+        child: FdaLoading(
+          loadingNotifier: loading,
+          dynamicText: ValueNotifier("Solo qualche secondo..."),
+          child: BlocConsumer<OrderBloc, OrderState>(
+            bloc: orderBloc,
+            listener: (context, state) {
+              loading.value = false;
+              if(state is OrderError && 
+              (state.event is FetchReceivedOrders ||
+                state.event is FetchMyOrders
+              ) &&
+              errorShowCountDown == 0)
+              {              
+                errorShowCountDown = -1;
+                DialogShower.showAlertDialog(
+                  context, 
+                  "Attenzione", 
+                  "Si è verificato un problema nel caricamento degli ordini.\nRiprova."
+                ).then((value) => errorShowCountDown = 10);              
+              }
+              else if(state is OrderError && 
+              state.event is FetchReceivedOrders){
+                errorShowCountDown--;
+              }
+              else if(state is OrdersFetched)
+              {
+                orders = state.orders;
+                errorShowCountDown = 0;
+              }
+            },
+            buildWhen: (previous, current) => (current is OrdersFetched
+            && (previous is! OrdersFetched ||
+            previous.orders.length != current.orders.length ||
+            anyOrderChanged(previous.orders, current.orders))),
+            builder: (context, state) {
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Padding(
                     padding: const EdgeInsets.only(
                       left: 20, 
                       right: 20, 
-                      top: 10,
-                      bottom: 20
+                      top: 20,
+                      bottom: 10
                     ),
-                    itemCount: orders.length,
-                    itemBuilder: (context, index) => Padding(
-                      padding: (index<orders.length -1)? const EdgeInsets.only(bottom: 20) : EdgeInsets.zero,
-                      child: OrderItem(
-                        order: orders[index],
-                        hasPermission: widget.hasPermission,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Text(
+                          !widget.hasPermission? "I tuoi ordini" : "Ordini ricevuti",
+                          style: Theme.of(context).textTheme.titleLarge,
+                        ),
+                        Text(
+                          !widget.hasPermission? 
+                          "Qui puoi visualizzare lo stato di tutti gli ordini da"
+                          " te effettuati." : 
+                          "Qui puoi visualizzare tutti gli ordini dei tuoi clienti"
+                          " gestendone lo stato." ,
+                        ),
+                      ],
+                    ),
+                  ),
+                  Expanded(
+                    child: ListView.builder(
+                      padding: const EdgeInsets.only(
+                        left: 20, 
+                        right: 20, 
+                        top: 10,
+                        bottom: 20
+                      ),
+                      itemCount: orders.length,
+                      itemBuilder: (context, index) => Padding(
+                        padding: (index<orders.length -1)? const EdgeInsets.only(bottom: 20) : EdgeInsets.zero,
+                        child: OrderItem(
+                          order: orders[index],
+                          hasPermission: widget.hasPermission,
+                        ),
                       ),
                     ),
                   ),
-                ),
-              ],
-            );
-          },
+                ],
+              );
+            },
+          ),
         )
       ),
     );
