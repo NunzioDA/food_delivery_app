@@ -41,14 +41,14 @@ class CartRepository{
   Future<Cart> fetchCart(
     UserState user,
     List<ProductsCategory> categories,
-    [Cart? previewsCart]
+    [Cart? previousCart]
   )async{
     String response;
     if(user is LoggedInState)
     {
-      if(previewsCart != null)
+      if(previousCart != null)
       {
-        for(MapEntry<Product,int> entry in previewsCart.entries)
+        for(MapEntry<Product,int> entry in previousCart.entries)
         {
           for(int i = 0; i<entry.value; i++)
           {

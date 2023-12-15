@@ -21,17 +21,17 @@ class CartBloc extends Bloc<CartEvent, CartState> {
 
     userSubscription = _userBloc.stream.listen((event) { 
 
-      Cart? previewsCart;
+      Cart? previousCart;
 
       if(event is LoggedInState && 
       event is! FetchedUserInfoState &&
       event is! UserErrorLoggedInState
       )      
       {
-        previewsCart = state.cart;        
+        previousCart = state.cart;        
       }
       
-      add(FetchCart(previewsCart));
+      add(FetchCart(previousCart));
     });
 
     on<CartEvent>((event, emit) async{
@@ -86,7 +86,7 @@ class CartBloc extends Bloc<CartEvent, CartState> {
             Cart cart = await _cartRepository.fetchCart(
               _userBloc.state, 
               _categoriesBloc.state.categories,
-              event.previewsCart
+              event.previousCart
             );
             
             emit(CartFetched(cart));

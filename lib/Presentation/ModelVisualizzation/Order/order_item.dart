@@ -19,12 +19,10 @@ class OrderItem extends StatelessWidget
 {
   final bool hasPermission;
   final Order order;
-  final bool static;
   const OrderItem({
     super.key,
     required this.order,
     required this.hasPermission,
-    this.static = false
   });
 
   @override
@@ -47,12 +45,13 @@ class OrderItem extends StatelessWidget
       },
       child: Hero(
         tag: order.id,
-        flightShuttleBuilder: (flightContext, animation, flightDirection, fromHeroContext, toHeroContext) =>
-        OrderItem(
-          hasPermission: hasPermission,
-          order: order,
-          static: true,
-        ),
+        flightShuttleBuilder: (
+          flightContext, 
+          animation, 
+          flightDirection, 
+          fromHeroContext, 
+          toHeroContext
+        ) => this,
         child: Material(
           elevation: 10,
           color: Theme.of(context).dialogBackgroundColor,
@@ -65,7 +64,7 @@ class OrderItem extends StatelessWidget
               crossAxisAlignment: CrossAxisAlignment.stretch,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                OrderInfoHeader(order: order, static: static,),                           
+                OrderInfoHeader(order: order, static: true,),                           
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [

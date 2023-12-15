@@ -43,6 +43,7 @@ class _ShowOrdersPageState extends State<ShowOrdersPage> {
   int errorShowCountDown = 0;
 
   late OrderEvent fetchEvent;
+  List<Order> orders = [];
 
   void updateFetchEvent()
   {
@@ -69,6 +70,18 @@ class _ShowOrdersPageState extends State<ShowOrdersPage> {
   void dispose() {
     updateTimer?.cancel();
     super.dispose();
+  }
+
+  bool anyOrderChanged(List<Order> previous, List<Order> current)
+  {
+    for(int i =0; i<previous.length; i++)
+    {
+      if(previous[i]!=current[i] || previous[i].status != current[i].status)
+      {
+        return true;
+      }
+    }
+    return false;
   }
 
   @override
@@ -99,18 +112,15 @@ class _ShowOrdersPageState extends State<ShowOrdersPage> {
             }
             else if(state is OrdersFetched)
             {
+              orders = state.orders;
               errorShowCountDown = 0;
             }
           },
-          buildWhen: (previous, current) => current is OrdersFetched,
-          builder: (context, state) {
-            
-            List<Order> orders = [];
-
-            if(state is OrdersFetched)
-            {
-              orders = state.orders;
-            }
+          buildWhen: (previous, current) => (current is OrdersFetched
+          && (previous is! OrdersFetched ||
+          previous.orders.length != current.orders.length ||
+          anyOrderChanged(previous.orders, current.orders))),
+          builder: (context, state) {          
 
             return Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -152,7 +162,7 @@ class _ShowOrdersPageState extends State<ShowOrdersPage> {
                       padding: (index<orders.length -1)? const EdgeInsets.only(bottom: 20) : EdgeInsets.zero,
                       child: OrderItem(
                         order: orders[index],
-                        hasPermission: widget.hasPermission
+                        hasPermission: widget.hasPermission,
                       ),
                     ),
                   ),

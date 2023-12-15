@@ -63,7 +63,7 @@ class Order{
         other.deliveryInfo.intercom == deliveryInfo.intercom&&
         other.deliveryInfo.address == deliveryInfo.address&&
         other.deliveryInfo.houseNumber == deliveryInfo.houseNumber&&
-        other.dateTime == dateTime
+        other.dateTime == dateTime 
       ));
   }
 
