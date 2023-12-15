@@ -3,6 +3,25 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 
+/// [SideMenuView] permette di creare una vista con menu a scorrimento
+/// laterale, dove a scorrere è la pagina visualizzata [ContentVisualizer].
+/// La pagina scorrendo lascerà spazio al set di pulsanti [SideMenuButton]
+/// del menu [SideMenu]. Questi saranno divisi in gruppi [SideMenuGroup]
+/// ognuno con un titolo.
+/// 
+/// Mette a disposizione [SideMenuViewInherited] che permette a tutti i discendenti
+/// di comunicare con il menu, potendolo aprire e chiudere, o ricavare informaizoni
+/// sul suo stato.
+/// 
+/// [initialContentIndex] indica tra i pulsanti presenti che possiede un contenuto
+/// da visualizzare, l'indice di quello da visualizzare inizialmente.
+/// 
+/// [rotate3D], inoltre, è un flag che attiva o disattiva la rotazione tridimensionale
+/// della pagina in movimento.
+/// 
+/// [topBarActionWidget] permette di specificare un widget che verrà visualizzato
+/// a lato sulla top bar [ContentVisualizerTopBar].
+
 class SideMenuView extends StatefulWidget{
   static const double _scaleDownPercentage = 0.05;
 
@@ -37,6 +56,8 @@ class _SideMenuViewState extends State<SideMenuView>
 
   GlobalKey<_ContentVisualizerState> contentKey = GlobalKey(); 
 
+  // Controlla che la pagina correntemente visualizzata
+  // esista ancora.
   bool currentPageStillExists()
   {
     return widget.groups.any((group) => 
@@ -44,9 +65,11 @@ class _SideMenuViewState extends State<SideMenuView>
     );
   } 
 
+  // ricerca tra i pulsanti il pulsante con contenuti che corrisponde
+  // all'indice indicato
   void checkAndFetchContent()
   {
-    // Multiple buttons name check
+    // Controlla che non ci siano più pulsanti con lo stesso nome
     Map<String, int> namesOccurrences = {};
     for(SideMenuGroup group in widget.groups){ 
       for(SideMenuButton button in group.buttons)
@@ -98,6 +121,7 @@ class _SideMenuViewState extends State<SideMenuView>
     changeState(buttonWithContent);
   }
 
+  // Cambia lo stato e quindi la pagina visualizzata dal menu
   void changeState(SideMenuButton? newButton)
   {
     setState(() {
@@ -169,6 +193,7 @@ class _SideMenuViewState extends State<SideMenuView>
             opened: isOpened(),
             onCloseRequest: close,
             onOpenRequest: open,
+            onChangeStateRequest: (state) => changeState(state),
             lastActive: lastActive,
             content: lastActive?.content ?? Container(),
             child: Stack(
@@ -214,6 +239,10 @@ class _SideMenuViewState extends State<SideMenuView>
   }  
 }
 
+/// [SideMenuViewInherited] permette a tutti i discendenti
+/// di [SideMenuView] di comunicare con il menu, potendolo aprire e chiudere, 
+/// o ricavare informaizoni sul suo stato.
+
 class SideMenuViewInherited extends InheritedWidget{   
 
   final SideMenuButton? lastActive;
@@ -222,16 +251,19 @@ class SideMenuViewInherited extends InheritedWidget{
 
   final VoidCallback onCloseRequest;
   final VoidCallback onOpenRequest;
+  final void Function(SideMenuButton? button) _onChangeStateRequest;
 
 
   const SideMenuViewInherited({
+    super.key, 
     this.lastActive,
     required this.content,
     required this.opened,
     required this.onCloseRequest,
     required this.onOpenRequest,
+    required void Function(SideMenuButton? button) onChangeStateRequest,
     required super.child,
-  });
+  }): _onChangeStateRequest = onChangeStateRequest;
   
 
   static SideMenuViewInherited? _maybeOf(BuildContext context) {
@@ -246,7 +278,7 @@ class SideMenuViewInherited extends InheritedWidget{
 
   void close() => onCloseRequest.call();
   void open() => onOpenRequest.call();
-  
+  void _changePage(SideMenuButton? state) => _onChangeStateRequest.call(state);
 
   @override
   bool updateShouldNotify(covariant SideMenuViewInherited oldWidget) {
@@ -257,6 +289,7 @@ class SideMenuViewInherited extends InheritedWidget{
 
 }
 
+/// Visualizza tutti [SideMenuGroup] 
 class SideMenu extends StatelessWidget{
 
   final List<SideMenuGroup> groups;
@@ -286,6 +319,10 @@ class SideMenu extends StatelessWidget{
 
 }
 
+/// Visualizza tutti i [SideMenuButton] al suo interno tramite la 
+/// classe [_SideMenuButton] con un [title] in maiuscolo a capo di tutti
+/// i pulsanti.
+
 class SideMenuGroup extends StatelessWidget
 {
   final String title;
@@ -314,10 +351,7 @@ class SideMenuGroup extends StatelessWidget
             ),
           ),
         ),        
-        ...buttons.map((e) => _SideMenuButton(
-            button: e,
-          )
-        ),
+        ...buttons,
         Divider(
           height: 10,
           thickness: 0.5,
@@ -330,33 +364,27 @@ class SideMenuGroup extends StatelessWidget
   }
 }
 
-class SideMenuButton{
+/// Classe che rappresenta ogni pulsante del menu, permettendo all'utente
+/// sia di selezionare un nuovo contenuto da visualizzare [content], sia di effettuare
+/// delle azioni [onPressed].
+class SideMenuButton extends StatefulWidget{
   final String name;
   final Widget icon;
   final Widget? content;
   final VoidCallback? onPressed;
 
   const SideMenuButton({
+    super.key,
     required this.name,
     required this.icon,
     this.content,
     this.onPressed
   });
-}
-
-
-class _SideMenuButton extends StatefulWidget{
-  final SideMenuButton button;
-  
-  const _SideMenuButton({
-    required this.button
-  });  
-
   @override
-  State<_SideMenuButton> createState() => _SideMenuButtonState();
+  State<SideMenuButton> createState() => _SideMenuButtonState();
 }
 
-class _SideMenuButtonState extends State<_SideMenuButton> {
+class _SideMenuButtonState extends State<SideMenuButton> {
 
   bool _isActive = false;
 
@@ -373,21 +401,19 @@ class _SideMenuButtonState extends State<_SideMenuButton> {
 
     if(lastActive != null)
     {
-      _isActive = lastActive.name  == widget.button.name;
+      _isActive = lastActive.name  == widget.name;
     }
       
     return Material(
       color: !_isActive? Colors.transparent : Theme.of(context).primaryColorDark,
       child: InkWell(
         onTap: (){
-          if(widget.button.content!=null)
-          {
-            context
-            .findAncestorStateOfType<_SideMenuViewState>()
-            !.changeState(widget.button);
+          if(widget.content!=null)
+          {            
+            SideMenuViewInherited.of(context)._changePage(widget);
           }         
 
-          widget.button.onPressed?.call();
+          widget.onPressed?.call();
         },
         child: Padding(
           padding: const EdgeInsets.only(left: 10),
@@ -395,10 +421,10 @@ class _SideMenuButtonState extends State<_SideMenuButton> {
             height: 50,
             child: Row(
               children: [
-                widget.button.icon,
+                widget.icon,
                 const Gap(10),
                 Text(
-                  widget.button.name,
+                  widget.name,
                   style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                     color: Theme.of(context).colorScheme.onPrimary
                   ),
@@ -412,7 +438,10 @@ class _SideMenuButtonState extends State<_SideMenuButton> {
   }
 }
 
-
+/// Pagina che visualizza i contenuti richiesti dai [SideMenuButton]
+/// che verrà fatta scorrere all'aprirsi del menu.
+/// Visualizza in alto ad ogni contenuto una topbar [ContentVisualizerTopBar]
+/// che permette di accedere al menu.
 class ContentVisualizer extends StatefulWidget{
 
   final Animation<double> animation;
@@ -477,6 +506,11 @@ class _ContentVisualizerState extends State<ContentVisualizer> {
     );
   }
 }
+
+/// Widget che rappresenta la topbar rappresentata in alto nel [ContentVisualizer].
+/// Permette accedere al menu, visualizzare il titolo di ogni pagina, corrispondente
+/// al nome del pulsante chiamante e visualizza anche il [topBarActionWidget]
+/// a destra della barra.
 
 class ContentVisualizerTopBar extends StatefulWidget{
   static const double barHeight = 65;
