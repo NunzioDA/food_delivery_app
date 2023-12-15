@@ -9,24 +9,26 @@ import 'package:food_delivery_app/bloc/order_bloc.dart';
 
 
 /// Questa pagina permette di visualizzare tutti gli ordini 
-/// effettuati mostrandone le informazioni tramite [OrderItem]
-/// e successivamente visualizzarne i dettagli tramite [OrderDetailsPage]
+/// effettuati mostrandone le informazioni tramite [OrderItem].
 /// 
 /// E' inoltre dotata di un timer di aggiornamento periodico che permette 
-/// all'utente con permessi di essere sempre aggiornato sui nuovi ordini in arrivo
-/// potendoli gestire in tempo reale.
+/// all'utente di essere sempre aggiornato sui nuovi ordini in arrivo nel caso di
+/// utente con permessi potendoli gestire in tempo reale; o per essere sempre aggiornato
+/// sullo stato dei propri ordini.
 
-class ReceivedOrdersPage extends StatefulWidget
+class ShowOrdersPage extends StatefulWidget
 {
-  const ReceivedOrdersPage({
+  final bool hasPermission;
+  const ShowOrdersPage({
     super.key,
+    required this.hasPermission,
   });
 
   @override
-  State<ReceivedOrdersPage> createState() => _ReceivedOrdersPageState();
+  State<ShowOrdersPage> createState() => _ShowOrdersPageState();
 }
 
-class _ReceivedOrdersPageState extends State<ReceivedOrdersPage> {
+class _ShowOrdersPageState extends State<ShowOrdersPage> {
 
   late OrderBloc orderBloc;
   Timer? updateTimer;
@@ -40,13 +42,24 @@ class _ReceivedOrdersPageState extends State<ReceivedOrdersPage> {
   // Oppure quando il fetching avviene correttamente la variabile viene azzerata.
   int errorShowCountDown = 0;
 
+  late OrderEvent fetchEvent;
+
+  void updateFetchEvent()
+  {
+    if(widget.hasPermission){
+      fetchEvent = FetchReceivedOrders();
+    }
+    else {
+      fetchEvent = FetchMyOrders();
+    }
+  }
+
   @override
   void initState() {
     orderBloc = BlocProvider.of<OrderBloc>(context);
-
-    orderBloc.add(FetchReceivedOrders());
+    
     updateTimer = Timer.periodic(const Duration(seconds: 5), (timer) {
-      orderBloc.add(FetchReceivedOrders());
+      orderBloc.add(fetchEvent);
     });
 
     super.initState();
@@ -60,13 +73,17 @@ class _ReceivedOrdersPageState extends State<ReceivedOrdersPage> {
 
   @override
   Widget build(BuildContext context) {
+    updateFetchEvent();
+    orderBloc.add(fetchEvent);
     return Scaffold(
       body: SafeArea(
         child: BlocConsumer<OrderBloc, OrderState>(
           bloc: orderBloc,
           listener: (context, state) {
             if(state is OrderError && 
-            state.event is FetchReceivedOrders &&
+            (state.event is FetchReceivedOrders ||
+              state.event is FetchMyOrders
+            ) &&
             errorShowCountDown == 0)
             {              
               errorShowCountDown = -1;
@@ -87,7 +104,7 @@ class _ReceivedOrdersPageState extends State<ReceivedOrdersPage> {
           },
           buildWhen: (previous, current) => current is OrdersFetched,
           builder: (context, state) {
-
+            
             List<Order> orders = [];
 
             if(state is OrdersFetched)
@@ -95,16 +112,42 @@ class _ReceivedOrdersPageState extends State<ReceivedOrdersPage> {
               orders = state.orders;
             }
 
-            return ListView.builder(
-              padding: const EdgeInsets.all(20),
-              itemCount: orders.length,
-              itemBuilder: (context, index) => Padding(
-                padding: (index<orders.length -1)? const EdgeInsets.only(bottom: 20) : EdgeInsets.zero,
-                child: OrderItem(
-                  order: orders[index],
-                  hasPermission: true
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(left: 20, right: 20, top: 20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Text(
+                        !widget.hasPermission? "I tuoi ordini" : "Ordini ricevuti",
+                        style: Theme.of(context).textTheme.titleLarge,
+                      ),
+                      Text(
+                        !widget.hasPermission? 
+                        "Qui puoi visualizzare lo stato di tutti gli ordini da"
+                        " te effettuati." : 
+                        "Qui puoi visualizzare tutti gli ordini dei tuoi clienti"
+                        " gestendone lo stato." ,
+                      ),
+                    ],
+                  ),
                 ),
-              ),
+                Expanded(
+                  child: ListView.builder(
+                    padding: const EdgeInsets.all(20),
+                    itemCount: orders.length,
+                    itemBuilder: (context, index) => Padding(
+                      padding: (index<orders.length -1)? const EdgeInsets.only(bottom: 20) : EdgeInsets.zero,
+                      child: OrderItem(
+                        order: orders[index],
+                        hasPermission: widget.hasPermission
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             );
           },
         )

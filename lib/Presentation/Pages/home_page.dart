@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:food_delivery_app/Presentation/Pages/login_page.dart';
-import 'package:food_delivery_app/Presentation/Pages/my_orders_page.dart';
 import 'package:food_delivery_app/Presentation/Pages/make_order_page.dart';
-import 'package:food_delivery_app/Presentation/Pages/received_orders_page.dart';
+import 'package:food_delivery_app/Presentation/Pages/show_orders_page.dart';
 import 'package:food_delivery_app/Presentation/UIUtilities/dialog_manager.dart';
 import 'package:food_delivery_app/Presentation/UIUtilities/side_menu.dart';
 import 'package:food_delivery_app/Presentation/UIUtilities/ui_utilities.dart';
@@ -13,8 +12,8 @@ import 'package:food_delivery_app/bloc/user_bloc.dart';
 /// Pagina principale dell'app che mostra un menu a scorrimento laterale
 /// tramite la vista [SideMenuView]. Permettendo all'utente di navigare 
 /// tra le schermate [MakeOrderPage] per creare un nuovo ordine
-/// la pagina [MyOrdersPage] per visualizzare i propri ordini
-/// e [ReceivedOrdersPage] per visualizzare, nel caso di utenti con 
+/// la pagina [ShowOrdersPage] per visualizzare i propri ordini
+/// e [ShowOrdersPage] per visualizzare, nel caso di utenti con 
 /// permessi, tutti li ordini ricevuti ed eventualmente gestirli.
 
 class HomePage extends StatefulWidget {
@@ -92,7 +91,9 @@ class _HomePageState extends State<HomePage> {
                         color: Colors.white,
                       ),
                       name: "I miei ordini",
-                      content: MyOrdersPage()
+                      content: ShowOrdersPage(
+                        hasPermission: false,
+                      )
                     ),
                     if (userBloc.state is FetchedUserInfoState && 
                     (userBloc.state as FetchedUserInfoState).userInfo.hasPermission)
@@ -102,7 +103,9 @@ class _HomePageState extends State<HomePage> {
                         color: Colors.white,
                       ),
                       name: "Ordini ricevuti",
-                      content: ReceivedOrdersPage()
+                      content: ShowOrdersPage(
+                        hasPermission: true,
+                      )
                     ),
                 ]
                 ),
