@@ -10,6 +10,7 @@ import 'package:food_delivery_app/Presentation/UIUtilities/add_element.dart';
 import 'package:food_delivery_app/Presentation/UIUtilities/dialog_manager.dart';
 import 'package:food_delivery_app/Presentation/UIUtilities/loading.dart';
 import 'package:food_delivery_app/Presentation/ModelVisualizzation/Cart/total_and_confirm.dart';
+import 'package:food_delivery_app/Presentation/UIUtilities/side_menu.dart';
 import 'package:food_delivery_app/Presentation/UIUtilities/ui_utilities.dart';
 import 'package:food_delivery_app/bloc/cart_bloc.dart';
 import 'package:food_delivery_app/bloc/categories_bloc.dart';
@@ -134,101 +135,108 @@ class _MakeOrderPageState extends State<MakeOrderPage> {
                       padding: const EdgeInsets.only(
                           bottom: TotalAndConfirm.closedPanelHeight -
                               defaultBorderRadius),
-                      child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            Padding(
-                              padding:
-                                  const EdgeInsets.only(top: 25, right: 25, left: 25),
-                              child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      "Da te\nIn pochi passi",
-                                      style:
-                                          Theme.of(context).textTheme.headlineLarge,
-                                    ),
-                                    const Gap(20),
-                                    Text(
-                                      "Ecco i nostri prodotti",
-                                      style: Theme.of(context).textTheme.titleMedium,
-                                    ),
-                                  ]),
-                            ),
-                            const Gap(10),
-                            Expanded(
-                              child: BlocConsumer<CategoriesBloc, CategoriesState>(
-                                bloc: categoriesBloc,
-                                listener: (context, state) {
-                                  loading.value = false;
-                
-                                  if (state is CategoriesErrorState &&
-                                      state.event is! CategoryDeleteEvent) {
-                                    DialogShower.showAlertDialog(
-                                        context,
-                                        "Attenzione!",
-                                        "Si è verificato un errore nella gesione dei dati\n"
-                                            "Se il problema persiste contattaci!");
-                                  } else if (state is CategoryAlreadyExisting) {
-                                    DialogShower.showAlertDialog(
-                                        context,
-                                        "Attenzione!",
-                                        "La categoria che stai cercando di creare esiste già.");
-                                  } else if (state is CategoryCreatedSuccesfully) {
-                                    DialogShower.showAlertDialog(context, "Fatto!",
-                                            "La categoria è stata creata correttamente")
-                                        .then((value) => updateCategories());
-                                  } else if (state is CategoryDeletedSuccesfully) {
-                                    updateCategories();
-                                  }
-                                  else if(state is CategoriesFetched)
-                                  {
-                                    cartBloc.add(const FetchCart());
-                                  }
-                                },
-                                builder: (context, state) {
-                                  return BlocBuilder<UserBloc, UserState>(
-                                    builder: (context, state) {
-                                      bool hasPermission = false;
-                
-                                      if (state is FetchedUserInfoState) {
-                                        hasPermission = state.userInfo.hasPermission;
+                      child: SingleChildScrollView(
+                        child: SizedBox(
+                          height: MediaQuery.of(context).size.height 
+                          - ContentVisualizerTopBar.barHeight -TotalAndConfirm.closedPanelHeight,
+                          child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                Padding(
+                                  padding:
+                                      const EdgeInsets.only(top: 25, right: 25, left: 25),
+                                  child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                                      mainAxisAlignment: MainAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          "Da te\nIn pochi passi",
+                                          style:
+                                              Theme.of(context).textTheme.headlineLarge,
+                                        ),
+                                        const Gap(20),
+                                        Text(
+                                          "Ecco i nostri prodotti",
+                                          style: Theme.of(context).textTheme.titleMedium,
+                                        ),
+                                      ]),
+                                ),
+                                const Gap(10),
+                                Expanded(
+                                  child: BlocConsumer<CategoriesBloc, CategoriesState>(
+                                    bloc: categoriesBloc,
+                                    listener: (context, state) {
+                                      loading.value = false;
+                                          
+                                      if (state is CategoriesErrorState &&
+                                          state.event is! CategoryDeleteEvent) {
+                                        DialogShower.showAlertDialog(
+                                            context,
+                                            "Attenzione!",
+                                            "Si è verificato un errore nella gesione dei dati\n"
+                                                "Se il problema persiste contattaci!");
+                                      } else if (state is CategoryAlreadyExisting) {
+                                        DialogShower.showAlertDialog(
+                                            context,
+                                            "Attenzione!",
+                                            "La categoria che stai cercando di creare esiste già.");
+                                      } else if (state is CategoryCreatedSuccesfully) {
+                                        DialogShower.showAlertDialog(context, "Fatto!",
+                                                "La categoria è stata creata correttamente")
+                                            .then((value) => updateCategories());
+                                      } else if (state is CategoryDeletedSuccesfully) {
+                                        updateCategories();
                                       }
-                
-                                      return GridView.count(
-                                        crossAxisCount: 2,
-                                        mainAxisSpacing: 10,
-                                        crossAxisSpacing: 10,
-                                        padding: const EdgeInsets.all(25),
-                                        children: [
-                                          ...categoriesBloc.state.categories
-                                              .map(
-                                                (e) => CategoryItem(
-                                                  category: e,
+                                      else if(state is CategoriesFetched)
+                                      {
+                                        cartBloc.add(const FetchCart());
+                                      }
+                                    },
+                                    builder: (context, state) {
+                                      return BlocBuilder<UserBloc, UserState>(
+                                        builder: (context, state) {
+                                          bool hasPermission = false;
+                                          
+                                          if (state is FetchedUserInfoState) {
+                                            hasPermission = state.userInfo.hasPermission;
+                                          }
+                                          
+                                          return GridView.count(
+                                            crossAxisCount: 2,
+                                            mainAxisSpacing: 10,
+                                            crossAxisSpacing: 10,
+                                            physics: const NeverScrollableScrollPhysics(),
+                                            padding: const EdgeInsets.all(25),
+                                            children: [
+                                              ...categoriesBloc.state.categories
+                                                  .map(
+                                                    (e) => CategoryItem(
+                                                      category: e,
+                                                      onPressed: () {
+                                                        openCategoryPage(
+                                                            e, false, hasPermission);
+                                                      },
+                                                    ),
+                                                  )
+                                                  .toList(),
+                                              if (hasPermission)
+                                                AddElementWidget(
                                                   onPressed: () {
                                                     openCategoryPage(
-                                                        e, false, hasPermission);
+                                                        null, true, hasPermission);
                                                   },
-                                                ),
-                                              )
-                                              .toList(),
-                                          if (hasPermission)
-                                            AddElementWidget(
-                                              onPressed: () {
-                                                openCategoryPage(
-                                                    null, true, hasPermission);
-                                              },
-                                            )
-                                        ],
+                                                )
+                                            ],
+                                          );
+                                        },
                                       );
                                     },
-                                  );
-                                },
-                              ),
-                            ),
-                          ]),
+                                  ),
+                                ),
+                              ]),
+                        ),
+                      ),
                     ),
                     TotalAndConfirm(
                       key: totalAndConfirmKey,

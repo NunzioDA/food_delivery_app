@@ -14,11 +14,13 @@ class OrderInfoHeader extends StatefulWidget
 {
   final Order order;
   final bool hasPermission;
+  final bool static;
   final ValueNotifier<bool>? loading;
   const OrderInfoHeader({
     super.key,
     required this.order,
     this.hasPermission = false,
+    this.static = false,
     this.loading
   });
 
@@ -34,7 +36,7 @@ class _OrderInfoHeaderState extends State<OrderInfoHeader> {
   @override
   void initState() {
     order = widget.order;
-    if(widget.hasPermission){
+    if(!widget.static){
       orderBloc = BlocProvider.of<OrderBloc>(context);
     }
     super.initState();
@@ -75,10 +77,11 @@ class _OrderInfoHeaderState extends State<OrderInfoHeader> {
               "Ordine ${widget.order.id}",
               style: Theme.of(context).textTheme.titleMedium,
             ),
-            if(widget.hasPermission)
+            if(!widget.static)
             BlocConsumer<OrderBloc, OrderState>(
               bloc: orderBloc,
-              buildWhen: (previous, current) => current is OrderUpdated,
+              buildWhen: (previous, current) => (current is OrderUpdated && widget.hasPermission)
+              || current is OrdersFetched,
               listener: (context, state) {
                 widget.loading?.value = false;
                 if(state is OrdersFetched)
@@ -95,7 +98,8 @@ class _OrderInfoHeaderState extends State<OrderInfoHeader> {
                 }
               },
               builder: (context, state) {
-                return DropdownButton(
+                return widget.hasPermission?
+                DropdownButton(
                   borderRadius: BorderRadius.circular(defaultBorderRadius),
                   alignment: Alignment.centerRight,
                   value: order.status,                  
@@ -109,10 +113,11 @@ class _OrderInfoHeaderState extends State<OrderInfoHeader> {
                     widget.loading?.value = true;
                     orderBloc.add(UpdateOrder(order, value!));
                   },
-                );
+                ):
+                statusText(order.status);
               },
             ),
-            if(!widget.hasPermission)
+            if(widget.static)       
             statusText(widget.order.status)
           ],
         ),

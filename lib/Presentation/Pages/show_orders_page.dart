@@ -116,7 +116,12 @@ class _ShowOrdersPageState extends State<ShowOrdersPage> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Padding(
-                  padding: const EdgeInsets.only(left: 20, right: 20, top: 20),
+                  padding: const EdgeInsets.only(
+                    left: 20, 
+                    right: 20, 
+                    top: 20,
+                    bottom: 10
+                  ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
@@ -136,7 +141,12 @@ class _ShowOrdersPageState extends State<ShowOrdersPage> {
                 ),
                 Expanded(
                   child: ListView.builder(
-                    padding: const EdgeInsets.all(20),
+                    padding: const EdgeInsets.only(
+                      left: 20, 
+                      right: 20, 
+                      top: 10,
+                      bottom: 20
+                    ),
                     itemCount: orders.length,
                     itemBuilder: (context, index) => Padding(
                       padding: (index<orders.length -1)? const EdgeInsets.only(bottom: 20) : EdgeInsets.zero,
