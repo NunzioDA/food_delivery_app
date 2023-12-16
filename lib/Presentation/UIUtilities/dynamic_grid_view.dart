@@ -33,19 +33,15 @@ class DynamicGridView extends StatelessWidget{
           {
             maxItemPerRow = 1;
           }
-      
+
+          availableSpace -= spacing * (maxItemPerRow -1);
           double perWidgetSpace = availableSpace / maxItemPerRow;
           double itemWidth = perWidgetSpace;
-      
-          if(maxItemPerRow != 1)
-          {
-            itemWidth -= spacing/2;
-          }
-         
+          
           return Wrap(
             direction: Axis.horizontal,
             runSpacing: runSpacing,
-            spacing: spacing,        
+            spacing: spacing,
             children: children.map(
               (e) => SizedBox(
                 height: aspectRatio != null? (itemWidth * aspectRatio!) : null,
