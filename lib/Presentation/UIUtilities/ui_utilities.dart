@@ -5,6 +5,14 @@ Color defaultTransparentScaffoldBackgrounColor(BuildContext context)
   return Theme.of(context).primaryColor.withAlpha(110);
 }
 
+class UIUtilities{
+  static bool isHorizontal(BuildContext context)
+  {
+    Size size = MediaQuery.of(context).size;
+    return size.width > size.height;
+  } 
+}
+
 const double defaultBorderRadius = 20;
 
 // Developed by Nunzio D'Amore
@@ -58,5 +66,6 @@ class Palette {
 
   static const MaterialColor secondary = Colors.amber;
 
-  static Color onPrimaryText = Colors.white;  
+  static Color onPrimaryText = Colors.white; 
+
 }

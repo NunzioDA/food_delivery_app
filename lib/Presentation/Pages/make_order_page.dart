@@ -9,8 +9,8 @@ import 'package:food_delivery_app/Presentation/Pages/category_page.dart';
 import 'package:food_delivery_app/Presentation/Pages/complete_order_page.dart';
 import 'package:food_delivery_app/Presentation/UIUtilities/add_element.dart';
 import 'package:food_delivery_app/Presentation/UIUtilities/dialog_manager.dart';
+import 'package:food_delivery_app/Presentation/UIUtilities/dynamic_grid_view.dart';
 import 'package:food_delivery_app/Presentation/UIUtilities/loading.dart';
-import 'package:food_delivery_app/Presentation/UIUtilities/side_menu.dart';
 import 'package:food_delivery_app/Presentation/UIUtilities/ui_utilities.dart';
 import 'package:food_delivery_app/bloc/cart_bloc.dart';
 import 'package:food_delivery_app/bloc/categories_bloc.dart';
@@ -74,6 +74,35 @@ class _MakeOrderPageState extends State<MakeOrderPage> {
     super.dispose();
   }
 
+  void reactToCategoriesBlocState(BuildContext context, CategoriesState state)
+  {
+    loading.value = false;
+                                        
+    if (state is CategoriesErrorState &&
+        state.event is! CategoryDeleteEvent) {
+      DialogShower.showAlertDialog(
+          context,
+          "Attenzione!",
+          "Si è verificato un errore nella gesione dei dati\n"
+              "Se il problema persiste contattaci!");
+    } else if (state is CategoryAlreadyExisting) {
+      DialogShower.showAlertDialog(
+          context,
+          "Attenzione!",
+          "La categoria che stai cercando di creare esiste già.");
+    } else if (state is CategoryCreatedSuccesfully) {
+      DialogShower.showAlertDialog(context, "Fatto!",
+              "La categoria è stata creata correttamente")
+          .then((value) => updateCategories());
+    } else if (state is CategoryDeletedSuccesfully) {
+      updateCategories();
+    }
+    else if(state is CategoriesFetched)
+    {
+      cartBloc.add(const FetchCart());
+    }
+  }
+
   void openCategoryPage(
     ProductsCategory? category,
     bool creationMode,
@@ -114,7 +143,8 @@ class _MakeOrderPageState extends State<MakeOrderPage> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) {   
+
     return PopScope(
       canPop: totalAndConfirmKey.currentState?.isOpened() ?? false,
       onPopInvoked: (didPop) async {
@@ -132,116 +162,85 @@ class _MakeOrderPageState extends State<MakeOrderPage> {
                 child: Stack(
                   fit: StackFit.expand,
                   children: [
-                    Padding(
-                      padding: const EdgeInsets.only(
-                          bottom: TotalAndConfirm.closedPanelHeight -
-                              defaultBorderRadius),
-                      child: SizedBox(
-                        height: MediaQuery.of(context).size.height 
-                        - ContentVisualizerTopBar.barHeight -TotalAndConfirm.closedPanelHeight - 50,
-                        child: SingleChildScrollView(
-                          child: SizedBox(
-                            height: MediaQuery.of(context).size.height ,
-                            child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.stretch,
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  HeaderMakeOrderPage(
-                                    expanded: MediaQuery.of(context).size.width > 680,
-                                    padding: const EdgeInsets.only(top: 25, right: 25, left: 25),
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.only(top: 25, right: 25, left: 25),
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                                      children: [                                      
-                                        const Gap(20),
-                                        Text(
-                                          "Il nostro menu",
-                                          style: Theme.of(context).textTheme.titleMedium,
+                    Padding(                      
+                      padding: EdgeInsets.only(
+                        bottom: !UIUtilities.isHorizontal(context)? 
+                        TotalAndConfirm.closedPanelHeight : 0
+                      ),
+                      child: SingleChildScrollView(
+                        child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              HeaderMakeOrderPage(
+                                expanded: MediaQuery.of(context).size.width > 680,
+                                padding: const EdgeInsets.only(top: 25, right: 25, left: 25),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(top: 25, right: 25, left: 25),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                                  children: [                                      
+                                    const Gap(20),
+                                    Text(
+                                      "Il nostro menu",
+                                      style: Theme.of(context).textTheme.titleMedium,
+                                    ),
+                                  ],
+                                )
+                              ),        
+                              const Gap(10),
+                              BlocConsumer<CategoriesBloc, CategoriesState>(
+                                bloc: categoriesBloc,
+                                listener: reactToCategoriesBlocState,
+                                builder: (context, state) { 
+                                  return BlocBuilder<UserBloc, UserState>(
+                                    builder: (context, state) {
+                                      bool hasPermission = false;
+                                      
+                                      if (state is FetchedUserInfoState) {
+                                        hasPermission = state.userInfo.hasPermission;
+                                      }
+                                      double padding = 20;
+                                      return Padding(
+                                        padding: EdgeInsets.only(
+                                          left: padding,
+                                          right: padding,
+                                          bottom: padding
                                         ),
-                                      ],
-                                    )
-                                  ),        
-                                  const Gap(10),
-                                  Expanded(
-                                    child: BlocConsumer<CategoriesBloc, CategoriesState>(
-                                      bloc: categoriesBloc,
-                                      listener: (context, state) {
-                                        loading.value = false;
-                                            
-                                        if (state is CategoriesErrorState &&
-                                            state.event is! CategoryDeleteEvent) {
-                                          DialogShower.showAlertDialog(
-                                              context,
-                                              "Attenzione!",
-                                              "Si è verificato un errore nella gesione dei dati\n"
-                                                  "Se il problema persiste contattaci!");
-                                        } else if (state is CategoryAlreadyExisting) {
-                                          DialogShower.showAlertDialog(
-                                              context,
-                                              "Attenzione!",
-                                              "La categoria che stai cercando di creare esiste già.");
-                                        } else if (state is CategoryCreatedSuccesfully) {
-                                          DialogShower.showAlertDialog(context, "Fatto!",
-                                                  "La categoria è stata creata correttamente")
-                                              .then((value) => updateCategories());
-                                        } else if (state is CategoryDeletedSuccesfully) {
-                                          updateCategories();
-                                        }
-                                        else if(state is CategoriesFetched)
-                                        {
-                                          cartBloc.add(const FetchCart());
-                                        }
-                                      },
-                                      builder: (context, state) {
-                                        return BlocBuilder<UserBloc, UserState>(
-                                          builder: (context, state) {
-                                            bool hasPermission = false;
-                                            
-                                            if (state is FetchedUserInfoState) {
-                                              hasPermission = state.userInfo.hasPermission;
-                                            }
-                                          
-                                            return GridView.count(
-                                              crossAxisCount: MediaQuery.of(context).size.width ~/ 192,
-                                              mainAxisSpacing: 10,
-                                              crossAxisSpacing: 10,
-                                              physics: const NeverScrollableScrollPhysics(),
-                                              padding: const EdgeInsets.only(
-                                                left:25,
-                                                right: 25
-                                              ),
-                                              children: [
-                                                ...categoriesBloc.state.categories
-                                                    .map(
-                                                      (e) => CategoryItem(
-                                                        category: e,
-                                                        onPressed: () {
-                                                          openCategoryPage(
-                                                              e, false, hasPermission);
-                                                        },
-                                                      ),
-                                                    )
-                                                    .toList(),
-                                                if (hasPermission)
-                                                  AddElementWidget(
+                                        child: DynamicGridView(
+                                          minItemSize: 185,
+                                          aspectRatio: 1,
+                                          spacing: 20,
+                                          runSpacing: 10,
+                                          children: [
+                                            ...categoriesBloc.state.categories
+                                                .map(
+                                                  (e) => CategoryItem(
+                                                    category: e,
                                                     onPressed: () {
                                                       openCategoryPage(
-                                                          null, true, hasPermission);
+                                                          e, false, hasPermission);
                                                     },
-                                                  )
-                                              ],
-                                            );
-                                          },
-                                        );
-                                      },
-                                    ),
-                                  ),
-                                ]),
-                          ),
-                        ),
+                                                  ),
+                                                )
+                                                .toList(),
+                                            if (hasPermission)
+                                              AddElementWidget(
+                                                onPressed: () {
+                                                  openCategoryPage(
+                                                      null, true, hasPermission);
+                                                },
+                                              )
+                                          ],
+                                        ),
+                                      );
+                                    },
+                                  );
+                                },
+                              ),
+                            ]),
                       ),
                     ),
                     TotalAndConfirm(
