@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:food_delivery_app/Presentation/UIUtilities/ui_utilities.dart';
 import 'package:gap/gap.dart';
 
 /// [SideMenuView] permette di creare una vista con menu a scorrimento
@@ -23,11 +24,10 @@ import 'package:gap/gap.dart';
 /// a lato sulla top bar [ContentVisualizerTopBar].
 
 class SideMenuView extends StatefulWidget{
-  static const double _scaleDownPercentage = 0.05;
-
   final int initialContentIndex;
   final List<SideMenuGroup> groups;
   final bool rotate3D;
+  final bool showTopBarOnHorizontalView;
   final Widget? topBarActionWidget;
   final double contentBorderRadius;
 
@@ -36,6 +36,7 @@ class SideMenuView extends StatefulWidget{
     required this.groups,
     this.initialContentIndex = 0,
     this.rotate3D = true,
+    this.showTopBarOnHorizontalView = false,
     this.topBarActionWidget,
     this.contentBorderRadius = 10
   });
@@ -45,9 +46,7 @@ class SideMenuView extends StatefulWidget{
 }
 
 class _SideMenuViewState extends State<SideMenuView> 
-  with SingleTickerProviderStateMixin{
-
-  double menuLeftPositionOpened = 400;
+  with SingleTickerProviderStateMixin{  
 
   SideMenuButton? lastActive;
 
@@ -55,6 +54,30 @@ class _SideMenuViewState extends State<SideMenuView>
   late Animation<double> animation;
 
   GlobalKey<_ContentVisualizerState> contentKey = GlobalKey(); 
+
+  double _textWidth(String text, TextStyle style) {
+    final TextPainter textPainter = TextPainter(
+      text: TextSpan(
+        text: text, 
+        style: style
+      ), 
+      maxLines: 1, 
+      textDirection: TextDirection.ltr
+    )..layout(minWidth: 0, maxWidth: double.infinity);
+    return textPainter.size.width;
+  }
+
+  // Controlla che la pagina correntemente visualizzata
+  // esista ancora.
+  double scaleDownPercentage()
+  {
+    double largerButtonNameWidth = widget.groups.expand(
+      (element) => element.buttons,
+    ).map((e) => _textWidth(e.name, Theme.of(context).textTheme.bodyMedium!)).reduce(max);
+
+
+    return (largerButtonNameWidth + 20/*paddind*/) / (2*MediaQuery.of(context).size.width);
+  } 
 
   // Controlla che la pagina correntemente visualizzata
   // esista ancora.
@@ -133,6 +156,11 @@ class _SideMenuViewState extends State<SideMenuView>
     });
   }
 
+  bool isWithTopBarMode()
+  {
+    return  !UIUtilities.isHorizontal(context) || widget.showTopBarOnHorizontalView;
+  }
+
   @override
   void initState() {
     super.initState();   
@@ -176,8 +204,16 @@ class _SideMenuViewState extends State<SideMenuView>
     {
       checkAndFetchContent();
     }
+    double menuLeftPositionOpened = 
+    2 * scaleDownPercentage() * MediaQuery.of(context).size.width + 20;
 
-    menuLeftPositionOpened = MediaQuery.of(context).size.width / 3;
+    double? left = isWithTopBarMode()?
+                  menuLeftPositionOpened * animation.value : null;
+    double? right = isWithTopBarMode()?
+                  null:0;
+
+    double? width = isWithTopBarMode()?
+                  MediaQuery.of(context).size.width : MediaQuery.of(context).size.width - menuLeftPositionOpened;
 
     return PopScope(
       canPop: animation.value == 0,
@@ -191,6 +227,7 @@ class _SideMenuViewState extends State<SideMenuView>
         body: SafeArea(
           child: SideMenuViewInherited(
             opened: isOpened(),
+            isWithTopBarMode: isWithTopBarMode(),
             onCloseRequest: close,
             onOpenRequest: open,
             onChangeStateRequest: (state) => changeState(state),
@@ -200,32 +237,44 @@ class _SideMenuViewState extends State<SideMenuView>
               children: [
                 SideMenu(groups: widget.groups),
                 Positioned(
-                  left: menuLeftPositionOpened * animation.value,
+                  left: left,
+                  right: right,
                   top: 0,
-                  width: MediaQuery.of(context).size.width,
+                  width: width,
                   height: MediaQuery.of(context).size.height-
                           MediaQuery.of(context).padding.top,
                   child: Transform.scale(
                     alignment: Alignment.center,
-                    scale: 1 - SideMenuView._scaleDownPercentage * animation.value,
+                    scale: isWithTopBarMode()?
+                    1 - scaleDownPercentage() * animation.value : 1,
                     child: Transform(
                       transform: Matrix4.identity()
                       ..setEntry(3, 2, 0.0005)
                       ..rotateY(widget.rotate3D? pi/5 * animation.value : 0),
                       alignment: Alignment.center,
-                      child: ContentVisualizer(
-                        animation: animation,
-                        topBarActionWidget: widget.topBarActionWidget,
-                        borderRadius: widget.contentBorderRadius,
-                        onMenuButton: (){
-                          if(isOpened())
-                          {
-                            close();
-                          }
-                          else{
-                            open();
-                          }
-                        },
+                      child: MediaQuery(
+                        data: MediaQuery.of(context).copyWith(
+                          size: Size(
+                            isWithTopBarMode()?
+                            MediaQuery.of(context).size.width:
+                            MediaQuery.of(context).size.width - menuLeftPositionOpened, 
+                            MediaQuery.of(context).size.height
+                          ) 
+                        ),
+                        child: ContentVisualizer(
+                          animation: animation,
+                          topBarActionWidget: widget.topBarActionWidget,
+                          borderRadius: widget.contentBorderRadius,
+                          onMenuButton: (){
+                            if(isOpened())
+                            {
+                              close();
+                            }
+                            else{
+                              open();
+                            }
+                          },
+                        ),
                       ),
                     ),
                   ),
@@ -248,7 +297,7 @@ class SideMenuViewInherited extends InheritedWidget{
   final SideMenuButton? lastActive;
   final Widget content;
   final bool opened;
-
+  final bool isWithTopBarMode;
   final VoidCallback onCloseRequest;
   final VoidCallback onOpenRequest;
   final void Function(SideMenuButton? button) _onChangeStateRequest;
@@ -257,6 +306,7 @@ class SideMenuViewInherited extends InheritedWidget{
   const SideMenuViewInherited({
     super.key, 
     this.lastActive,
+    required this.isWithTopBarMode,
     required this.content,
     required this.opened,
     required this.onCloseRequest,
@@ -307,10 +357,12 @@ class SideMenu extends StatelessWidget{
         alignment: Alignment.topLeft,
         child: Padding(
           padding: const EdgeInsets.only(top: 70),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: groups,
+          child: IntrinsicWidth(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: groups,
+            ),
           ),
         ),
       ),
@@ -349,7 +401,8 @@ class SideMenuGroup extends StatelessWidget
               fontSize: 12
             ),
           ),
-        ),        
+        ),
+        const Gap(5),        
         ...buttons,
         Divider(
           height: 10,
@@ -404,7 +457,12 @@ class _SideMenuButtonState extends State<SideMenuButton> {
     }
       
     return Material(
-      color: !_isActive? Colors.transparent : Theme.of(context).primaryColorDark,
+      elevation: _isActive? 2:0,
+      color: !_isActive? Colors.transparent : Theme.of(context).colorScheme.onPrimary,
+      borderRadius: const BorderRadius.only(
+        topRight: Radius.circular(defaultBorderRadius),
+        bottomRight: Radius.circular(defaultBorderRadius) 
+      ),
       child: InkWell(
         onTap: (){
           if(widget.content!=null)
@@ -415,17 +473,33 @@ class _SideMenuButtonState extends State<SideMenuButton> {
           widget.onPressed?.call();
         },
         child: Padding(
-          padding: const EdgeInsets.only(left: 10),
+          padding: const EdgeInsets.only(left: 10, right: 20),
           child: SizedBox(
             height: 50,
             child: Row(
               children: [
+                if(widget.icon is Icon)
+                Icon(
+                  (widget.icon as Icon).icon,
+                  size: 20,
+                  color: !_isActive? (widget.icon as Icon).color:
+                  Theme.of(context).colorScheme.primary,
+                ),
+                if(widget.icon is ImageIcon)
+                ImageIcon(
+                  (widget.icon as ImageIcon).image,
+                  size: 20,
+                  color: !_isActive? (widget.icon as ImageIcon).color:
+                  Theme.of(context).colorScheme.primary,
+                ),
+                if(widget.icon is! Icon && widget.icon is! ImageIcon)
                 widget.icon,
                 const Gap(10),
                 Text(
                   widget.name,
                   style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                    color: Theme.of(context).colorScheme.onPrimary
+                    color: !_isActive? Theme.of(context).colorScheme.onPrimary : 
+                    Theme.of(context).colorScheme.primary,
                   ),
                 )
               ],
@@ -476,14 +550,20 @@ class _ContentVisualizerState extends State<ContentVisualizer> {
       clipBehavior: Clip.hardEdge,
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(
-          widget.borderRadius * widget.animation.value
-        )
+        borderRadius: SideMenuViewInherited.of(context).isWithTopBarMode?
+          BorderRadius.circular(          
+            widget.borderRadius * widget.animation.value
+          ):
+          BorderRadius.only(          
+            topLeft: Radius.circular(widget.borderRadius),
+            bottomLeft: Radius.circular(widget.borderRadius),
+          )
       ),
       child: Stack(
         children: [
           Column(
             children: [
+              if(SideMenuViewInherited.of(context).isWithTopBarMode)
               ContentVisualizerTopBar(
                 onMenuButton: widget.onMenuButton,
                 topBarActionWidget: widget.topBarActionWidget,
@@ -493,7 +573,8 @@ class _ContentVisualizerState extends State<ContentVisualizer> {
               )
             ],
           ),
-          if(SideMenuViewInherited.of(context).opened)
+          if(SideMenuViewInherited.of(context).opened
+          && (SideMenuViewInherited.of(context).isWithTopBarMode))
           GestureDetector(
             onTap: () {
               SideMenuViewInherited.of(context).close();
