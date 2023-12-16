@@ -213,7 +213,8 @@ class _SideMenuViewState extends State<SideMenuView>
                   null:0;
 
     double? width = isWithTopBarMode()?
-                  MediaQuery.of(context).size.width : MediaQuery.of(context).size.width - menuLeftPositionOpened;
+                  MediaQuery.of(context).size.width : 
+                  MediaQuery.of(context).size.width - menuLeftPositionOpened - 40;
 
     return PopScope(
       canPop: animation.value == 0,
@@ -227,6 +228,7 @@ class _SideMenuViewState extends State<SideMenuView>
         body: SafeArea(
           child: SideMenuViewInherited(
             opened: isOpened(),
+            topBarActionWidget: widget.topBarActionWidget,
             isWithTopBarMode: isWithTopBarMode(),
             onCloseRequest: close,
             onOpenRequest: open,
@@ -235,7 +237,9 @@ class _SideMenuViewState extends State<SideMenuView>
             content: lastActive?.content ?? Container(),
             child: Stack(
               children: [
-                SideMenu(groups: widget.groups),
+                SideMenu(
+                  groups: widget.groups
+                ),
                 Positioned(
                   left: left,
                   right: right,
@@ -257,13 +261,12 @@ class _SideMenuViewState extends State<SideMenuView>
                           size: Size(
                             isWithTopBarMode()?
                             MediaQuery.of(context).size.width:
-                            MediaQuery.of(context).size.width - menuLeftPositionOpened, 
+                            width, 
                             MediaQuery.of(context).size.height
                           ) 
                         ),
                         child: ContentVisualizer(
                           animation: animation,
-                          topBarActionWidget: widget.topBarActionWidget,
                           borderRadius: widget.contentBorderRadius,
                           onMenuButton: (){
                             if(isOpened())
@@ -295,6 +298,7 @@ class _SideMenuViewState extends State<SideMenuView>
 class SideMenuViewInherited extends InheritedWidget{   
 
   final SideMenuButton? lastActive;
+  final Widget? topBarActionWidget;
   final Widget content;
   final bool opened;
   final bool isWithTopBarMode;
@@ -307,6 +311,7 @@ class SideMenuViewInherited extends InheritedWidget{
     super.key, 
     this.lastActive,
     required this.isWithTopBarMode,
+    required this.topBarActionWidget,
     required this.content,
     required this.opened,
     required this.onCloseRequest,
@@ -361,7 +366,35 @@ class SideMenu extends StatelessWidget{
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
-              children: groups,
+              children: [
+                if(!SideMenuViewInherited.of(context).isWithTopBarMode
+                && SideMenuViewInherited.of(context).topBarActionWidget != null)
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    SizedBox(
+                      height: ContentVisualizerTopBar.barHeight,
+                      child: Material(
+                        elevation: 5,
+                        borderRadius: const BorderRadius.only(
+                          topRight: Radius.circular(defaultBorderRadius),
+                          bottomRight: Radius.circular(defaultBorderRadius) 
+                        ),
+                        color: Theme.of(context).colorScheme.onPrimary,
+                        child: Padding(
+                          padding: const EdgeInsets.all(10.0),
+                          child: Align(
+                            child: SideMenuViewInherited.of(context).topBarActionWidget!
+                          ),
+                        ),
+                      ),
+                    ),
+                    const Gap(20),
+                  ],
+                ),                
+                ...groups
+              ],
             ),
           ),
         ),
@@ -519,7 +552,6 @@ class ContentVisualizer extends StatefulWidget{
 
   final Animation<double> animation;
   final VoidCallback onMenuButton;
-  final Widget? topBarActionWidget;
   final double borderRadius;
 
   const ContentVisualizer({
@@ -527,7 +559,6 @@ class ContentVisualizer extends StatefulWidget{
     required this.animation,
     required this.onMenuButton,
     required this.borderRadius,
-    this.topBarActionWidget
   });
 
   @override
@@ -554,10 +585,7 @@ class _ContentVisualizerState extends State<ContentVisualizer> {
           BorderRadius.circular(          
             widget.borderRadius * widget.animation.value
           ):
-          BorderRadius.only(          
-            topLeft: Radius.circular(widget.borderRadius),
-            bottomLeft: Radius.circular(widget.borderRadius),
-          )
+          null
       ),
       child: Stack(
         children: [
@@ -566,7 +594,7 @@ class _ContentVisualizerState extends State<ContentVisualizer> {
               if(SideMenuViewInherited.of(context).isWithTopBarMode)
               ContentVisualizerTopBar(
                 onMenuButton: widget.onMenuButton,
-                topBarActionWidget: widget.topBarActionWidget,
+                topBarActionWidget: SideMenuViewInherited.of(context).topBarActionWidget,
               ),
               Expanded(
                 child: SideMenuViewInherited.of(context).content,
