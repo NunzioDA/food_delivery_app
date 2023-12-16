@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:food_delivery_app/Data/Model/order.dart';
 import 'package:food_delivery_app/Presentation/ModelVisualizzation/Order/order_item.dart';
 import 'package:food_delivery_app/Presentation/UIUtilities/dialog_manager.dart';
+import 'package:food_delivery_app/Presentation/UIUtilities/dynamic_grid_view.dart';
 import 'package:food_delivery_app/Presentation/UIUtilities/loading.dart';
 import 'package:food_delivery_app/bloc/order_bloc.dart';
 
@@ -97,11 +98,11 @@ class _ShowOrdersPageState extends State<ShowOrdersPage> {
   Widget build(BuildContext context) {
     updateFetchEvent();
     
-    return Scaffold(
-      body: SafeArea(
-        child: FdaLoading(
-          loadingNotifier: loading,
-          dynamicText: ValueNotifier("Solo qualche secondo..."),
+    return FdaLoading(
+      loadingNotifier: loading,
+      dynamicText: ValueNotifier("Solo qualche secondo..."),
+      child: Scaffold(
+        body: SafeArea(
           child: BlocConsumer<OrderBloc, OrderState>(
             bloc: orderBloc,
             listener: (context, state) {
@@ -134,56 +135,52 @@ class _ShowOrdersPageState extends State<ShowOrdersPage> {
             previous.orders.length != current.orders.length ||
             anyOrderChanged(previous.orders, current.orders))),
             builder: (context, state) {
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(
-                      left: 20, 
-                      right: 20, 
-                      top: 20,
-                      bottom: 10
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        Text(
-                          !widget.hasPermission? "I tuoi ordini" : "Ordini ricevuti",
-                          style: Theme.of(context).textTheme.titleLarge,
-                        ),
-                        Text(
-                          !widget.hasPermission? 
-                          "Qui puoi visualizzare lo stato di tutti gli ordini da"
-                          " te effettuati." : 
-                          "Qui puoi visualizzare tutti gli ordini dei tuoi clienti"
-                          " gestendone lo stato." ,
-                        ),
-                      ],
-                    ),
-                  ),
-                  Expanded(
-                    child: ListView.builder(
+              return SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Padding(
                       padding: const EdgeInsets.only(
                         left: 20, 
                         right: 20, 
-                        top: 10,
-                        bottom: 20
+                        top: 20,
+                        bottom: 10
                       ),
-                      itemCount: orders.length,
-                      itemBuilder: (context, index) => Padding(
-                        padding: (index<orders.length -1)? const EdgeInsets.only(bottom: 20) : EdgeInsets.zero,
-                        child: OrderItem(
-                          order: orders[index],
-                          hasPermission: widget.hasPermission,
-                        ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          Text(
+                            !widget.hasPermission? "I tuoi ordini" : "Ordini ricevuti",
+                            style: Theme.of(context).textTheme.titleLarge,
+                          ),
+                          Text(
+                            !widget.hasPermission? 
+                            "Qui puoi visualizzare lo stato di tutti gli ordini da"
+                            " te effettuati." : 
+                            "Qui puoi visualizzare tutti gli ordini dei tuoi clienti"
+                            " gestendone lo stato." ,
+                          ),
+                        ],
                       ),
                     ),
-                  ),
-                ],
+                    DynamicGridView(
+                      minItemSize: 300,
+                      spacing: 20,
+                      runSpacing: 20,
+                      padding: const EdgeInsets.all(20),
+                      children: orders.map((e) => 
+                        OrderItem(
+                          order: e,
+                          hasPermission: widget.hasPermission,
+                        ),
+                      ).toList()
+                    ),
+                  ],
+                ),
               );
             },
           ),
-        )
+        ),
       ),
     );
   }

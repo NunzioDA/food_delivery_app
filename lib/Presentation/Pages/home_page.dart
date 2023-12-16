@@ -8,6 +8,7 @@ import 'package:food_delivery_app/Presentation/UIUtilities/side_menu.dart';
 import 'package:food_delivery_app/Presentation/UIUtilities/ui_utilities.dart';
 import 'package:food_delivery_app/bloc/order_bloc.dart';
 import 'package:food_delivery_app/bloc/user_bloc.dart';
+import 'package:gap/gap.dart';
 
 /// Pagina principale dell'app che mostra un menu a scorrimento laterale
 /// tramite la vista [SideMenuView]. Permettendo all'utente di navigare 
@@ -137,20 +138,43 @@ class TopBarUserStatus extends StatelessWidget {
     if (!loggedIn) {
       return Hero(
         tag: "Login",
-        child: ElevatedButton(
-          onPressed: () {
-            Navigator.of(context).push(PageRouteBuilder(
-              opaque: false,
-              pageBuilder: (context, animation, secondaryAnimation) {
-                return const LoginSignupPage();
-              },
-            ));
-          },
-          child: const Text("Accedi"),
+        child: Container(
+          color: Theme.of(context).colorScheme.onPrimary,
+          child: TextButton(
+            onPressed: () {
+              Navigator.of(context).push(PageRouteBuilder(
+                opaque: false,
+                pageBuilder: (context, animation, secondaryAnimation) {
+                  return const LoginSignupPage();
+                },
+              ));
+            },
+            child: const Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text("Login"),
+                Gap(5),
+                Icon(
+                  Icons.login,
+                ),
+              ],
+            )
+          ),
         ),
       );
     } else {
-      return Text("Ciao, ${name ?? ""}");
+      return Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            Icons.account_circle_rounded,
+            color: Theme.of(context).colorScheme.primary,
+          ),
+          const Gap(5),
+          Text("Ciao, ${name ?? ""}"),
+          const Gap(5),
+        ],
+      );
     }
   }
 }

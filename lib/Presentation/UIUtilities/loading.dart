@@ -80,7 +80,7 @@ class _FdaLoadingVisualizerState extends State<_FdaLoadingVisualizer> {
 
   Size? getChildSize()
   {
-    return widget.childKey.currentContext!.size;
+    return widget.childKey.currentContext?.size;
   }
 
   double getMinSize(Size size)
@@ -89,7 +89,15 @@ class _FdaLoadingVisualizerState extends State<_FdaLoadingVisualizer> {
   }
 
   void action() {
-    if(mounted) setState(() {});
+    if(mounted) 
+    {
+      setState(() {
+        if(widget.loadingNotifier.value)
+        {
+          mySize = getChildSize()!;
+        }
+      });
+    }
   }
 
   @override
@@ -119,6 +127,8 @@ class _FdaLoadingVisualizerState extends State<_FdaLoadingVisualizer> {
 
   @override
   Widget build(BuildContext context) {
+
+
     return Positioned(
       width: mySize.width,
       height: mySize.height,
