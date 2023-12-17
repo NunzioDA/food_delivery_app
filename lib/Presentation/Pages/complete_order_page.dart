@@ -7,6 +7,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:food_delivery_app/Data/Model/delivery_info.dart';
 import 'package:food_delivery_app/Data/Model/product.dart';
 import 'package:food_delivery_app/Presentation/UIUtilities/dialog_manager.dart';
+import 'package:food_delivery_app/Presentation/UIUtilities/dynamic_grid_view.dart';
 import 'package:food_delivery_app/Presentation/UIUtilities/ui_utilities.dart';
 import 'package:food_delivery_app/Utilities/compute_total.dart';
 import 'package:food_delivery_app/bloc/cart_bloc.dart';
@@ -75,29 +76,27 @@ class _CompleteOrderPageState extends State<CompleteOrderPage> {
         bottom: CompleteOrderPage.padding
       ):
       const EdgeInsets.all(20),
-      child: SizedBox(
-        width: MediaQuery.of(context).size.width < 700? 200 : null,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [                    
-            Text(
-              "Checkout",
-              style: Theme.of(context).textTheme.headlineLarge,
-            ),
-            Text(
-              "Ci siamo quasi",
-              style: Theme.of(context).textTheme.titleMedium,
-            ),
-            const Text(
-              "Abbiamo bisogno delle ultime informazioni, e siamo subito da te.",
-            ),
-            const Gap(20),
-            DeliveryInfoManagement(
-              key: deliveryInfoManagement,
-            ),
-            const PaymentInfoManagement()
-          ],
-        ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [                    
+          Text(
+            "Checkout",
+            style: Theme.of(context).textTheme.headlineLarge,
+          ),
+          Text(
+            "Ci siamo quasi",
+            style: Theme.of(context).textTheme.titleMedium,
+          ),
+          const Text(
+            "Abbiamo bisogno delle ultime informazioni, e siamo subito da te.",
+          ),
+          const Gap(20),
+          DeliveryInfoManagement(
+            key: deliveryInfoManagement,
+          ),
+          const Gap(20),
+          const PaymentInfoManagement()
+        ],
       ),
     );
   }
@@ -132,6 +131,29 @@ class _CompleteOrderPageState extends State<CompleteOrderPage> {
       ),
     );
   }
+  
+  /// Imposto il flex della sezione più piccola (la parte relativa 
+  /// al riepilogo ordine) a 1000, in modo da aumentare gli intervalli
+  /// di discretizzazione, arrotondando il risultato della sigmoide ad
+  /// un valore intero di flex nella funzione [infoSectionFlex].
+  final int minFlex = 1000;
+
+  /// Crea una sigmoide con intervallo 1-2, con centro variabile
+  /// e pendenza 50, che permette in base alla larghezza della finestra
+  /// di asspegnare un flex alla sezione di informazioni.
+  /// L'obbiettivo è quello di raddoppiare [minFlex] per dimensioni superiori
+  /// a quella indicata da center o restituire un valore vicino a [minFlex]
+  /// man mano che la finestra diminuisce di dimensioni.
+  /// In questo modo la sezione delle informazioni sarà il doppio della sezione
+  /// del riepilogo per finestre larghe, mentre saranno simili per finestre più
+  /// piccole, cercando di fornire sempre il giusto spazio per visualizzare entrambe
+  /// le sezioni.
+  int infoSectionFlex(double center)
+  {
+    var x = MediaQuery.of(context).size.width;
+    double result =  (1.0/(1.0+pow(e, -(x-center)/50))) +1.0;
+    return (result * minFlex).round();
+  }
 
   Widget contentFlex()
   {
@@ -141,10 +163,13 @@ class _CompleteOrderPageState extends State<CompleteOrderPage> {
       Axis.horizontal : Axis.vertical,
       children: [                    
         Flexible(
-          flex: (UIUtilities.isHorizontal(context) && MediaQuery.of(context).size.width > 700)? 2 : 0,
-          child: UIUtilities.isHorizontal(context)? 
-          SingleChildScrollView(child: infoSection())
-          :infoSection(),
+          flex: (UIUtilities.isHorizontal(context))? 
+          infoSectionFlex(1100): 0,
+          child: Align(
+            child: UIUtilities.isHorizontal(context)? 
+            SingleChildScrollView(child: infoSection())
+            :infoSection(),
+          ),
         ),
         const Gap(20),
         if(UIUtilities.isHorizontal(context))
@@ -158,10 +183,12 @@ class _CompleteOrderPageState extends State<CompleteOrderPage> {
         if(UIUtilities.isHorizontal(context))
         const Gap(20),
         Flexible(
-          flex: UIUtilities.isHorizontal(context)? 1 : 0,
-          child: UIUtilities.isHorizontal(context)? 
-          SingleChildScrollView(child: summarySection(),):
-          summarySection()
+          flex: UIUtilities.isHorizontal(context)? minFlex : 0,
+          child: Align(
+            child: UIUtilities.isHorizontal(context)? 
+            SingleChildScrollView(child: summarySection(),):
+            summarySection(),
+          ),
         ),                    
       ],
     );
@@ -197,12 +224,20 @@ class PaymentInfoManagement extends StatefulWidget{
 
 class _PaymentInfoManagementState extends State<PaymentInfoManagement> {
 
-  PaymentMethod? selected;
+  
   List<PaymentMethod> methods = [
     const PaymentMethod("paypal.png", Colors.white),
     const PaymentMethod("mastercard.png", Color(0xff374961)),
     const PaymentMethod("visa.webp", Color(0xff0066B1))
   ];
+
+  late PaymentMethod selected;
+
+  @override
+  void initState() {
+    selected = methods[0];
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -220,26 +255,48 @@ class _PaymentInfoManagementState extends State<PaymentInfoManagement> {
           height: 10,
           thickness: 1,
         ),
-        Material(
-          elevation: 10,
-          borderRadius: BorderRadius.circular(defaultBorderRadius),
-          color: Colors.grey.shade200,
-          child: SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Row(
-              children: methods.map((e) => 
-                Container(
-                  decoration: BoxDecoration(
-                    
-                  ),
-                  child: Material(
-                    elevation: 5,
-                    color: e.color,
-                    borderRadius: BorderRadius.circular(defaultBorderRadius),
-                    child: Image.asset("assets/icons/${e.asset}"),
-                  ),
-                )
-              ).toList(),
+        const Gap(20),
+        Padding(
+          padding: const EdgeInsets.all(20),
+          child: Material(
+            elevation: 10,
+            borderRadius: BorderRadius.circular(defaultBorderRadius),
+            color: Colors.grey.shade200,
+            child: Padding(
+              padding: const EdgeInsets.all(20),
+              child: DynamicGridView(
+                minItemSize: 150,
+                aspectRatio: 2/3,
+                spacing: 20,
+                runSpacing: 20,
+                children: methods.map((e) => 
+                  GestureDetector(
+                    onTap: ()=>setState(() {
+                      selected = e;
+                    }),
+                    child: Material(
+                      elevation: 5,
+                      color: e.color,
+                      clipBehavior: Clip.hardEdge,
+                      borderRadius: BorderRadius.circular(defaultBorderRadius),
+                      child: Container(
+                        clipBehavior: Clip.hardEdge,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(defaultBorderRadius),
+                          border: selected==e? Border.all(
+                            width: 5, 
+                            color: Theme.of(context).colorScheme.secondary
+                          ): null
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(20),
+                          child: Image.asset("assets/icons/${e.asset}"),
+                        ),
+                      ),
+                    ),
+                  )
+                ).toList(),
+              ),
             ),
           ),
         ),
