@@ -133,26 +133,30 @@ class _CompleteOrderPageState extends State<CompleteOrderPage> {
   }
   
   /// Imposto il flex della sezione più piccola (la parte relativa 
-  /// al riepilogo ordine) a 1000, in modo da aumentare gli intervalli
-  /// di discretizzazione, arrotondando il risultato della sigmoide ad
-  /// un valore intero di flex nella funzione [infoSectionFlex].
-  final int minFlex = 1000;
+  /// al riepilogo ordine). Risulta preferibile mantenere un valore alto
+  /// in modo da aumentare la capacità di discretizzazione della funzione
+  /// [_infoSectionFlex], cercando di ridurre al meglio l'errore di discretizzazione
+  /// nel momento in cui la sigmoide viene trasformata in un valore di flex.
+  /// 
+  /// L'errore è relativo allo scarto tra il rapporto tra i valori di flex delle
+  /// due sezioni, e il valore riportato dalla sigmoide.
+  final int _summarySectionFlex = 1000;
 
   /// Crea una sigmoide con intervallo 1-2, con centro variabile
   /// e pendenza 50, che permette in base alla larghezza della finestra
   /// di asspegnare un flex alla sezione di informazioni.
-  /// L'obbiettivo è quello di raddoppiare [minFlex] per dimensioni superiori
-  /// a quella indicata da center o restituire un valore vicino a [minFlex]
+  /// L'obbiettivo è quello di raddoppiare [_summarySectionFlex] per dimensioni superiori
+  /// a quella indicata da [center] o restituire un valore vicino a [_summarySectionFlex]
   /// man mano che la finestra diminuisce di dimensioni.
   /// In questo modo la sezione delle informazioni sarà il doppio della sezione
   /// del riepilogo per finestre larghe, mentre saranno simili per finestre più
   /// piccole, cercando di fornire sempre il giusto spazio per visualizzare entrambe
   /// le sezioni.
-  int infoSectionFlex(double center)
+  int _infoSectionFlex(double center)
   {
     var x = MediaQuery.of(context).size.width;
     double result =  (1.0/(1.0+pow(e, -(x-center)/50))) +1.0;
-    return (result * minFlex).round();
+    return (result * _summarySectionFlex).round();
   }
 
   Widget contentFlex()
@@ -164,7 +168,7 @@ class _CompleteOrderPageState extends State<CompleteOrderPage> {
       children: [                    
         Flexible(
           flex: (UIUtilities.isHorizontal(context))? 
-          infoSectionFlex(1100): 0,
+          _infoSectionFlex(1100): 0,
           child: Align(
             child: UIUtilities.isHorizontal(context)? 
             SingleChildScrollView(child: infoSection())
@@ -183,7 +187,7 @@ class _CompleteOrderPageState extends State<CompleteOrderPage> {
         if(UIUtilities.isHorizontal(context))
         const Gap(20),
         Flexible(
-          flex: UIUtilities.isHorizontal(context)? minFlex : 0,
+          flex: UIUtilities.isHorizontal(context)? _summarySectionFlex : 0,
           child: Align(
             child: UIUtilities.isHorizontal(context)? 
             SingleChildScrollView(child: summarySection(),):
