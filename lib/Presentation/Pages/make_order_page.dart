@@ -155,138 +155,136 @@ class _MakeOrderPageState extends State<MakeOrderPage> {
       child: Scaffold(
           body: BlocProvider<CartBloc>(
             create: (context) => cartBloc,
-            child: SafeArea(
-              child: FdaLoading(
-                loadingNotifier: loading,
-                dynamicText: ValueNotifier("Sto caricando i dati.."),
-                child: Stack(
-                  fit: StackFit.expand,
-                  children: [
-                    Padding(                      
-                      padding: EdgeInsets.only(
-                        bottom: !UIUtilities.isHorizontal(context)? 
-                        TotalAndConfirm.closedPanelHeight : 0
-                      ),
-                      child: SingleChildScrollView(
-                        child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              HeaderMakeOrderPage(
-                                expanded: MediaQuery.of(context).size.width > 680,
-                                padding: const EdgeInsets.only(top: 25, right: 25, left: 25),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.only(top: 25, right: 25, left: 25),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                                  children: [                                      
-                                    const Gap(20),
-                                    Text(
-                                      "Il nostro menu",
-                                      style: Theme.of(context).textTheme.titleMedium,
-                                    ),
-                                  ],
-                                )
-                              ),        
-                              const Gap(10),
-                              BlocConsumer<CategoriesBloc, CategoriesState>(
-                                bloc: categoriesBloc,
-                                listener: reactToCategoriesBlocState,
-                                builder: (context, state) { 
-                                  return BlocBuilder<UserBloc, UserState>(
-                                    builder: (context, state) {
-                                      bool hasPermission = false;
-                                      
-                                      if (state is FetchedUserInfoState) {
-                                        hasPermission = state.userInfo.hasPermission;
-                                      }
-                                      double padding = 20;
-                                      return Padding(
-                                        padding: EdgeInsets.only(
-                                          left: padding,
-                                          right: padding,
-                                          bottom: padding
-                                        ),
-                                        child: DynamicGridView(
-                                          targetItemWidth: 185,
-                                          aspectRatio: 1,
-                                          spacing: 20,
-                                          runSpacing: 10,
-                                          children: [
-                                            ...categoriesBloc.state.categories
-                                                .map(
-                                                  (e) => CategoryItem(
-                                                    category: e,
-                                                    onPressed: () {
-                                                      openCategoryPage(
-                                                          e, false, hasPermission);
-                                                    },
-                                                  ),
-                                                )
-                                                .toList(),
-                                            if (hasPermission)
-                                              AddElementWidget(
-                                                onPressed: () {
-                                                  openCategoryPage(
-                                                      null, true, hasPermission);
-                                                },
-                                              )
-                                          ],
-                                        ),
-                                      );
-                                    },
-                                  );
-                                },
-                              ),
-                            ]),
-                      ),
+            child: FdaLoading(
+              loadingNotifier: loading,
+              dynamicText: ValueNotifier("Sto caricando i dati.."),
+              child: Stack(
+                fit: StackFit.expand,
+                children: [
+                  Padding(                      
+                    padding: EdgeInsets.only(
+                      bottom: !UIUtilities.isHorizontal(context)? 
+                      TotalAndConfirm.closedPanelHeight : 0
                     ),
-                    TotalAndConfirm(
-                      key: totalAndConfirmKey,
-                      confirmText: "Carrello",
-                      maxHeight: 5 * MediaQuery.of(context).size.height / 6,
-                      onCompleteOrderRequest: () {
-                        if(userBloc.state is LoggedInState)
-                        {
-                          if(cartBloc.state.cart.isNotEmpty)
-                          {
-                            Navigator.of(context).push(
-                              PageRouteBuilder(
-                                pageBuilder: (newC, animation, secondaryAnimation) => MultiBlocProvider(
-                                providers: [
-                                  BlocProvider.value(
-                                    value: cartBloc,
+                    child: SingleChildScrollView(
+                      child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            HeaderMakeOrderPage(
+                              expanded: MediaQuery.of(context).size.width > 680,
+                              padding: const EdgeInsets.only(top: 25, right: 25, left: 25),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(top: 25, right: 25, left: 25),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                children: [                                      
+                                  const Gap(20),
+                                  Text(
+                                    "Il nostro menu",
+                                    style: Theme.of(context).textTheme.titleMedium,
                                   ),
-                                  BlocProvider.value(
-                                    value: BlocProvider.of<OrderBloc>(context),
-                                  )
                                 ],
-                                child: const CompleteOrderPage(),
-                              ),
                               )
-                            );
-                          }
-                          else{
-                            DialogShower.showAlertDialog(
-                              context, 
-                              "Il carrello è vuoto", 
-                              "Prima di completare l'ordine, metti qualcosa nel carrello."
-                            );
-                          }
-                        }
-                        else {
-                          DialogShower.showAlertDialog(
-                            context, 
-                            "Login", 
-                            "Effettua il login prima di completare l'ordine."
+                            ),        
+                            const Gap(10),
+                            BlocConsumer<CategoriesBloc, CategoriesState>(
+                              bloc: categoriesBloc,
+                              listener: reactToCategoriesBlocState,
+                              builder: (context, state) { 
+                                return BlocBuilder<UserBloc, UserState>(
+                                  builder: (context, state) {
+                                    bool hasPermission = false;
+                                    
+                                    if (state is FetchedUserInfoState) {
+                                      hasPermission = state.userInfo.hasPermission;
+                                    }
+                                    double padding = 20;
+                                    return Padding(
+                                      padding: EdgeInsets.only(
+                                        left: padding,
+                                        right: padding,
+                                        bottom: padding
+                                      ),
+                                      child: DynamicGridView(
+                                        targetItemWidth: 185,
+                                        aspectRatio: 1,
+                                        spacing: 20,
+                                        runSpacing: 10,
+                                        children: [
+                                          ...categoriesBloc.state.categories
+                                              .map(
+                                                (e) => CategoryItem(
+                                                  category: e,
+                                                  onPressed: () {
+                                                    openCategoryPage(
+                                                        e, false, hasPermission);
+                                                  },
+                                                ),
+                                              )
+                                              .toList(),
+                                          if (hasPermission)
+                                            AddElementWidget(
+                                              onPressed: () {
+                                                openCategoryPage(
+                                                    null, true, hasPermission);
+                                              },
+                                            )
+                                        ],
+                                      ),
+                                    );
+                                  },
+                                );
+                              },
+                            ),
+                          ]),
+                    ),
+                  ),
+                  TotalAndConfirm(
+                    key: totalAndConfirmKey,
+                    confirmText: "Carrello",
+                    maxHeight: 5 * MediaQuery.of(context).size.height / 6,
+                    onCompleteOrderRequest: () {
+                      if(userBloc.state is LoggedInState)
+                      {
+                        if(cartBloc.state.cart.isNotEmpty)
+                        {
+                          Navigator.of(context).push(
+                            PageRouteBuilder(
+                              pageBuilder: (newC, animation, secondaryAnimation) => MultiBlocProvider(
+                              providers: [
+                                BlocProvider.value(
+                                  value: cartBloc,
+                                ),
+                                BlocProvider.value(
+                                  value: BlocProvider.of<OrderBloc>(context),
+                                )
+                              ],
+                              child: const CompleteOrderPage(),
+                            ),
+                            )
                           );
                         }
-                      },
-                    )
-                  ],
-                ),
+                        else{
+                          DialogShower.showAlertDialog(
+                            context, 
+                            "Il carrello è vuoto", 
+                            "Prima di completare l'ordine, metti qualcosa nel carrello."
+                          );
+                        }
+                      }
+                      else {
+                        DialogShower.showAlertDialog(
+                          context, 
+                          "Login", 
+                          "Effettua il login prima di completare l'ordine."
+                        );
+                      }
+                    },
+                  )
+                ],
               ),
             ),
           )),
