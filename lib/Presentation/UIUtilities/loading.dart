@@ -91,12 +91,11 @@ class _FdaLoadingVisualizerState extends State<_FdaLoadingVisualizer> {
   void action() {
     if(mounted) 
     {
-      setState(() {
-        if(widget.loadingNotifier.value)
-        {
-          mySize = getChildSize()!;
-        }
-      });
+      if(widget.loadingNotifier.value)
+      {          
+        mySize = getChildSize()!;
+      }
+      setState(() {});
     }
   }
 

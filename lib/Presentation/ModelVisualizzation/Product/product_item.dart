@@ -29,6 +29,8 @@ class ProductItem extends StatefulWidget {
   final VoidCallback? onDeleteRequest;
   final bool canModifyCart;
   final int? fixedCount;
+  final double elevation;
+  final Color? backgroundColor;
 
   const ProductItem({
     super.key,
@@ -36,7 +38,9 @@ class ProductItem extends StatefulWidget {
     this.hasPermission = false,
     this.onDeleteRequest,
     this.canModifyCart = true,
-    this.fixedCount
+    this.fixedCount,
+    this.elevation = 10,
+    this.backgroundColor
   }) : assert(!hasPermission || onDeleteRequest!=null), 
       assert(canModifyCart || fixedCount != null);
 
@@ -72,10 +76,10 @@ class _ProductItemState extends State<ProductItem> {
     return SizedBox(
       height: ProductItem.rowHeight,
       child: Material(
-        elevation: 10,
+        elevation: widget.elevation,
         borderRadius: BorderRadius.circular(defaultBorderRadius),
         clipBehavior: Clip.hardEdge,
-        color: Theme.of(context).dialogBackgroundColor,
+        color: widget.backgroundColor ?? Theme.of(context).dialogBackgroundColor,
         child: FdaLoading(
           loadingNotifier: loading,
           dynamicText: ValueNotifier(""),

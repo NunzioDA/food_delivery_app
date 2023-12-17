@@ -88,7 +88,7 @@ class _MyAppState extends State<MyApp> {
             headlineLarge: textTheme.headlineLarge!.copyWith(
                 fontSize: 35,
                 fontWeight: FontWeight.w900,
-                color: Palette.primary.shade800),
+                color: Palette.primary),
             headlineMedium: textTheme.headlineMedium!.copyWith(
               fontSize: 30, 
               fontWeight: FontWeight.w800, 
