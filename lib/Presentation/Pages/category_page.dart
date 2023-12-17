@@ -27,7 +27,6 @@ import 'package:image_picker/image_picker.dart';
 
 class CategoryPage extends StatefulWidget {
   static const double imageSize = 120;
-  static const double listHeight = 500;
   static const double deleteIconSize = 25;
 
   final bool creationMode;

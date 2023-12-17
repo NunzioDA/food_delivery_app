@@ -36,23 +36,14 @@ class _CategoryItemState extends State<CategoryItem> {
         padding: const EdgeInsets.only(left:20.0, right: 20, bottom: 20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
-          mainAxisAlignment: MainAxisAlignment.end,
+          mainAxisAlignment: MainAxisAlignment.start,
           children: [
             const Gap(CategoryPage.imageSize / 2),
             CategoryInfo(
               category: widget.category,
               onCountChanged: (value) => count = value,
               fixedCount: (animation != null) ? count : null,
-            ),
-            if (animation != null)
-              SizeTransition(
-                sizeFactor:
-                    Tween<double>(begin: 0, end: CategoryPage.listHeight)
-                        .animate(animation),
-                child: const Material(
-                  child: SizedBox(height: 1),
-                ),
-              )
+            ),            
           ],
         ),
       ),
