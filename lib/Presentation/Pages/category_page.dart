@@ -56,8 +56,11 @@ class _CategoryPageState extends State<CategoryPage> {
 
   ValueNotifier<bool> loading = ValueNotifier(false);
 
+  late ScrollController _parentScrollController;
+
   @override
   void initState() {
+    _parentScrollController = ScrollController();
     myCategory = widget.category;
 
     _categoriesBloc = BlocProvider.of<CategoriesBloc>(context);
@@ -159,238 +162,255 @@ class _CategoryPageState extends State<CategoryPage> {
                 maxWidth: 500
               ),
               child: SingleChildScrollView(
-                child: Stack(
-                  children: [
-                    Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const Gap(CategoryPage.imageSize / 2),
-                        Center(
-                          child: Hero(
-                            tag: "Container${myCategory?.name}",
-                            child: Material(
-                              elevation: 10,
-                              color: Theme.of(context).dialogBackgroundColor,
-                              borderRadius:BorderRadius.circular(
-                                defaultBorderRadius
-                              ),
-                              child: Padding(
-                                padding: const EdgeInsets.only(
-                                  top: CategoryPage.imageSize /2, 
-                                  bottom: 20
+                controller: _parentScrollController,
+                child: NotificationListener(
+                  onNotification: (notification) {
+                    if (notification is OverscrollNotification ) {
+                      if (notification.metrics.pixels ==
+                          notification.metrics.maxScrollExtent) {
+                        _parentScrollController.jumpTo(
+                          _parentScrollController.offset + notification.overscroll);
+                      } else if (notification.metrics.pixels ==
+                          notification.metrics.minScrollExtent) {
+                        _parentScrollController.jumpTo(
+                          _parentScrollController.offset + notification.overscroll);
+                      }
+                    }
+                    return true;
+                  },
+                  child: Stack(
+                    children: [
+                      Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Gap(CategoryPage.imageSize / 2),
+                          Center(
+                            child: Hero(
+                              tag: "Container${myCategory?.name}",
+                              child: Material(
+                                elevation: 10,
+                                color: Theme.of(context).dialogBackgroundColor,
+                                borderRadius:BorderRadius.circular(
+                                  defaultBorderRadius
                                 ),
-                                child: Column(
-                                  crossAxisAlignment:CrossAxisAlignment.stretch,
-                                  mainAxisAlignment: MainAxisAlignment.end,
-                                  children: [
-                                    if (!widget.creationMode)
-                                      Padding(
-                                        padding: const EdgeInsets.only(
-                                          left: 20, 
-                                          right: 20
-                                        ),
-                                        child: Column(
-                                          crossAxisAlignment:CrossAxisAlignment.stretch,
-                                          mainAxisAlignment: MainAxisAlignment.end,
-                                          children: [
-                                            CategoryInfo(
-                                              category: myCategory!,
-                                              onCountChanged: (value) {},
-                                            ),
-                                            if (widget.hasPermission)
-                                            Align(
-                                              alignment: Alignment.centerRight,
-                                              child: TextButton(
-                                                onPressed: () {
-                                                  DialogShower.showConfirmDenyDialog(
-                                                      context,
-                                                      "Eliminazione",
-                                                      "Sei sicuro di voler eliminare "
-                                                      "definitivamente questa categoria?",
-                                                      onConfirmPressed: () {
-                                                    loading.value = true;
-                                                    _categoriesBloc.add(
-                                                        CategoryDeleteEvent(
-                                                            myCategory!));
-                                                  });
-                                                },
-                                                child: Row(
-                                                  mainAxisSize: MainAxisSize.min,
-                                                  children: [
-                                                    Text(
-                                                      "Elimina",
-                                                      style: Theme.of(context)
-                                                          .textTheme
-                                                          .bodyMedium!
-                                                          .copyWith(
-                                                              color: Colors.red),
-                                                    ),
-                                                    const Icon(
-                                                      Icons.delete_forever,
-                                                      color: Colors.red,
-                                                      size:
-                                                          CategoryPage.deleteIconSize,
-                                                    ),
-                                                  ],
+                                child: Padding(
+                                  padding: const EdgeInsets.only(
+                                    top: CategoryPage.imageSize /2, 
+                                    bottom: 20
+                                  ),
+                                  child: Column(
+                                    crossAxisAlignment:CrossAxisAlignment.stretch,
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    children: [
+                                      if (!widget.creationMode)
+                                        Padding(
+                                          padding: const EdgeInsets.only(
+                                            left: 20, 
+                                            right: 20
+                                          ),
+                                          child: Column(
+                                            crossAxisAlignment:CrossAxisAlignment.stretch,
+                                            mainAxisAlignment: MainAxisAlignment.end,
+                                            children: [
+                                              CategoryInfo(
+                                                category: myCategory!,
+                                                onCountChanged: (value) {},
+                                              ),
+                                              if (widget.hasPermission)
+                                              Align(
+                                                alignment: Alignment.centerRight,
+                                                child: TextButton(
+                                                  onPressed: () {
+                                                    DialogShower.showConfirmDenyDialog(
+                                                        context,
+                                                        "Eliminazione",
+                                                        "Sei sicuro di voler eliminare "
+                                                        "definitivamente questa categoria?",
+                                                        onConfirmPressed: () {
+                                                      loading.value = true;
+                                                      _categoriesBloc.add(
+                                                          CategoryDeleteEvent(
+                                                              myCategory!));
+                                                    });
+                                                  },
+                                                  child: Row(
+                                                    mainAxisSize: MainAxisSize.min,
+                                                    children: [
+                                                      Text(
+                                                        "Elimina",
+                                                        style: Theme.of(context)
+                                                            .textTheme
+                                                            .bodyMedium!
+                                                            .copyWith(
+                                                                color: Colors.red),
+                                                      ),
+                                                      const Icon(
+                                                        Icons.delete_forever,
+                                                        color: Colors.red,
+                                                        size:
+                                                            CategoryPage.deleteIconSize,
+                                                      ),
+                                                    ],
+                                                  ),
                                                 ),
                                               ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),                                      
-                                    if (!widget.creationMode &&
-                                        !widget.hasPermission)
-                                      const Gap(20),
-                                    if (!widget.creationMode)
-                                      ConstrainedBox(
-                                        constraints: BoxConstraints(
-                                          maxHeight: maxListHeight
-                                        ),
-                                        child: ListView.builder(
-                                          padding: const EdgeInsets.all(20),
-                                          itemCount: myCategory!.products.length +
-                                            (widget.hasPermission? 1: 0),
-                                          itemBuilder: (context, index) => 
-                                          index < myCategory!.products.length?
-                                          Padding(
-                                            padding: const EdgeInsets.only(bottom: 20),
-                                            child: ProductItem(
-                                              product: myCategory!.products[index],
-                                              hasPermission: widget.hasPermission,
-                                              onDeleteRequest: () {
-                                                DialogShower.showConfirmDenyDialog(
-                                                  context, 
-                                                  "Eliminazione", 
-                                                  "Sei sicuro di voler "
-                                                  "eliminare questo prodotto?",
-                                                  confirmText: "Elimina",
-                                                  denyText: "Annulla",
-                                                  onConfirmPressed: (){
-                                                    loading.value =true;
+                                            ],
+                                          ),
+                                        ),                                      
+                                      if (!widget.creationMode &&
+                                          !widget.hasPermission)
+                                        const Gap(20),
+                                      if (!widget.creationMode)
+                                        ConstrainedBox(
+                                          constraints: BoxConstraints(
+                                            maxHeight: maxListHeight
+                                          ),
+                                          child: ListView.builder(
+                                            padding: const EdgeInsets.all(20),
+                                            itemCount: myCategory!.products.length +
+                                              (widget.hasPermission? 1: 0),
+                                            itemBuilder: (context, index) => 
+                                            index < myCategory!.products.length?
+                                            Padding(
+                                              padding: const EdgeInsets.only(bottom: 20),
+                                              child: ProductItem(
+                                                product: myCategory!.products[index],
+                                                hasPermission: widget.hasPermission,
+                                                onDeleteRequest: () {
+                                                  DialogShower.showConfirmDenyDialog(
+                                                    context, 
+                                                    "Eliminazione", 
+                                                    "Sei sicuro di voler "
+                                                    "eliminare questo prodotto?",
+                                                    confirmText: "Elimina",
+                                                    denyText: "Annulla",
+                                                    onConfirmPressed: (){
+                                                      loading.value =true;
+                                                      _categoriesBloc.add(
+                                                        ProductDeleteEvent(
+                                                          myCategory!.products[index]
+                                                        )
+                                                      );
+                                                    }
+                                                  );
+                                                },
+                                              ),
+                                            ):
+                                            SizedBox(
+                                              height: 150,
+                                              child: AddElementWidget(
+                                                onPressed: () async {
+                                                  var productPair =
+                                                      await Navigator.of(
+                                                              context)
+                                                          .push(
+                                                              PageRouteBuilder(
+                                                    opaque: false,
+                                                    pageBuilder: (context,
+                                                        animation,
+                                                        secondaryAnimation) {
+                                                      return const CreateProductPage();
+                                                    },
+                                                  ));
+                                              
+                                                  if (productPair != null) {
+                                                    loading.value = true;
                                                     _categoriesBloc.add(
-                                                      ProductDeleteEvent(
-                                                        myCategory!.products[index]
-                                                      )
-                                                    );
+                                                        ProductCreateEvent(
+                                                      myCategory!,
+                                                      productPair.$1,
+                                                      productPair.$2,
+                                                    ));
                                                   }
-                                                );
-                                              },
+                                                },
+                                              ),
                                             ),
-                                          ):
-                                          SizedBox(
-                                            height: 150,
-                                            child: AddElementWidget(
-                                              onPressed: () async {
-                                                var productPair =
-                                                    await Navigator.of(
-                                                            context)
-                                                        .push(
-                                                            PageRouteBuilder(
-                                                  opaque: false,
-                                                  pageBuilder: (context,
-                                                      animation,
-                                                      secondaryAnimation) {
-                                                    return const CreateProductPage();
-                                                  },
-                                                ));
-                                            
-                                                if (productPair != null) {
-                                                  loading.value = true;
-                                                  _categoriesBloc.add(
-                                                      ProductCreateEvent(
-                                                    myCategory!,
-                                                    productPair.$1,
-                                                    productPair.$2,
-                                                  ));
+                                                 
+                                          )
+                                        ),
+                                      if (widget.creationMode)
+                                        Padding(
+                                          padding: const EdgeInsets.all(20),
+                                          child: Form(
+                                            key: nameFormKey,
+                                            child: TextFormField(
+                                              validator: (value) {
+                                                if (!validateCategoryName()) {
+                                                  return "Inserisci il nome, da 3 a 20 caratteri. Solo lettere.";
+                                                } else {
+                                                  return null;
                                                 }
+                                              },
+                                              decoration: const InputDecoration(
+                                                  label: Text("Nome categoria")),
+                                              onChanged: (value) {
+                                                newCategoryName = value;
                                               },
                                             ),
                                           ),
-                                               
+                                        ),
+                                      if (widget.creationMode)
+                                        Padding(
+                                          padding: const EdgeInsets.only(
+                                            left: 20,
+                                            right: 20,
+                                            bottom: 20
+                                          ),
+                                          child: SizedBox(
+                                            height: 50,
+                                            child: ElevatedButton(
+                                                onPressed: () {
+                                                  if (validateNewCategory()) {
+                                                    Navigator.of(context).pop((
+                                                      newCategoryName,
+                                                      newCategoryImage
+                                                    ));
+                                                  } else if (newCategoryImage ==
+                                                      null) {
+                                                    DialogShower.showAlertDialog(
+                                                        context,
+                                                        "Attenzione",
+                                                        "Inserisci un'immagine prima di procedere");
+                                                  }
+                                                },
+                                                child:
+                                                    const Text("Crea categoria")),
+                                          ),
                                         )
-                                      ),
-                                    if (widget.creationMode)
-                                      Padding(
-                                        padding: const EdgeInsets.all(20),
-                                        child: Form(
-                                          key: nameFormKey,
-                                          child: TextFormField(
-                                            validator: (value) {
-                                              if (!validateCategoryName()) {
-                                                return "Inserisci il nome, da 3 a 20 caratteri. Solo lettere.";
-                                              } else {
-                                                return null;
-                                              }
-                                            },
-                                            decoration: const InputDecoration(
-                                                label: Text("Nome categoria")),
-                                            onChanged: (value) {
-                                              newCategoryName = value;
-                                            },
-                                          ),
-                                        ),
-                                      ),
-                                    if (widget.creationMode)
-                                      Padding(
-                                        padding: const EdgeInsets.only(
-                                          left: 20,
-                                          right: 20,
-                                          bottom: 20
-                                        ),
-                                        child: SizedBox(
-                                          height: 50,
-                                          child: ElevatedButton(
-                                              onPressed: () {
-                                                if (validateNewCategory()) {
-                                                  Navigator.of(context).pop((
-                                                    newCategoryName,
-                                                    newCategoryImage
-                                                  ));
-                                                } else if (newCategoryImage ==
-                                                    null) {
-                                                  DialogShower.showAlertDialog(
-                                                      context,
-                                                      "Attenzione",
-                                                      "Inserisci un'immagine prima di procedere");
-                                                }
-                                              },
-                                              child:
-                                                  const Text("Crea categoria")),
-                                        ),
-                                      )
-                                  ],
+                                    ],
+                                  ),
                                 ),
                               ),
                             ),
                           ),
-                        ),
-                      ],
-                    ),
-                    Align(
-                      alignment: Alignment.topCenter,
-                      child: !widget.creationMode
-                          ? Hero(
-                              tag: "Image${myCategory?.name}",
-                              child: SizedBox(
+                        ],
+                      ),
+                      Align(
+                        alignment: Alignment.topCenter,
+                        child: !widget.creationMode
+                            ? Hero(
+                                tag: "Image${myCategory?.name}",
+                                child: SizedBox(
+                                  height: CategoryPage.imageSize,
+                                  width: CategoryPage.imageSize,
+                                  child: FdaCachedNetworkImage(
+                                    url: FdaServerCommunication.getImageUrl(
+                                      myCategory!.imageName
+                                    ),
+                                  ),
+                                ))
+                            : ImageChooser(
+                                heroTag: "Image${myCategory?.name}",
                                 height: CategoryPage.imageSize,
                                 width: CategoryPage.imageSize,
-                                child: FdaCachedNetworkImage(
-                                  url: FdaServerCommunication.getImageUrl(
-                                    myCategory!.imageName
-                                  ),
-                                ),
-                              ))
-                          : ImageChooser(
-                              heroTag: "Image${myCategory?.name}",
-                              height: CategoryPage.imageSize,
-                              width: CategoryPage.imageSize,
-                              editable: true,
-                              onImageChanged: (img) {
-                                newCategoryImage = img;
-                              },
-                            ),
-                    ),
-                  ],
+                                editable: true,
+                                onImageChanged: (img) {
+                                  newCategoryImage = img;
+                                },
+                              ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
