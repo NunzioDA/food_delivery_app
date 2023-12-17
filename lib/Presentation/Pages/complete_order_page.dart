@@ -21,6 +21,7 @@ import 'package:gap/gap.dart';
 /// uno nuovo, gestendo gli indirizzi con la classe [DeliveryInfoManagement]
 
 class CompleteOrderPage extends StatefulWidget{
+  static const double padding = 60;
   const CompleteOrderPage({super.key});
 
   @override
@@ -29,7 +30,7 @@ class CompleteOrderPage extends StatefulWidget{
 
 class _CompleteOrderPageState extends State<CompleteOrderPage> {
 
-  GlobalKey<_DeliveryInfoManagementState> deliveryInfoManaement = GlobalKey();
+  GlobalKey<_DeliveryInfoManagementState> deliveryInfoManagement = GlobalKey();
   late OrderBloc orderBloc;
   late StreamSubscription orderSubscription;
 
@@ -65,69 +66,184 @@ class _CompleteOrderPageState extends State<CompleteOrderPage> {
     super.dispose();
   }
 
+  Widget infoSection()
+  {
+    return Padding(
+      padding: UIUtilities.isHorizontal(context)? const EdgeInsets.only(
+        left: CompleteOrderPage.padding,
+        top: CompleteOrderPage.padding,
+        bottom: CompleteOrderPage.padding
+      ):
+      const EdgeInsets.all(20),
+      child: SizedBox(
+        width: MediaQuery.of(context).size.width < 700? 200 : null,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [                    
+            Text(
+              "Checkout",
+              style: Theme.of(context).textTheme.headlineLarge,
+            ),
+            Text(
+              "Ci siamo quasi",
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+            const Text(
+              "Abbiamo bisogno delle ultime informazioni, e siamo subito da te.",
+            ),
+            const Gap(20),
+            DeliveryInfoManagement(
+              key: deliveryInfoManagement,
+            ),
+            const PaymentInfoManagement()
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget summarySection()
+  {
+    return Padding(
+      padding: UIUtilities.isHorizontal(context)? const EdgeInsets.only(
+        left: 5,
+        right: CompleteOrderPage.padding-5,
+        top: CompleteOrderPage.padding,
+        bottom: CompleteOrderPage.padding
+      ):
+      const EdgeInsets.all(20),
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(
+          minWidth: 100,
+          maxWidth: 400
+        ),
+        child: OrderSummary(
+          onCompleteRequest : () {
+            DeliveryInfo? deliveryInfo = deliveryInfoManagement
+            .currentState?.getDeliveryInfo();
+            if(deliveryInfo!=null)
+            {
+              orderBloc.add(
+                ConfirmOrderEvent(deliveryInfo)
+              );
+            }
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget contentFlex()
+  {
+    return Flex(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      direction: UIUtilities.isHorizontal(context)? 
+      Axis.horizontal : Axis.vertical,
+      children: [                    
+        Flexible(
+          flex: (UIUtilities.isHorizontal(context) && MediaQuery.of(context).size.width > 700)? 2 : 0,
+          child: UIUtilities.isHorizontal(context)? 
+          SingleChildScrollView(child: infoSection())
+          :infoSection(),
+        ),
+        const Gap(20),
+        if(UIUtilities.isHorizontal(context))
+        const VerticalDivider(
+          width: 1, 
+          thickness: 0.11,
+          endIndent: 60,
+          indent: 60,
+          color: Colors.black,
+        ),
+        if(UIUtilities.isHorizontal(context))
+        const Gap(20),
+        Flexible(
+          flex: UIUtilities.isHorizontal(context)? 1 : 0,
+          child: UIUtilities.isHorizontal(context)? 
+          SingleChildScrollView(child: summarySection(),):
+          summarySection()
+        ),                    
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(60),
-          child: Flex(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            direction: UIUtilities.isHorizontal(context)? 
-            Axis.horizontal : Axis.vertical,
-            children: [                    
-              Expanded(
-                flex: UIUtilities.isHorizontal(context)? 1 :0,
-                child: SingleChildScrollView(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [                    
-                      Text(
-                        "Checkout",
-                        style: Theme.of(context).textTheme.headlineLarge,
-                      ),
-                      Text(
-                        "Ci siamo quasi",
-                        style: Theme.of(context).textTheme.titleMedium,
-                      ),
-                      const Text(
-                        "Abbiamo bisogno delle ultime informazioni, e siamo subito da te.",
-                      ),
-                      const Gap(20),
-                      DeliveryInfoManagement(
-                        key: deliveryInfoManaement,
-                      ),
-                    ],
+        child: !UIUtilities.isHorizontal(context)? SingleChildScrollView(
+          // physics: UIUtilities.isHorizontal(context) ? const NeverScrollableScrollPhysics() : const ScrollPhysics(),
+          child: contentFlex() 
+        ) : contentFlex(),
+      ),
+    );
+  }
+}
+
+class PaymentMethod{
+  final String asset;
+  final Color color;
+  const PaymentMethod(this.asset, this.color);
+}
+
+class PaymentInfoManagement extends StatefulWidget{
+
+
+  const PaymentInfoManagement({super.key});
+
+  @override
+  State<PaymentInfoManagement> createState() => _PaymentInfoManagementState();
+}
+
+class _PaymentInfoManagementState extends State<PaymentInfoManagement> {
+
+  PaymentMethod? selected;
+  List<PaymentMethod> methods = [
+    const PaymentMethod("paypal.png", Colors.white),
+    const PaymentMethod("mastercard.png", Color(0xff374961)),
+    const PaymentMethod("visa.webp", Color(0xff0066B1))
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Text(
+          "Informazioni di pagamento",
+          style: Theme.of(context).textTheme.titleMedium?.copyWith(
+            fontWeight: FontWeight.w800
+          ),
+        ),         
+        const Divider(
+          color: Colors.black,
+          height: 10,
+          thickness: 1,
+        ),
+        Material(
+          elevation: 10,
+          borderRadius: BorderRadius.circular(defaultBorderRadius),
+          color: Colors.grey.shade200,
+          child: SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              children: methods.map((e) => 
+                Container(
+                  decoration: BoxDecoration(
+                    
                   ),
-                ),
-              ),
-              const Gap(20),
-              if(UIUtilities.isHorizontal(context))
-              const VerticalDivider(
-                width: 1, 
-                thickness: 0.11,
-                color: Colors.black,
-              ),
-              if(UIUtilities.isHorizontal(context))
-              const Gap(20),
-              SingleChildScrollView(
-                child: OrderSummary(
-                  onCompleteRequest : () {
-                    DeliveryInfo? deliveryInfo = deliveryInfoManaement
-                    .currentState?.getDeliveryInfo();
-                    if(deliveryInfo!=null)
-                    {
-                      orderBloc.add(
-                        ConfirmOrderEvent(deliveryInfo)
-                      );
-                    }
-                  },
-                ),
-              ),                    
-            ],
+                  child: Material(
+                    elevation: 5,
+                    color: e.color,
+                    borderRadius: BorderRadius.circular(defaultBorderRadius),
+                    child: Image.asset("assets/icons/${e.asset}"),
+                  ),
+                )
+              ).toList(),
+            ),
           ),
         ),
-      ),
+      ],
     );
   }
 }
@@ -557,76 +673,71 @@ class OrderSummary extends StatelessWidget{
       elevation: 10,
       color: Colors.grey.shade200,
       borderRadius: BorderRadius.circular(defaultBorderRadius),
-      child: ConstrainedBox(
-        constraints: const BoxConstraints(
-          maxWidth: 500
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(60),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,  
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,    
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [    
-              Text(
-                "Riepilogo",
-                style: Theme.of(context).textTheme.titleLarge,
-              ),    
-              const Gap(20),
-              Column(
-                mainAxisSize: MainAxisSize.min,  
-                children: [
-                  ...cartBloc.state.cart.keys.map(
-                    (key) => Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        CartEntryItem(
-                          product: key, 
-                          count: cartBloc.state.cart[key]!
-                        ),
-                        // ProductItem(
-                        //   product: key, 
-                        //   canModifyCart: false,
-                        //   fixedCount: cartBloc.state.cart[key]!,
-                        //   hasPermission: false,
-                        //   elevation: 0,
-                        //   backgroundColor: Colors.transparent,
-                        // ),
-                        const Divider(
-                          color: Colors.black,
-                          height: 1,
-                          thickness: 0.1,
-                        )
-                      ],
-                    )
-                  ).toList(),
-                  const Divider(color: Colors.black,),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      child: Padding(
+        padding: const EdgeInsets.all(60),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,  
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,    
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [    
+            Text(
+              "Riepilogo",
+              style: Theme.of(context).textTheme.titleLarge,
+            ),    
+            const Gap(20),
+            Column(
+              mainAxisSize: MainAxisSize.min,  
+              children: [
+                ...cartBloc.state.cart.keys.map(
+                  (key) => Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    mainAxisSize: MainAxisSize.min,
                     children: [
-                      Text(
-                        "Totale",
-                        style: Theme.of(context).textTheme.titleMedium,
+                      CartEntryItem(
+                        product: key, 
+                        count: cartBloc.state.cart[key]!
                       ),
-                      Text(
-                        "${getTotal(cartBloc.state.cart)}€",
-                        style: Theme.of(context).textTheme.titleMedium,
+                      // ProductItem(
+                      //   product: key, 
+                      //   canModifyCart: false,
+                      //   fixedCount: cartBloc.state.cart[key]!,
+                      //   hasPermission: false,
+                      //   elevation: 0,
+                      //   backgroundColor: Colors.transparent,
+                      // ),
+                      const Divider(
+                        color: Colors.black,
+                        height: 1,
+                        thickness: 0.1,
                       )
                     ],
-                  ),
-                ],
-              ),
-              const Gap(20),
-              SizedBox(
-                height: 60,
-                child: ElevatedButton(
-                  onPressed: onCompleteRequest, 
-                  child: const Text("Paga")
+                  )
+                ).toList(),
+                const Divider(color: Colors.black,),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      "Totale",
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
+                    Text(
+                      "${getTotal(cartBloc.state.cart)}€",
+                      style: Theme.of(context).textTheme.titleMedium,
+                    )
+                  ],
                 ),
-              )
-            ],
-          ),
+              ],
+            ),
+            const Gap(20),
+            SizedBox(
+              height: 60,
+              child: ElevatedButton(
+                onPressed: onCompleteRequest, 
+                child: const Text("Paga")
+              ),
+            )
+          ],
         ),
       ),
     );
