@@ -231,6 +231,8 @@ class TotalAndConfirmState extends State<TotalAndConfirm>
                       ],
                     ),
                     if(animation.value != 0)
+                    const Gap(20),
+                    if(animation.value != 0)
                     const Expanded(
                       child: CartContent()
                     ),
