@@ -210,7 +210,7 @@ class _MakeOrderPageState extends State<MakeOrderPage> {
                                           bottom: padding
                                         ),
                                         child: DynamicGridView(
-                                          minItemSize: 185,
+                                          targetItemWidth: 185,
                                           aspectRatio: 1,
                                           spacing: 20,
                                           runSpacing: 10,

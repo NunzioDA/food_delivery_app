@@ -227,7 +227,7 @@ class _PaymentInfoManagementState extends State<PaymentInfoManagement> {
   List<PaymentMethod> methods = [
     const PaymentMethod("paypal.png", Colors.white),
     const PaymentMethod("mastercard.png", Color(0xff374961)),
-    const PaymentMethod("visa.webp", Color(0xff0066B1))
+    const PaymentMethod("visa.png", Color(0xff0066B1))
   ];
 
   late PaymentMethod selected;
@@ -264,7 +264,8 @@ class _PaymentInfoManagementState extends State<PaymentInfoManagement> {
             child: Padding(
               padding: const EdgeInsets.all(20),
               child: DynamicGridView(
-                minItemSize: 150,
+                fit: DynamicGridFit.loose,
+                targetItemWidth: 150,
                 aspectRatio: 2/3,
                 spacing: 20,
                 runSpacing: 20,

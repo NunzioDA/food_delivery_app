@@ -40,7 +40,7 @@ class CartContent extends StatelessWidget {
                       right: 20,
                       bottom: 20
                     ),
-                    minItemSize: 500,
+                    targetItemWidth: 500,
                     spacing: 20,
                     runSpacing: 20,
                     children: productsInCart

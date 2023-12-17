@@ -164,7 +164,7 @@ class _ShowOrdersPageState extends State<ShowOrdersPage> {
                       ),
                     ),
                     DynamicGridView(
-                      minItemSize: 300,
+                      targetItemWidth: 300,
                       spacing: 20,
                       runSpacing: 20,
                       padding: const EdgeInsets.all(20),
