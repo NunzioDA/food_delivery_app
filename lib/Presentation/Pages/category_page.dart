@@ -163,21 +163,9 @@ class _CategoryPageState extends State<CategoryPage> {
               ),
               child: SingleChildScrollView(
                 controller: _parentScrollController,
-                child: NotificationListener(
-                  onNotification: (notification) {
-                    if (notification is OverscrollNotification ) {
-                      if (notification.metrics.pixels ==
-                          notification.metrics.maxScrollExtent) {
-                        _parentScrollController.jumpTo(
-                          _parentScrollController.offset + notification.overscroll);
-                      } else if (notification.metrics.pixels ==
-                          notification.metrics.minScrollExtent) {
-                        _parentScrollController.jumpTo(
-                          _parentScrollController.offset + notification.overscroll);
-                      }
-                    }
-                    return true;
-                  },
+                child: NotificationListener<OverscrollNotification>(
+                  onNotification: (notification) => 
+                  scrollParentOnChildOverscroll(notification, _parentScrollController),
                   child: Stack(
                     children: [
                       Column(
