@@ -59,11 +59,7 @@ class DynamicGridView extends StatelessWidget{
           availableSpace -= spacing * (maxItemPerRow -1);
           double perWidgetSpace = availableSpace / maxItemPerRow;
           double itemWidth = perWidgetSpace;
-          
-          print(targetItemWidth);
-          print(availableSpace);
-          print(targetItemWidth);
-          print(maxItemPerRow);
+        
 
           return Wrap(
             direction: Axis.horizontal,
