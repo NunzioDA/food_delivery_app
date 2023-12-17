@@ -8,6 +8,7 @@ import 'package:food_delivery_app/Presentation/UIUtilities/dialog_manager.dart';
 import 'package:food_delivery_app/Presentation/UIUtilities/dynamic_grid_view.dart';
 import 'package:food_delivery_app/Presentation/UIUtilities/loading.dart';
 import 'package:food_delivery_app/bloc/order_bloc.dart';
+import 'package:food_delivery_app/cubit/connectivity_cubit.dart';
 
 
 /// Questa pagina permette di visualizzare tutti gli ordini 
@@ -32,6 +33,7 @@ class ShowOrdersPage extends StatefulWidget
 
 class _ShowOrdersPageState extends State<ShowOrdersPage> {
 
+  late ConnectivityCubit connectivityCubit;
   late OrderBloc orderBloc;
   Timer? updateTimer;
   bool canMakeRequest = true;
@@ -59,7 +61,11 @@ class _ShowOrdersPageState extends State<ShowOrdersPage> {
       fetchEvent = FetchMyOrders();
     }
     loading.value = true;
-    orderBloc.add(fetchEvent);
+    if(connectivityCubit.state is Connected)
+    {
+      orderBloc.add(fetchEvent);
+    }
+
     if(orderBloc.state is OrdersFetched)
     {
       orders = (orderBloc.state as OrdersFetched).orders;
@@ -69,10 +75,10 @@ class _ShowOrdersPageState extends State<ShowOrdersPage> {
   @override
   void initState() {
     orderBloc = BlocProvider.of<OrderBloc>(context);
-    
-    updateTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+    connectivityCubit = BlocProvider.of<ConnectivityCubit>(context);
 
-      if(canMakeRequest)
+    updateTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if(canMakeRequest && connectivityCubit.state is Connected)
       {
         canMakeRequest = false;
         orderBloc.add(fetchEvent);
@@ -115,21 +121,29 @@ class _ShowOrdersPageState extends State<ShowOrdersPage> {
             canMakeRequest = true;
             if(state is OrderError && 
             (state.event is FetchReceivedOrders ||
-              state.event is FetchMyOrders
-            ) &&
-            errorShowCountDown == 0)
-            {              
-              errorShowCountDown = -1;
-              DialogShower.showAlertDialog(
-                context, 
-                "Attenzione", 
-                "Si è verificato un problema nel caricamento degli ordini.\nRiprova."
-              ).then((value) => errorShowCountDown = 10);              
-            }
-            else if(state is OrderError && 
-            state.event is FetchReceivedOrders){
-              errorShowCountDown--;
-            }
+              state.event is FetchMyOrders))
+            {
+              if(errorShowCountDown == 0)
+              {              
+                errorShowCountDown = -1;
+
+                String connectivityMsg="";
+                if(connectivityCubit.state is! Connected)
+                {
+                  connectivityMsg = "Stato connessione:\n${connectivityCubit.stateToMessage()}";
+                }
+
+                DialogShower.showAlertDialog(
+                  context, 
+                  "Attenzione", 
+                  "Si è verificato un problema nel caricamento degli ordini.\n"
+                  "$connectivityMsg"
+                ).then((value) => errorShowCountDown = 10);              
+              }
+              else {
+                errorShowCountDown--;
+              }
+            }           
             else if(state is OrdersFetched)
             {
               orders = state.orders;
