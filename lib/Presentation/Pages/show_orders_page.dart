@@ -34,6 +34,7 @@ class _ShowOrdersPageState extends State<ShowOrdersPage> {
 
   late OrderBloc orderBloc;
   Timer? updateTimer;
+  bool canMakeRequest = true;
 
   // Questa variabile permette di evitara l'accavallarsi di dialoghi di errore
   // evitando inoltre la petulanza causata dal ripetersi di messaggi di errore
@@ -69,8 +70,13 @@ class _ShowOrdersPageState extends State<ShowOrdersPage> {
   void initState() {
     orderBloc = BlocProvider.of<OrderBloc>(context);
     
-    updateTimer = Timer.periodic(const Duration(seconds: 5), (timer) {
-      orderBloc.add(fetchEvent);
+    updateTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+
+      if(canMakeRequest)
+      {
+        canMakeRequest = false;
+        orderBloc.add(fetchEvent);
+      }
     });
 
     super.initState();
@@ -106,6 +112,7 @@ class _ShowOrdersPageState extends State<ShowOrdersPage> {
           bloc: orderBloc,
           listener: (context, state) {
             loading.value = false;
+            canMakeRequest = true;
             if(state is OrderError && 
             (state.event is FetchReceivedOrders ||
               state.event is FetchMyOrders
