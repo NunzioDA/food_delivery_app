@@ -71,6 +71,7 @@ class _CompleteOrderPageState extends State<CompleteOrderPage> {
   {
     return Padding(
       padding: UIUtilities.isHorizontal(context)? const EdgeInsets.only(
+        right: 20,
         left: CompleteOrderPage.padding,
         top: CompleteOrderPage.padding,
         bottom: CompleteOrderPage.padding
@@ -105,16 +106,15 @@ class _CompleteOrderPageState extends State<CompleteOrderPage> {
   {
     return Padding(
       padding: UIUtilities.isHorizontal(context)? const EdgeInsets.only(
-        left: 5,
+        left: 25,
         right: CompleteOrderPage.padding-5,
         top: CompleteOrderPage.padding,
         bottom: CompleteOrderPage.padding
       ):
       const EdgeInsets.all(20),
       child: ConstrainedBox(
-        constraints: const BoxConstraints(
-          minWidth: 100,
-          maxWidth: 400
+        constraints: BoxConstraints(
+          maxWidth: UIUtilities.isHorizontal(context)? 400 : double.infinity
         ),
         child: OrderSummary(
           onCompleteRequest : () {
@@ -175,24 +175,19 @@ class _CompleteOrderPageState extends State<CompleteOrderPage> {
             :infoSection(),
           ),
         ),
-        const Gap(20),
         if(UIUtilities.isHorizontal(context))
         const VerticalDivider(
-          width: 1, 
+          width: 0, 
           thickness: 0.11,
           endIndent: 60,
           indent: 60,
           color: Colors.black,
         ),
-        if(UIUtilities.isHorizontal(context))
-        const Gap(20),
         Flexible(
           flex: UIUtilities.isHorizontal(context)? _summarySectionFlex : 0,
-          child: Align(
-            child: UIUtilities.isHorizontal(context)? 
-            SingleChildScrollView(child: summarySection(),):
-            summarySection(),
-          ),
+          child: UIUtilities.isHorizontal(context)? 
+          Align(child: SingleChildScrollView(child: summarySection(),)):
+          summarySection(),
         ),                    
       ],
     );
@@ -417,87 +412,106 @@ class _DeliveryInfoManagementState extends State<DeliveryInfoManagement>
                 sizeFactor: 
                   state is DeliveryInfoStateFetched && state.myDeliveryInfos.isNotEmpty?
                     animationToAddInfo : animationToAddInfoInverse,
-                child: Form(
-                  key: formKey,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const Text(
-                        "Inserisci di seguito le tue informazioni di consegna",
-                      ),
-                      const Gap(10),
-                      TextFormField(
-                        validator: (value){
-                          if(value == null || value.isEmpty)
-                          {
-                            return "Inserisci un nome";
-                          }
-                          return null;
-                        },
-                        decoration: const InputDecoration(
-                          label: Text("Nome sul citofono")
-                        ),
-                        onChanged: (value) => name = value,
-                      ),
-                      const Gap(20),
-                      TextFormField(
-                        validator: (value){
-                          if(value == null || value.isEmpty)
-                          {
-                            return "Inserisci una città";
-                          }
-                          return null;
-                        },
-                        decoration: const InputDecoration(
-                          label: Text("Città")
-                        ),
-                        onChanged: (value) => city = value,
-                      ),
-                      const Gap(20),
-                      Row(
-                        children: [
-                          Expanded(
-                            flex: 2,
-                            child: TextFormField(
-                              validator: (value){
-                                if(value == null || value.isEmpty)
-                                {
-                                  return "Inserisci un indirizzo";
-                                }
-                                return null;
-                              },
-                              decoration: const InputDecoration(
-                                label: Text("Indirizzo")
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    const Text(
+                      "Inserisci di seguito le nuove informazioni di consegna e"
+                      " procedi al pagamento.",
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(20),
+                      child: Material(
+                        elevation: 10,
+                        borderRadius: BorderRadius.circular(defaultBorderRadius),
+                        color: Colors.grey.shade200,
+                        clipBehavior: Clip.hardEdge,
+                        child: Padding(
+                          padding: const EdgeInsets.all(20),
+                          child: Align(
+                            child: Form(
+                              key: formKey,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                mainAxisSize: MainAxisSize.min,
+                                children: [             
+                                  TextFormField(
+                                    validator: (value){
+                                      if(value == null || value.isEmpty)
+                                      {
+                                        return "Inserisci un nome";
+                                      }
+                                      return null;
+                                    },
+                                    decoration: const InputDecoration(
+                                      label: Text("Nome sul citofono")
+                                    ),
+                                    onChanged: (value) => name = value,
+                                  ),
+                                  const Gap(20),
+                                  TextFormField(
+                                    validator: (value){
+                                      if(value == null || value.isEmpty)
+                                      {
+                                        return "Inserisci una città";
+                                      }
+                                      return null;
+                                    },
+                                    decoration: const InputDecoration(
+                                      label: Text("Città")
+                                    ),
+                                    onChanged: (value) => city = value,
+                                  ),
+                                  const Gap(20),
+                                  Row(
+                                    children: [
+                                      Expanded(
+                                        flex: 2,
+                                        child: TextFormField(
+                                          validator: (value){
+                                            if(value == null || value.isEmpty)
+                                            {
+                                              return "Inserisci un indirizzo";
+                                            }
+                                            return null;
+                                          },
+                                          decoration: const InputDecoration(
+                                            label: Text("Indirizzo")
+                                          ),
+                                          onChanged: (value) => address = value,
+                                        ),
+                                      ),
+                                      const Gap(10),
+                                      Expanded(
+                                        flex: 1,
+                                        child: TextFormField(
+                                          validator: (value){
+                                            if(value == null || value.isEmpty)
+                                            {
+                                              return "Inserisci n.civ";
+                                            }
+                                            return null;
+                                          },
+                                          keyboardType: TextInputType.number,
+                                          inputFormatters: [
+                                            FilteringTextInputFormatter.digitsOnly
+                                          ],
+                                          decoration: const InputDecoration(
+                                            label: Text("N.civ")
+                                          ),
+                                          onChanged: (value) => houseNumber = value,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
                               ),
-                              onChanged: (value) => address = value,
                             ),
                           ),
-                          const Gap(10),
-                          Expanded(
-                            flex: 1,
-                            child: TextFormField(
-                              validator: (value){
-                                if(value == null || value.isEmpty)
-                                {
-                                  return "Inserisci n.civ";
-                                }
-                                return null;
-                              },
-                              keyboardType: TextInputType.number,
-                              inputFormatters: [
-                                FilteringTextInputFormatter.digitsOnly
-                              ],
-                              decoration: const InputDecoration(
-                                label: Text("N.civ")
-                              ),
-                              onChanged: (value) => houseNumber = value,
-                            ),
-                          ),
-                        ],
+                        ),
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
               if(state is DeliveryInfoStateFetched && state.myDeliveryInfos.isNotEmpty)
@@ -506,12 +520,10 @@ class _DeliveryInfoManagementState extends State<DeliveryInfoManagement>
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    const Padding(
-                      padding: EdgeInsets.only(left:20, right: 20),
-                      child: Text(
-                        "Seleziona le tue informazioni di consegna",
-                      ),
+                    const Text(
+                      "Seleziona le tue informazioni di consegna",
                     ),
+                    const Gap(20),
                     ChooseOldAddress(
                       state: state,
                       onSelectionChanged:(selected) =>
@@ -736,69 +748,68 @@ class OrderSummary extends StatelessWidget{
       borderRadius: BorderRadius.circular(defaultBorderRadius),
       child: Padding(
         padding: const EdgeInsets.all(60),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,  
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,    
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [    
-            Text(
-              "Riepilogo",
-              style: Theme.of(context).textTheme.titleLarge,
-            ),    
-            const Gap(20),
-            Column(
+        child: Align(
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              maxWidth: !UIUtilities.isHorizontal(context)? 400 : double.infinity
+            ),
+            child: Column(
               mainAxisSize: MainAxisSize.min,  
-              children: [
-                ...cartBloc.state.cart.keys.map(
-                  (key) => Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      CartEntryItem(
-                        product: key, 
-                        count: cartBloc.state.cart[key]!
-                      ),
-                      // ProductItem(
-                      //   product: key, 
-                      //   canModifyCart: false,
-                      //   fixedCount: cartBloc.state.cart[key]!,
-                      //   hasPermission: false,
-                      //   elevation: 0,
-                      //   backgroundColor: Colors.transparent,
-                      // ),
-                      const Divider(
-                        color: Colors.black,
-                        height: 1,
-                        thickness: 0.1,
-                      )
-                    ],
-                  )
-                ).toList(),
-                const Divider(color: Colors.black,),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,    
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [    
+                Text(
+                  "Riepilogo",
+                  style: Theme.of(context).textTheme.titleLarge,
+                ),    
+                const Gap(20),
+                Column(
+                  mainAxisSize: MainAxisSize.min,  
                   children: [
-                    Text(
-                      "Totale",
-                      style: Theme.of(context).textTheme.titleMedium,
+                    ...cartBloc.state.cart.keys.map(
+                      (key) => Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          CartEntryItem(
+                            product: key, 
+                            count: cartBloc.state.cart[key]!
+                          ),
+                          const Divider(
+                            color: Colors.black,
+                            height: 1,
+                            thickness: 0.1,
+                          )
+                        ],
+                      )
+                    ).toList(),
+                    const Divider(color: Colors.black,),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          "Totale",
+                          style: Theme.of(context).textTheme.titleMedium,
+                        ),
+                        Text(
+                          "${getTotal(cartBloc.state.cart)}€",
+                          style: Theme.of(context).textTheme.titleMedium,
+                        )
+                      ],
                     ),
-                    Text(
-                      "${getTotal(cartBloc.state.cart)}€",
-                      style: Theme.of(context).textTheme.titleMedium,
-                    )
                   ],
                 ),
+                const Gap(20),
+                SizedBox(
+                  height: 60,
+                  child: ElevatedButton(
+                    onPressed: onCompleteRequest, 
+                    child: const Text("Paga")
+                  ),
+                )
               ],
             ),
-            const Gap(20),
-            SizedBox(
-              height: 60,
-              child: ElevatedButton(
-                onPressed: onCompleteRequest, 
-                child: const Text("Paga")
-              ),
-            )
-          ],
+          ),
         ),
       ),
     );

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:food_delivery_app/Data/Model/product.dart';
+import 'package:food_delivery_app/Presentation/Pages/Templates/dialog_page_template.dart';
 import 'package:food_delivery_app/Presentation/UIUtilities/dialog_manager.dart';
 import 'package:food_delivery_app/Presentation/UIUtilities/image_chooser.dart';
 import 'package:food_delivery_app/Presentation/UIUtilities/ui_utilities.dart';
@@ -33,12 +34,12 @@ class _CreateProductPageState extends State<CreateProductPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: defaultTransparentScaffoldBackgrounColor(context),
-      body: SafeArea(
-        child: Center(
-          child: Padding(
-            padding: const EdgeInsets.all(20.0),
+    return DialogPageTemplate(
+      child: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 500),
             child: Container(
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(defaultBorderRadius),
@@ -122,7 +123,7 @@ class _CreateProductPageState extends State<CreateProductPage> {
                                   description!,
                                   price!
                                 );
-
+                  
                                 Navigator.of(context).pop((product, image));
                               }
                               else{

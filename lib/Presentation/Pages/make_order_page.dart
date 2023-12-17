@@ -250,21 +250,31 @@ class _MakeOrderPageState extends State<MakeOrderPage> {
                       onCompleteOrderRequest: () {
                         if(userBloc.state is LoggedInState)
                         {
-                          Navigator.of(context).push(
-                            PageRouteBuilder(
-                              pageBuilder: (newC, animation, secondaryAnimation) => MultiBlocProvider(
-                              providers: [
-                                BlocProvider.value(
-                                  value: cartBloc,
-                                ),
-                                BlocProvider.value(
-                                  value: BlocProvider.of<OrderBloc>(context),
-                                )
-                              ],
-                              child: const CompleteOrderPage(),
-                            ),
-                            )
-                          );
+                          if(cartBloc.state.cart.isNotEmpty)
+                          {
+                            Navigator.of(context).push(
+                              PageRouteBuilder(
+                                pageBuilder: (newC, animation, secondaryAnimation) => MultiBlocProvider(
+                                providers: [
+                                  BlocProvider.value(
+                                    value: cartBloc,
+                                  ),
+                                  BlocProvider.value(
+                                    value: BlocProvider.of<OrderBloc>(context),
+                                  )
+                                ],
+                                child: const CompleteOrderPage(),
+                              ),
+                              )
+                            );
+                          }
+                          else{
+                            DialogShower.showAlertDialog(
+                              context, 
+                              "Il carrello è vuoto", 
+                              "Prima di completare l'ordine, metti qualcosa nel carrello."
+                            );
+                          }
                         }
                         else {
                           DialogShower.showAlertDialog(

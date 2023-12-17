@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:food_delivery_app/Presentation/Pages/Templates/dialog_page_template.dart';
 import 'package:food_delivery_app/Presentation/UIUtilities/dialog_manager.dart';
 import 'package:food_delivery_app/Presentation/UIUtilities/loading.dart';
 import 'package:food_delivery_app/Presentation/UIUtilities/ui_utilities.dart';
@@ -156,113 +157,110 @@ class _LoginSignupPageState extends State<LoginSignupPage> with SingleTickerProv
     return FdaLoading(
       loadingNotifier: loading,
       dynamicText: dynamicLoadingText,
-      child: Scaffold(
-        backgroundColor: defaultTransparentScaffoldBackgrounColor(context),
-        body: SafeArea(
-          child: Center(
-            child: Padding(
-              padding: const EdgeInsets.all(30.0),
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(
-                  maxWidth: 500
-                ),
-                child: Hero(
-                  tag: "Login",
-                  child: Material(
-                    borderRadius: BorderRadius.circular(defaultBorderRadius),
-                    color: Theme.of(context).dialogBackgroundColor,
-                    child: Padding(
-                      padding: const EdgeInsets.all(35.0),
-                      child: Stack(
-                        children: [
-                          Positioned(
-                            top: 0,
-                            left: 0,
-                            child: BlocBuilder<CredentialPageCubit, CredentialPageState>(
-                              bloc: credentialPageCubit,
-                              builder: (context, state) {
-                                return Text(
-                                  state is LoginMode ? "Login" : "Signup",
-                                  style: Theme.of(context)
+      child: DialogPageTemplate(
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(30.0),
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(
+                maxWidth: 500
+              ),
+              child: Hero(
+                tag: "Login",
+                child: Material(
+                  borderRadius: BorderRadius.circular(defaultBorderRadius),
+                  color: Theme.of(context).dialogBackgroundColor,
+                  child: Padding(
+                    padding: const EdgeInsets.all(35.0),
+                    child: Stack(
+                      children: [
+                        Positioned(
+                          top: 0,
+                          left: 0,
+                          child: BlocBuilder<CredentialPageCubit, CredentialPageState>(
+                            bloc: credentialPageCubit,
+                            builder: (context, state) {
+                              return Text(
+                                state is LoginMode ? "Login" : "Signup",
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .headlineLarge
+                                    ?.copyWith(color: Theme.of(context).primaryColor),
+                              );
+                            },
+                          ),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(
+                              top: Theme.of(context)
                                       .textTheme
-                                      .headlineLarge
-                                      ?.copyWith(color: Theme.of(context).primaryColor),
-                                );
-                              },
-                            ),
+                                      .headlineLarge!
+                                      .fontSize! +
+                                  30
                           ),
-                          Padding(
-                            padding: EdgeInsets.only(
-                                top: Theme.of(context)
-                                        .textTheme
-                                        .headlineLarge!
-                                        .fontSize! +
-                                    30
-                            ),
-                            child: SingleChildScrollView(
-                                child: LoginSignInForm(
-                                  credentialPageCubit: credentialPageCubit,
-                                  nameValidator: (value) {
-                                    if(!validateName(value))
+                          child: SingleChildScrollView(
+                              child: LoginSignInForm(
+                                credentialPageCubit: credentialPageCubit,
+                                nameValidator: (value) {
+                                  if(!validateName(value))
+                                  {
+                                    return "Inserisci un nome tra i 3 e 20 caratteri.";
+                                  }
+                    
+                                  return null;
+                                },
+                                usernameValidator: (value) {
+                                  if(!validateUsername(value))
+                                  {
+                                    return "Solo lettere e più di 6";
+                                  }
+                    
+                                  return null;
+                                },
+                                passwordValidator: (value) {
+                                  PasswordValidationErrors error = validatePassword(value);
+                    
+                                  if(credentialPageCubit.state is SignupMode)
+                                  {
+                                    if(error != PasswordValidationErrors.good &&
+                                    error != PasswordValidationErrors.empty)
+                                    {                              
+                                      showPasswordValidationError(error);
+                                      return "Inserisci la password correttamente";
+                                    }
+                                    else if(error == PasswordValidationErrors.empty)
                                     {
-                                      return "Inserisci un nome tra i 3 e 20 caratteri.";
+                                      return "Inserisci la password";
                                     }
-                      
-                                    return null;
-                                  },
-                                  usernameValidator: (value) {
-                                    if(!validateUsername(value))
-                                    {
-                                      return "Solo lettere e più di 6";
-                                    }
-                      
-                                    return null;
-                                  },
-                                  passwordValidator: (value) {
-                                    PasswordValidationErrors error = validatePassword(value);
-                      
-                                    if(credentialPageCubit.state is SignupMode)
-                                    {
-                                      if(error != PasswordValidationErrors.good &&
-                                      error != PasswordValidationErrors.empty)
-                                      {                              
-                                        showPasswordValidationError(error);
-                                        return "Inserisci la password correttamente";
-                                      }
-                                      else if(error == PasswordValidationErrors.empty)
-                                      {
-                                        return "Inserisci la password";
-                                      }
-                                    }
-                                    else if(error != PasswordValidationErrors.good){
-                                      return "Password errata";
-                                    }
-                      
-                                    return null;
-                                  },
-                                  onLoginRequest: (username, password) {
-                                    loading.value = true;
-                                    dynamicLoadingText.value = "Sto effettuando il login";
-                                    userBloc.add(
-                                      LoginEvent(username, password)
-                                    );
-                                  },
-                                  onSignInRequest: (name, username, password) {
-                                    loading.value = true;
-                                    dynamicLoadingText.value = "Sto effettuando la registazione";
-                            
-                                    usernameS = username;
-                                    passwordS = password;
-                      
-                                    userBloc.add(
-                                      SignupEvent(name, username, password)
-                                    );
-                                  },
-                              )
-                            ),
+                                  }
+                                  else if(error != PasswordValidationErrors.good){
+                                    return "Password errata";
+                                  }
+                    
+                                  return null;
+                                },
+                                onLoginRequest: (username, password) {
+                                  loading.value = true;
+                                  dynamicLoadingText.value = "Sto effettuando il login";
+                                  userBloc.add(
+                                    LoginEvent(username, password)
+                                  );
+                                },
+                                onSignInRequest: (name, username, password) {
+                                  loading.value = true;
+                                  dynamicLoadingText.value = "Sto effettuando la registazione";
+                          
+                                  usernameS = username;
+                                  passwordS = password;
+                    
+                                  userBloc.add(
+                                    SignupEvent(name, username, password)
+                                  );
+                                },
+                            )
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
@@ -368,6 +366,7 @@ class _LoginSignInFormState extends State<LoginSignInForm>
               ),
               Gap(20 * animation.value),
               TextFormField(
+                autofillHints: const [AutofillHints.username],
                 validator: (value) {
                   if(!errorOccurred)
                   {
@@ -381,18 +380,27 @@ class _LoginSignInFormState extends State<LoginSignInForm>
                 onChanged: (value) => username = value,
               ),
               const Gap(20),
-              TextFormField(
-                validator: (value) {
-                  if(!errorOccurred)
-                  {
-                    String? result = widget.passwordValidator?.call(value);
-                    errorOccurred = result != null;
-                    return result;
-                  }
-                  return null;
-                },
-                decoration: const InputDecoration(label: Text("Password")),
-                onChanged: (value) => password = value,
+              BlocBuilder<CredentialPageCubit, CredentialPageState>(
+                bloc: widget.credentialPageCubit,
+                builder: (context, state) {
+                return TextFormField(
+                    autofillHints: const [AutofillHints.password],
+                    validator: (value) {
+                      if(!errorOccurred)
+                      {
+                        String? result = widget.passwordValidator?.call(value);
+                        errorOccurred = result != null;
+                        return result;
+                      }
+                      return null;
+                    },
+                    decoration: const InputDecoration(label: Text("Password")),
+                    onChanged: (value) => password = value,
+                    obscureText: state is LoginMode,
+                    enableSuggestions: false,
+                    autocorrect: false,
+                  );
+                }
               ),
               Gap(20 * animation.value),
               SizeTransition(

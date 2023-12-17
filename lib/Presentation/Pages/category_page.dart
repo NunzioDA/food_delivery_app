@@ -7,6 +7,7 @@ import 'package:food_delivery_app/Data/Model/product.dart';
 import 'package:food_delivery_app/Data/Model/products_category.dart';
 import 'package:food_delivery_app/Presentation/ModelVisualizzation/Category/category_info.dart';
 import 'package:food_delivery_app/Presentation/ModelVisualizzation/Product/product_item.dart';
+import 'package:food_delivery_app/Presentation/Pages/Templates/dialog_page_template.dart';
 import 'package:food_delivery_app/Presentation/Pages/product_page.dart';
 import 'package:food_delivery_app/Presentation/UIUtilities/add_element.dart';
 import 'package:food_delivery_app/Presentation/UIUtilities/cached_image.dart';
@@ -128,26 +129,36 @@ class _CategoryPageState extends State<CategoryPage> {
 
   @override
   Widget build(BuildContext context) {
-    int productsInCategory = myCategory!.products.length;
-    double maxListHeight = 20 +
-    (productsInCategory < 3? productsInCategory : 2.5) 
-    * ProductItem.rowHeight + 
-    (productsInCategory < 3? 20 * productsInCategory + 5 : 60);
+    int productsInCategory = 0;
+    double maxListHeight = 0;
 
-    if(widget.hasPermission && productsInCategory<2)
+    if(!widget.creationMode)
     {
-      maxListHeight += ProductItem.rowHeight + 20;
+      //Calcolo l'altezza della lista da costuire in base
+      //al numero dei componenti
+      productsInCategory = myCategory!.products.length;
+      maxListHeight = 20 +
+      (productsInCategory < 3? productsInCategory : 2.5) 
+      * ProductItem.rowHeight + 
+      (productsInCategory < 3? 20 * productsInCategory + 5 : 60);
+
+      if(widget.hasPermission && productsInCategory<2)
+      {
+        maxListHeight += ProductItem.rowHeight + 20;
+      }
     }
 
-    return Scaffold(
-      backgroundColor: defaultTransparentScaffoldBackgrounColor(context),
-      body: SafeArea(
+    return DialogPageTemplate(
+      child: Padding(
+        padding: const EdgeInsets.all(20),
         child: FdaLoading(
           loadingNotifier: loading,
-          dynamicText: ValueNotifier("Sto eliminando la categoria"),
-          child: Padding(
-            padding: const EdgeInsets.all(15.0),
-            child: Center(
+          dynamicText: ValueNotifier(""),
+          child: Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(
+                maxWidth: 500
+              ),
               child: SingleChildScrollView(
                 child: Stack(
                   children: [
@@ -156,156 +167,153 @@ class _CategoryPageState extends State<CategoryPage> {
                       children: [
                         const Gap(CategoryPage.imageSize / 2),
                         Center(
-                          child: ConstrainedBox(
-                            constraints: const BoxConstraints(
-                              maxWidth: 500
-                            ),
-                            child: Hero(
-                              tag: "Container${myCategory?.name}",
-                              child: Material(
-                                elevation: 10,
-                                color: Theme.of(context).dialogBackgroundColor,
-                                borderRadius:BorderRadius.circular(
-                                  defaultBorderRadius
+                          child: Hero(
+                            tag: "Container${myCategory?.name}",
+                            child: Material(
+                              elevation: 10,
+                              color: Theme.of(context).dialogBackgroundColor,
+                              borderRadius:BorderRadius.circular(
+                                defaultBorderRadius
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.only(
+                                  top: CategoryPage.imageSize /2, 
+                                  bottom: 20
                                 ),
-                                child: Padding(
-                                  padding: const EdgeInsets.only(
-                                    top: CategoryPage.imageSize /2, 
-                                    bottom: 20
-                                  ),
-                                  child: Column(
-                                    crossAxisAlignment:CrossAxisAlignment.stretch,
-                                    mainAxisAlignment: MainAxisAlignment.end,
-                                    children: [
-                                      if (!widget.creationMode)
-                                        Padding(
-                                          padding: const EdgeInsets.only(
-                                            left: 20, 
-                                            right: 20
-                                          ),
-                                          child: Column(
-                                            crossAxisAlignment:CrossAxisAlignment.stretch,
-                                            mainAxisAlignment: MainAxisAlignment.end,
-                                            children: [
-                                              CategoryInfo(
-                                                category: myCategory!,
-                                                onCountChanged: (value) {},
-                                              ),
-                                              if (widget.hasPermission)
-                                              Align(
-                                                alignment: Alignment.centerRight,
-                                                child: TextButton(
-                                                  onPressed: () {
-                                                    DialogShower.showConfirmDenyDialog(
-                                                        context,
-                                                        "Eliminazione",
-                                                        "Sei sicuro di voler eliminare "
-                                                        "definitivamente questa categoria?",
-                                                        onConfirmPressed: () {
-                                                      loading.value = true;
-                                                      _categoriesBloc.add(
-                                                          CategoryDeleteEvent(
-                                                              myCategory!));
-                                                    });
-                                                  },
-                                                  child: Row(
-                                                    mainAxisSize: MainAxisSize.min,
-                                                    children: [
-                                                      Text(
-                                                        "Elimina",
-                                                        style: Theme.of(context)
-                                                            .textTheme
-                                                            .bodyMedium!
-                                                            .copyWith(
-                                                                color: Colors.red),
-                                                      ),
-                                                      const Icon(
-                                                        Icons.delete_forever,
-                                                        color: Colors.red,
-                                                        size:
-                                                            CategoryPage.deleteIconSize,
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),                                      
-                                      if (!widget.creationMode &&
-                                          !widget.hasPermission)
-                                        const Gap(20),
-                                      if (!widget.creationMode)
-                                        ConstrainedBox(
-                                          constraints: BoxConstraints(
-                                            maxHeight: maxListHeight
-                                          ),
-                                          child: ListView.builder(
-                                            padding: const EdgeInsets.all(20),
-                                            itemCount: myCategory!.products.length +
-                                              (widget.hasPermission? 1: 0),
-                                            itemBuilder: (context, index) => 
-                                            index < myCategory!.products.length?
-                                            Padding(
-                                              padding: const EdgeInsets.only(bottom: 20),
-                                              child: ProductItem(
-                                                product: myCategory!.products[index],
-                                                hasPermission: widget.hasPermission,
-                                                onDeleteRequest: () {
+                                child: Column(
+                                  crossAxisAlignment:CrossAxisAlignment.stretch,
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  children: [
+                                    if (!widget.creationMode)
+                                      Padding(
+                                        padding: const EdgeInsets.only(
+                                          left: 20, 
+                                          right: 20
+                                        ),
+                                        child: Column(
+                                          crossAxisAlignment:CrossAxisAlignment.stretch,
+                                          mainAxisAlignment: MainAxisAlignment.end,
+                                          children: [
+                                            CategoryInfo(
+                                              category: myCategory!,
+                                              onCountChanged: (value) {},
+                                            ),
+                                            if (widget.hasPermission)
+                                            Align(
+                                              alignment: Alignment.centerRight,
+                                              child: TextButton(
+                                                onPressed: () {
                                                   DialogShower.showConfirmDenyDialog(
-                                                    context, 
-                                                    "Eliminazione", 
-                                                    "Sei sicuro di voler "
-                                                    "eliminare questo prodotto?",
-                                                    confirmText: "Elimina",
-                                                    denyText: "Annulla",
-                                                    onConfirmPressed: (){
-                                                      loading.value =true;
-                                                      _categoriesBloc.add(
-                                                        ProductDeleteEvent(
-                                                          myCategory!.products[index]
-                                                        )
-                                                      );
-                                                    }
-                                                  );
-                                                },
-                                              ),
-                                            ):
-                                            SizedBox(
-                                              height: 150,
-                                              child: AddElementWidget(
-                                                onPressed: () async {
-                                                  var productPair =
-                                                      await Navigator.of(
-                                                              context)
-                                                          .push(
-                                                              PageRouteBuilder(
-                                                    opaque: false,
-                                                    pageBuilder: (context,
-                                                        animation,
-                                                        secondaryAnimation) {
-                                                      return const CreateProductPage();
-                                                    },
-                                                  ));
-                                              
-                                                  if (productPair != null) {
+                                                      context,
+                                                      "Eliminazione",
+                                                      "Sei sicuro di voler eliminare "
+                                                      "definitivamente questa categoria?",
+                                                      onConfirmPressed: () {
                                                     loading.value = true;
                                                     _categoriesBloc.add(
-                                                        ProductCreateEvent(
-                                                      myCategory!,
-                                                      productPair.$1,
-                                                      productPair.$2,
-                                                    ));
-                                                  }
+                                                        CategoryDeleteEvent(
+                                                            myCategory!));
+                                                  });
                                                 },
+                                                child: Row(
+                                                  mainAxisSize: MainAxisSize.min,
+                                                  children: [
+                                                    Text(
+                                                      "Elimina",
+                                                      style: Theme.of(context)
+                                                          .textTheme
+                                                          .bodyMedium!
+                                                          .copyWith(
+                                                              color: Colors.red),
+                                                    ),
+                                                    const Icon(
+                                                      Icons.delete_forever,
+                                                      color: Colors.red,
+                                                      size:
+                                                          CategoryPage.deleteIconSize,
+                                                    ),
+                                                  ],
+                                                ),
                                               ),
                                             ),
-                                                 
-                                          )
+                                          ],
                                         ),
-                                      if (widget.creationMode) const Gap(50),
-                                      if (widget.creationMode)
-                                        Form(
+                                      ),                                      
+                                    if (!widget.creationMode &&
+                                        !widget.hasPermission)
+                                      const Gap(20),
+                                    if (!widget.creationMode)
+                                      ConstrainedBox(
+                                        constraints: BoxConstraints(
+                                          maxHeight: maxListHeight
+                                        ),
+                                        child: ListView.builder(
+                                          padding: const EdgeInsets.all(20),
+                                          itemCount: myCategory!.products.length +
+                                            (widget.hasPermission? 1: 0),
+                                          itemBuilder: (context, index) => 
+                                          index < myCategory!.products.length?
+                                          Padding(
+                                            padding: const EdgeInsets.only(bottom: 20),
+                                            child: ProductItem(
+                                              product: myCategory!.products[index],
+                                              hasPermission: widget.hasPermission,
+                                              onDeleteRequest: () {
+                                                DialogShower.showConfirmDenyDialog(
+                                                  context, 
+                                                  "Eliminazione", 
+                                                  "Sei sicuro di voler "
+                                                  "eliminare questo prodotto?",
+                                                  confirmText: "Elimina",
+                                                  denyText: "Annulla",
+                                                  onConfirmPressed: (){
+                                                    loading.value =true;
+                                                    _categoriesBloc.add(
+                                                      ProductDeleteEvent(
+                                                        myCategory!.products[index]
+                                                      )
+                                                    );
+                                                  }
+                                                );
+                                              },
+                                            ),
+                                          ):
+                                          SizedBox(
+                                            height: 150,
+                                            child: AddElementWidget(
+                                              onPressed: () async {
+                                                var productPair =
+                                                    await Navigator.of(
+                                                            context)
+                                                        .push(
+                                                            PageRouteBuilder(
+                                                  opaque: false,
+                                                  pageBuilder: (context,
+                                                      animation,
+                                                      secondaryAnimation) {
+                                                    return const CreateProductPage();
+                                                  },
+                                                ));
+                                            
+                                                if (productPair != null) {
+                                                  loading.value = true;
+                                                  _categoriesBloc.add(
+                                                      ProductCreateEvent(
+                                                    myCategory!,
+                                                    productPair.$1,
+                                                    productPair.$2,
+                                                  ));
+                                                }
+                                              },
+                                            ),
+                                          ),
+                                               
+                                        )
+                                      ),
+                                    if (widget.creationMode)
+                                      Padding(
+                                        padding: const EdgeInsets.all(20),
+                                        child: Form(
                                           key: nameFormKey,
                                           child: TextFormField(
                                             validator: (value) {
@@ -322,9 +330,15 @@ class _CategoryPageState extends State<CategoryPage> {
                                             },
                                           ),
                                         ),
-                                      if (widget.creationMode) const Gap(10),
-                                      if (widget.creationMode)
-                                        SizedBox(
+                                      ),
+                                    if (widget.creationMode)
+                                      Padding(
+                                        padding: const EdgeInsets.only(
+                                          left: 20,
+                                          right: 20,
+                                          bottom: 20
+                                        ),
+                                        child: SizedBox(
                                           height: 50,
                                           child: ElevatedButton(
                                               onPressed: () {
@@ -343,9 +357,9 @@ class _CategoryPageState extends State<CategoryPage> {
                                               },
                                               child:
                                                   const Text("Crea categoria")),
-                                        )
-                                    ],
-                                  ),
+                                        ),
+                                      )
+                                  ],
                                 ),
                               ),
                             ),

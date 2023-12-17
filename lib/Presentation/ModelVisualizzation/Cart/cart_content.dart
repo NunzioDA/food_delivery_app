@@ -4,6 +4,7 @@ import 'package:food_delivery_app/Data/Model/product.dart';
 import 'package:food_delivery_app/Presentation/ModelVisualizzation/Product/product_item.dart';
 import 'package:food_delivery_app/Presentation/UIUtilities/dynamic_grid_view.dart';
 import 'package:food_delivery_app/bloc/cart_bloc.dart';
+import 'package:gap/gap.dart';
 
 /// Questa classe permette di visualizzare il contenuto del carrello
 /// rappresentato da [CartBloc].
@@ -52,18 +53,22 @@ class CartContent extends StatelessWidget {
                   return Align(
                     child: ConstrainedBox(
                       constraints: const BoxConstraints(
-                        maxHeight: 300
+                        maxHeight: 250
                       ),
-                      child: Column(
-                        children: [
-                          Expanded(
-                            child: Image.asset("assets/empty_cart.png")
-                          ),
-                          Text(
-                            "Il carrello è vuoto",
-                            style: Theme.of(context).textTheme.titleMedium,
-                          )
-                        ],
+                      child: Padding(
+                        padding: const EdgeInsets.all(30),
+                        child: Column(
+                          children: [
+                            Expanded(
+                              child: Image.asset("assets/empty_cart.png")
+                            ),
+                            const Gap(20),
+                            Text(
+                              "Il carrello è vuoto",
+                              style: Theme.of(context).textTheme.titleMedium,
+                            )
+                          ],
+                        ),
                       ),
                     ),
                   );
