@@ -587,7 +587,7 @@ class _ChooseOldAddressState extends State<ChooseOldAddress>
 with SingleTickerProviderStateMixin
 {
   late AnimationController _controllerExpandOldInfo;
-  late Animation<double> animationExpandOldInfo;
+  late Animation<double> _animationExpandOldInfo;
 
   @override
   void initState() {
@@ -595,7 +595,7 @@ with SingleTickerProviderStateMixin
       vsync: this, 
       duration: const Duration(milliseconds: 100)
     )..addListener(() {setState(() {});});
-    animationExpandOldInfo = Tween<double>(begin: 0, end: 1).animate(_controllerExpandOldInfo);
+    _animationExpandOldInfo = Tween<double>(begin: 0, end: 1).animate(_controllerExpandOldInfo);
 
     super.initState();
   }
@@ -635,7 +635,7 @@ with SingleTickerProviderStateMixin
                         style: Theme.of(context).textTheme.titleMedium,
                       ),
                       Transform.rotate(
-                        angle: pi/2 + (animationExpandOldInfo.value * pi),
+                        angle: pi/2 + (_animationExpandOldInfo.value * pi),
                         child: IconButton(
                           onPressed: (){
                             if(!_controllerExpandOldInfo.isCompleted)
@@ -658,7 +658,7 @@ with SingleTickerProviderStateMixin
         ),
         const Gap(10),                      
         SizeTransition(
-          sizeFactor: animationExpandOldInfo,
+          sizeFactor: _animationExpandOldInfo,
           axis: Axis.vertical,
           axisAlignment: -1,
           child: Padding(
@@ -671,18 +671,20 @@ with SingleTickerProviderStateMixin
               child: Padding(
                 padding: const EdgeInsets.all(20),
                 child: SizedBox(
-                  height: 150,
+                  height: widget.state.myDeliveryInfos.length<3?
+                  widget.state.myDeliveryInfos.length * DeliveryInfoWidget.height:
+                  3 * DeliveryInfoWidget.height,
                   child: ListView.builder(
                     itemCount: widget.state.myDeliveryInfos.length,
                     itemBuilder: (context, index) => Column(
                       children: [
                         InkWell(
-                          onTap: () => widget.onSelectionChanged(widget.state.myDeliveryInfos[index]),
-                          child: Padding(
-                            padding: const EdgeInsets.only(top: 20, bottom: 20),
-                            child: DeliveryInfoWidget(
-                              deliveryInfo: widget.state.myDeliveryInfos[index],
-                            ),
+                          onTap: () {
+                            _controllerExpandOldInfo.reverse();
+                            widget.onSelectionChanged(widget.state.myDeliveryInfos[index]);
+                          },
+                          child: DeliveryInfoWidget(
+                            deliveryInfo: widget.state.myDeliveryInfos[index],
                           ), 
                         ),
                         const Divider(
@@ -705,6 +707,7 @@ with SingleTickerProviderStateMixin
 
 
 class DeliveryInfoWidget extends StatelessWidget{
+  static const double height = 85;
   final DeliveryInfo deliveryInfo;
   const DeliveryInfoWidget({
     super.key,
@@ -713,20 +716,23 @@ class DeliveryInfoWidget extends StatelessWidget{
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Text(
-          deliveryInfo.intercom,
-          style: Theme.of(context).textTheme.titleSmall,
-        ),
-        Text(
-          deliveryInfo.city          
-        ),
-        Text(
-         "${deliveryInfo.address}, ${deliveryInfo.houseNumber}"
-        )
-      ],
+    return SizedBox(
+      height: height,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text(
+            deliveryInfo.intercom,
+            style: Theme.of(context).textTheme.titleSmall,
+          ),
+          Text(
+            deliveryInfo.city          
+          ),
+          Text(
+           "${deliveryInfo.address}, ${deliveryInfo.houseNumber}"
+          )
+        ],
+      ),
     );
   }
   
