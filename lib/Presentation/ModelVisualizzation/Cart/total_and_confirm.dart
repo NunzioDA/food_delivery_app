@@ -77,12 +77,19 @@ class TotalAndConfirmState extends State<TotalAndConfirm>
     double? height;
     double? right;
 
+    // Impostazione parametri di posizionamento
     if(UIUtilities.isHorizontal(context))
     {
       double screenBasedWidth = (MediaQuery.of(context).size.width / 3);
       width = screenBasedWidth < TotalAndConfirm.minPanelWidthHorizontal? 
         TotalAndConfirm.minPanelWidthHorizontal : screenBasedWidth
       + TotalAndConfirm.closedPanelButtonSize;
+
+      if(width > MediaQuery.of(context).size.width)
+      {
+        width = MediaQuery.of(context).size.width;
+      }
+
       right = (width - TotalAndConfirm.closedPanelButtonSize) * (-1 + animation.value) ;
       bottom = 0;
       top = 0;

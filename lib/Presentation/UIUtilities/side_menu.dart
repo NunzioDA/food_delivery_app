@@ -362,39 +362,41 @@ class SideMenu extends StatelessWidget{
         alignment: Alignment.topLeft,
         child: Padding(
           padding: const EdgeInsets.only(top: 70),
-          child: IntrinsicWidth(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                if(!SideMenuViewInherited.of(context).isWithTopBarMode
-                && SideMenuViewInherited.of(context).topBarActionWidget != null)
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    SizedBox(
-                      height: ContentVisualizerTopBar.barHeight,
-                      child: Material(
-                        elevation: 5,
-                        borderRadius: const BorderRadius.only(
-                          topRight: Radius.circular(defaultBorderRadius),
-                          bottomRight: Radius.circular(defaultBorderRadius) 
-                        ),
-                        color: Theme.of(context).colorScheme.onPrimary,
-                        child: Padding(
-                          padding: const EdgeInsets.all(10.0),
-                          child: Align(
-                            child: SideMenuViewInherited.of(context).topBarActionWidget!
+          child: SingleChildScrollView(
+            child: IntrinsicWidth(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if(!SideMenuViewInherited.of(context).isWithTopBarMode
+                  && SideMenuViewInherited.of(context).topBarActionWidget != null)
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      SizedBox(
+                        height: ContentVisualizerTopBar.barHeight,
+                        child: Material(
+                          elevation: 5,
+                          borderRadius: const BorderRadius.only(
+                            topRight: Radius.circular(defaultBorderRadius),
+                            bottomRight: Radius.circular(defaultBorderRadius) 
+                          ),
+                          color: Theme.of(context).colorScheme.onPrimary,
+                          child: Padding(
+                            padding: const EdgeInsets.all(10.0),
+                            child: Align(
+                              child: SideMenuViewInherited.of(context).topBarActionWidget!
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                    const Gap(20),
-                  ],
-                ),                
-                ...groups
-              ],
+                      const Gap(20),
+                    ],
+                  ),                
+                  ...groups
+                ],
+              ),
             ),
           ),
         ),
