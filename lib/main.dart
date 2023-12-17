@@ -5,6 +5,8 @@ import 'package:food_delivery_app/Presentation/UIUtilities/ui_utilities.dart';
 import 'package:food_delivery_app/bloc/user_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import 'Presentation/UIUtilities/palette.dart';
+
 void main() {
   runApp(const MyApp());
 }
