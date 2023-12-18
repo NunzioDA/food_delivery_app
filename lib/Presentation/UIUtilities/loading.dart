@@ -47,12 +47,6 @@ class FdaLoading extends StatelessWidget
 }
 
 /// L'overlay si adatterà al widget figlio di [FdaLoading]
-/// evitando che lo [Stack] prenda tutto lo spazio a sua disposizione
-/// mantenendosi esclusivamente nei confini del widget figlio.
-/// 
-/// Per farlo aspetterà la costruzione per ricavare dal widget figlio
-/// le informazioni riguardanti le sue dimensioni.
-
 class _FdaLoadingVisualizer extends StatefulWidget {
 
   final ValueNotifier<bool> loadingNotifier;
@@ -78,23 +72,14 @@ class _FdaLoadingVisualizerState extends State<_FdaLoadingVisualizer> {
   final double minPadding = 20;  
   late Size mySize;
 
-  Size? getChildSize()
-  {
-    return widget.childKey.currentContext?.size;
-  }
-
   double getMinSize(Size size)
   {
     return min(size.width, size.height);
   }
 
-  void action() {
+  void update() {
     if(mounted) 
     {
-      if(widget.loadingNotifier.value)
-      {          
-        mySize = getChildSize()!;
-      }
       setState(() {});
     }
   }
@@ -103,41 +88,32 @@ class _FdaLoadingVisualizerState extends State<_FdaLoadingVisualizer> {
   void initState() {
     mySize = Size.zero;
 
-    widget.loadingNotifier.addListener(action);
-    widget.dynamicText.addListener(action);
+    widget.loadingNotifier.addListener(update);
+    widget.dynamicText.addListener(update);
 
-    // Ricava le dimensioni del widget figlio
-    // dopo la costruzione degl widget
-    // per adattare l'overlay di caricamento a quest'ultimo
-    WidgetsBinding.instance.addPostFrameCallback((_) => 
-      setState(() {
-        mySize = getChildSize()!;
-      })
-    );
     super.initState();
   }
 
   @override
   void dispose() {
-    widget.dynamicText.removeListener(action);
-    widget.loadingNotifier.removeListener(action);
+    widget.dynamicText.removeListener(update);
+    widget.loadingNotifier.removeListener(update);
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-
-
     return Positioned(
-      width: mySize.width,
-      height: mySize.height,
-      child: widget.loadingNotifier.value && mySize != Size.zero? 
+      top: 0,
+      bottom: 0,
+      left: 0,
+      right: 0,
+      child: widget.loadingNotifier.value? 
       Container(
         decoration: BoxDecoration(
           borderRadius: widget.borderRadius,
           color: Theme.of(context).primaryColorDark.withAlpha(110),
         ),
-        constraints: const BoxConstraints.expand(),
         child: Align(
           alignment: Alignment.center,
           child: LayoutBuilder(
