@@ -176,8 +176,8 @@ class _CategoryPageState extends State<CategoryPage> {
                             child: Hero(
                               tag: "Container${myCategory?.name}",
                               child: Material(
-                                elevation: 10,
-                                color: Theme.of(context).dialogBackgroundColor,
+                                elevation: defaultElevation,
+                                color: Theme.of(context).scaffoldBackgroundColor,
                                 borderRadius:BorderRadius.circular(
                                   defaultBorderRadius
                                 ),
@@ -259,30 +259,44 @@ class _CategoryPageState extends State<CategoryPage> {
                                               (widget.hasPermission? 1: 0),
                                             itemBuilder: (context, index) => 
                                             index < myCategory!.products.length?
-                                            Padding(
-                                              padding: const EdgeInsets.only(bottom: 20),
-                                              child: ProductItem(
-                                                product: myCategory!.products[index],
-                                                hasPermission: widget.hasPermission,
-                                                onDeleteRequest: () {
-                                                  DialogShower.showConfirmDenyDialog(
-                                                    context, 
-                                                    "Eliminazione", 
-                                                    "Sei sicuro di voler "
-                                                    "eliminare questo prodotto?",
-                                                    confirmText: "Elimina",
-                                                    denyText: "Annulla",
-                                                    onConfirmPressed: (){
-                                                      loading.value =true;
-                                                      _categoriesBloc.add(
-                                                        ProductDeleteEvent(
-                                                          myCategory!.products[index]
-                                                        )
+                                            Column(
+                                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                                              children: [
+                                                Padding(
+                                                  padding: const EdgeInsets.only(
+                                                    bottom: 10,
+                                                    top: 10
+                                                  ),
+                                                  child: ProductItem(
+                                                    // borderRadius: BorderRadius.zero,
+                                                    // backgroundColor: Colors.grey.shade50,
+                                                    product: myCategory!.products[index],
+                                                    hasPermission: widget.hasPermission,
+                                                    onDeleteRequest: () {
+                                                      DialogShower.showConfirmDenyDialog(
+                                                        context, 
+                                                        "Eliminazione", 
+                                                        "Sei sicuro di voler "
+                                                        "eliminare questo prodotto?",
+                                                        confirmText: "Elimina",
+                                                        denyText: "Annulla",
+                                                        onConfirmPressed: (){
+                                                          loading.value =true;
+                                                          _categoriesBloc.add(
+                                                            ProductDeleteEvent(
+                                                              myCategory!.products[index]
+                                                            )
+                                                          );
+                                                        }
                                                       );
-                                                    }
-                                                  );
-                                                },
-                                              ),
+                                                    },
+                                                  ),
+                                                ),
+                                                const Divider(
+                                                  height: 0,
+                                                  thickness: 0.1,
+                                                )
+                                              ],
                                             ):
                                             SizedBox(
                                               height: 150,

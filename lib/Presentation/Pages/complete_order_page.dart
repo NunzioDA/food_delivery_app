@@ -261,7 +261,7 @@ class _PaymentInfoManagementState extends State<PaymentInfoManagement> {
         Padding(
           padding: const EdgeInsets.all(20),
           child: Material(
-            elevation: 10,
+            elevation: defaultElevation,
             borderRadius: BorderRadius.circular(defaultBorderRadius),
             color: Colors.grey.shade200,
             child: Padding(
@@ -444,7 +444,7 @@ class _DeliveryInfoManagementState extends State<DeliveryInfoManagement>
                     Padding(
                       padding: const EdgeInsets.all(20),
                       child: Material(
-                        elevation: 10,
+                        elevation: defaultElevation,
                         borderRadius: BorderRadius.circular(defaultBorderRadius),
                         color: Colors.grey.shade200,
                         clipBehavior: Clip.hardEdge,
@@ -629,7 +629,7 @@ with SingleTickerProviderStateMixin
         Padding(
           padding: const EdgeInsets.only(left:20, right: 20),
           child: Material(
-            elevation: 10,
+            elevation: defaultElevation,
             color: Colors.grey.shade200,
             borderRadius: BorderRadius.circular(defaultBorderRadius),
             child: Padding(
@@ -771,7 +771,7 @@ class OrderSummary extends StatelessWidget{
   Widget build(BuildContext context) {
     CartBloc cartBloc = BlocProvider.of<CartBloc>(context);
     return Material(
-      elevation: 10,
+      elevation: defaultElevation,
       color: Colors.grey.shade200,
       borderRadius: BorderRadius.circular(defaultBorderRadius),
       child: Padding(

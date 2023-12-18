@@ -29,7 +29,7 @@ class _CategoryItemState extends State<CategoryItem> {
   Widget categoryWidgetContent(BuildContext context,
       [Animation<double>? animation, HeroFlightDirection? flightDirection]) {
     return Material(
-      elevation: 10,
+      elevation: defaultElevation,
       color: Theme.of(context).dialogBackgroundColor,
       borderRadius: BorderRadius.circular(defaultBorderRadius),
       child: Padding(

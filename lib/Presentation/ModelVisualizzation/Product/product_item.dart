@@ -31,6 +31,7 @@ class ProductItem extends StatefulWidget {
   final int? fixedCount;
   final double elevation;
   final Color? backgroundColor;
+  final BorderRadius? borderRadius;
 
   const ProductItem({
     super.key,
@@ -39,8 +40,9 @@ class ProductItem extends StatefulWidget {
     this.onDeleteRequest,
     this.canModifyCart = true,
     this.fixedCount,
-    this.elevation = 10,
-    this.backgroundColor
+    this.elevation = 5,
+    this.backgroundColor,
+    this.borderRadius
   }) : assert(!hasPermission || onDeleteRequest!=null), 
       assert(canModifyCart || fixedCount != null);
 
@@ -77,7 +79,7 @@ class _ProductItemState extends State<ProductItem> {
       height: ProductItem.rowHeight,
       child: Material(
         elevation: widget.elevation,
-        borderRadius: BorderRadius.circular(defaultBorderRadius),
+        borderRadius: widget.borderRadius?? BorderRadius.circular(defaultBorderRadius),
         clipBehavior: Clip.hardEdge,
         color: widget.backgroundColor ?? Theme.of(context).dialogBackgroundColor,
         child: FdaLoading(
@@ -86,10 +88,12 @@ class _ProductItemState extends State<ProductItem> {
           child: Padding(
             padding: EdgeInsets.all(internalPadding),
             child: Row(
+              mainAxisSize: MainAxisSize.max,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                IntrinsicHeight(
-                  child: Container(                                      
-                    width: imageWidth,
+                AspectRatio(
+                  aspectRatio: 1,
+                  child: Container(                     
                     clipBehavior: Clip.hardEdge,
                     decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(
@@ -113,83 +117,68 @@ class _ProductItemState extends State<ProductItem> {
                         widget.product.name,
                         style: Theme.of(context).textTheme.titleSmall,
                         textAlign: TextAlign.left,
-                      ),
+                      ),                      
                       Expanded(
                         child: Text(
                           widget.product.description,
                           overflow: TextOverflow.fade,
                         ),
-                      ),
-                      Row(
-                        mainAxisSize: MainAxisSize.max,
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          Text(
-                            "${widget.product.price}€",
-                            textAlign: TextAlign.end,
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodyMedium!
-                                .copyWith(
-                                    color: Theme.of(context).primaryColor),
-                          ),
-                          if(!widget.canModifyCart)
-                          const Gap(20),
-                          if(!widget.canModifyCart)
-                          Text("x${widget.fixedCount.toString()}")
-                        ],
-                      ),
-                      if(widget.canModifyCart)
-                      Expanded(
+                      ),                      
+                      if(widget.canModifyCart && widget.hasPermission)
+                      GestureDetector(
+                        onTap: widget.onDeleteRequest,
                         child: Row(
                           children: [
-                            if(widget.hasPermission)
-                            GestureDetector(
-                              onTap: widget.onDeleteRequest,
-                              child: Row(
-                                children: [
-                                  Text(
-                                    "Elimina",
-                                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                      color: Colors.red
-                                    ),
-                                  ),
-                                  const Icon(
-                                      Icons.delete_forever_rounded,
-                                      color: Colors.red,
-                                    ),
-                                ],
-                              ),
-                            ),                            
-                            Expanded(
-                              child: Align(
-                                alignment: Alignment.centerRight,
-                                child: AddRemove<CartBloc, CartState>(
-                                  bloc: cartBloc,
-                                  listener: (context, state) => loading.value = false,
-                                  stateToCount: (state) => state.cart[widget.product] ?? 0,
-                                  onAddPressed: () {
-                                    loading.value = true;
-                                    cartBloc.add(
-                                      AddProductToCart(widget.product)
-                                    );
-                                  },
-                                  onRemovePressed: () {
-                                    loading.value = true;
-                                    cartBloc.add(
-                                      RemoveProductFromCart(widget.product)
-                                    );
-                                  },
-                                ),
+                            Text(
+                              "Elimina",
+                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                color: Colors.red
                               ),
                             ),
-                            
+                            const Icon(
+                                Icons.delete_forever_rounded,
+                                color: Colors.red,
+                              ),
                           ],
                         ),
                       )
                     ],
                   ),
-                )
+                ),
+                const Gap(10),
+                Text(
+                  "${widget.product.price}€",
+                  textAlign: TextAlign.end,
+                  style: Theme.of(context)
+                      .textTheme
+                      .bodyMedium!
+                      .copyWith(
+                          color: Theme.of(context).primaryColor),
+                ),
+                const Gap(10),
+                if(!widget.canModifyCart)
+                Text("x${widget.fixedCount.toString()}"),
+                if(widget.canModifyCart)
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: AddRemove<CartBloc, CartState>(
+                    bloc: cartBloc,
+                    listener: (context, state) => loading.value = false,
+                    stateToCount: (state) => state.cart[widget.product] ?? 0,
+                    onAddPressed: () {
+                      loading.value = true;
+                      cartBloc.add(
+                        AddProductToCart(widget.product)
+                      );
+                    },
+                    onRemovePressed: () {
+                      loading.value = true;
+                      cartBloc.add(
+                        RemoveProductFromCart(widget.product)
+                      );
+                    },
+                  ),
+                ),
               ],
             ),
           ),

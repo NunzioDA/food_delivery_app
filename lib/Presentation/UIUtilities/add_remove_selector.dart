@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:food_delivery_app/Presentation/UIUtilities/ui_utilities.dart';
 import 'package:gap/gap.dart';
 
 /// Questo widget si basa su [Bloc]. Permette di visualizzare un selettore
@@ -15,6 +16,7 @@ class AddRemove<B extends StateStreamable<S>, S> extends StatelessWidget {
   final void Function(BuildContext context, S state)? listener;
   final bool Function(S previous, S current)? buildWhen;
   final B bloc;
+  final Axis direction;
 
   const AddRemove({
     super.key,
@@ -23,39 +25,83 @@ class AddRemove<B extends StateStreamable<S>, S> extends StatelessWidget {
     required this.onRemovePressed,
     required this.stateToCount,
     this.listener,
-    this.buildWhen
+    this.buildWhen,
+    this.direction = Axis.vertical
   });
 
-  Widget createButton(
-      {required BuildContext context,
-      required Color backgroundColor,
-      required Color borderColor,
-      required Color iconColor,
-      required IconData icon,
-      required VoidCallback onPressed,
-      required BoxConstraints constraints
-}) {
-    return Container(
-      decoration: BoxDecoration(
-        border: Border.all(
-          color: borderColor,
-        ),
-        shape: BoxShape.circle,
+  List<Widget> contentList(BuildContext context)
+  {
+    return [
+      createButton(
+        context: context,
+        backgroundColor: Colors.white,
+        borderColor: Theme.of(context).primaryColor,
+        iconColor: Theme.of(context).primaryColor,
+        icon: Icons.remove,
+        onPressed: onRemovePressed.call,
+        borderRadius: direction == Axis.horizontal?
+        const BorderRadius.only(
+          topLeft: Radius.circular(defaultBorderRadius),
+          bottomLeft: Radius.circular(defaultBorderRadius),
+        ):
+        const BorderRadius.only(
+          bottomRight: Radius.circular(defaultBorderRadius),
+          bottomLeft: Radius.circular(defaultBorderRadius),
+        )
       ),
-      child: ClipOval(
-        child: Material(
-          clipBehavior: Clip.hardEdge,
-          color: backgroundColor,
-          child: InkWell(
-            onTap: onPressed.call,
-            child: Padding(
-              padding: const EdgeInsets.all(5.0),
-              child: Icon(
-                icon,
-                color: iconColor,
-                size: constraints.maxWidth / 3 - 20,
-              ),
-            ),
+      const Gap(10),
+      BlocConsumer<B,S>(
+        bloc: bloc,
+        buildWhen: buildWhen,
+        listener: (context, state) {
+          listener?.call(context, state);
+        },
+        builder: (context, state) {
+          int count = stateToCount(state);
+          return Text("$count".padLeft(2,'0'));
+        },
+      ),
+      const Gap(10),
+      createButton(
+        context: context,
+        backgroundColor: Colors.white,
+        borderColor: Theme.of(context).primaryColor,
+        iconColor: Theme.of(context).primaryColor,
+        icon: Icons.add,
+        onPressed: onAddPressed.call,
+        borderRadius: direction == Axis.horizontal?
+        const BorderRadius.only(
+          topRight: Radius.circular(defaultBorderRadius),
+          bottomRight: Radius.circular(defaultBorderRadius),
+        ):
+        const BorderRadius.only(
+          topLeft: Radius.circular(defaultBorderRadius),
+          topRight: Radius.circular(defaultBorderRadius),
+        )
+      ),
+    ];
+  }
+
+  Widget createButton({
+    required BuildContext context,
+    required Color backgroundColor,
+    required Color borderColor,
+    required Color iconColor,
+    required IconData icon,
+    required VoidCallback onPressed,
+    required BorderRadius borderRadius
+  }) 
+  {
+    return Expanded(
+      child: Material(
+        color: backgroundColor,
+        // borderRadius: borderRadius,
+        clipBehavior: Clip.hardEdge,
+        child: InkWell(
+          onTap: onPressed.call,
+          child: Padding(
+            padding: const EdgeInsets.only(left: 10, right: 10),
+            child: Icon(icon, color: iconColor,),
           ),
         ),
       ),
@@ -64,49 +110,17 @@ class AddRemove<B extends StateStreamable<S>, S> extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ConstrainedBox(
-      constraints: const BoxConstraints(
-        maxWidth: 100,
-      ),
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          return Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              createButton(
-                context: context,
-                backgroundColor: Colors.white,
-                borderColor: Theme.of(context).primaryColor,
-                iconColor: Theme.of(context).primaryColor,
-                icon: Icons.remove,
-                onPressed: onRemovePressed.call,
-                constraints:constraints
-              ),
-              const Gap(10),
-              BlocConsumer<B,S>(
-                bloc: bloc,
-                buildWhen: buildWhen,
-                listener: (context, state) {
-                  listener?.call(context, state);
-                },
-                builder: (context, state) {
-                  int count = stateToCount(state);
-                  return Text("${count}x");
-                },
-              ),
-              const Gap(10),
-              createButton(
-                context: context,
-                backgroundColor: Theme.of(context).primaryColor,
-                borderColor: Colors.transparent,
-                iconColor: Colors.white,
-                icon: Icons.add,
-                onPressed: onAddPressed.call,
-                constraints:constraints
-              ),
-            ],
-          );
-        }
+    return Material(
+      clipBehavior: Clip.hardEdge,
+      // borderRadius: BorderRadius.circular(20),
+      elevation: 0,
+      color: Colors.white,
+      child: Flex(
+        direction: direction,
+        mainAxisSize: MainAxisSize.min,
+        children: direction == Axis.horizontal? 
+        contentList(context):
+        contentList(context).reversed.toList(),
       ),
     );
   }

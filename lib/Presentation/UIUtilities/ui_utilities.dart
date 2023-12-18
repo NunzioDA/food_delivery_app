@@ -32,4 +32,5 @@ class UIUtilities{
   } 
 }
 
-const double defaultBorderRadius = 20;
+const double defaultBorderRadius = 10;
+const double defaultElevation = 5;

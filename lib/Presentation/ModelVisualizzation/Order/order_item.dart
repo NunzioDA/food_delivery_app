@@ -53,7 +53,7 @@ class OrderItem extends StatelessWidget
           toHeroContext
         ) => this,
         child: Material(
-          elevation: 10,
+          elevation: defaultElevation,
           color: Theme.of(context).dialogBackgroundColor,
           shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(defaultBorderRadius)

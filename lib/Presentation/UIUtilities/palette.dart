@@ -18,7 +18,7 @@ class Palette {
     },
   );
 
-  static const int _primaryBaseColor = 0xff695cb6;
+  static const int _primaryBaseColor = 0xff22293b;
 
   static const MaterialColor secondary = Colors.amber;
 

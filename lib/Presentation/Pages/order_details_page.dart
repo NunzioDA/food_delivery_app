@@ -46,7 +46,7 @@ class OrderDetailsPage extends StatelessWidget
                 child: Hero(
                   tag: order.id,
                   child: Material(
-                    elevation: 10,
+                    elevation: defaultElevation,
                     color: Theme.of(context).dialogBackgroundColor,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(defaultBorderRadius)
