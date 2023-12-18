@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bloc/bloc.dart';
 import 'package:food_delivery_app/Communication/http_communication.dart';
 import 'package:food_delivery_app/Data/Model/product.dart';
@@ -13,7 +15,18 @@ part 'categories_state.dart';
 class CategoriesBloc extends Bloc<CategoriesEvent, CategoriesState> {
   final CategoryRepository _repository = CategoryRepository();
   final UserBloc _userBloc;
+  // final ConnectivityCubit _connectivityCubit;
+  // late final StreamSubscription _connectivitySubscription;
+  
   CategoriesBloc(this._userBloc) : super(CategoriesInitial()) {
+
+    // _connectivitySubscription = _connectivityCubit.stream.listen((event) {
+    //   if(event is NotConnected)
+    //   {
+    //     add(_EmptyCategories());
+    //   }
+    // });
+
     on<CategoriesEvent>((event, emit) async{
       switch(event)
       {
@@ -118,7 +131,16 @@ class CategoriesBloc extends Bloc<CategoriesEvent, CategoriesState> {
             ));
           }
         break;
+        case _EmptyCategories():
+        emit(const CategoriesFetched([]));
+        break;
       }
     });
+  }
+
+  @override
+  Future<void> close() {
+    // _connectivitySubscription.cancel();
+    return super.close();
   }
 }

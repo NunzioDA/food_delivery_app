@@ -1,12 +1,12 @@
 import 'dart:async';
 
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:food_delivery_app/Communication/http_communication.dart';
 import 'package:food_delivery_app/Data/Model/product.dart';
 import 'package:food_delivery_app/Presentation/Pages/to_visualizer_bridge.dart';
 import 'package:food_delivery_app/Presentation/UIUtilities/add_remove_selector.dart';
+import 'package:food_delivery_app/Presentation/UIUtilities/cached_image.dart';
 import 'package:food_delivery_app/Presentation/UIUtilities/loading.dart';
 import 'package:food_delivery_app/Presentation/UIUtilities/ui_utilities.dart';
 import 'package:food_delivery_app/bloc/cart_bloc.dart';
@@ -99,10 +99,10 @@ class _ProductItemState extends State<ProductItem> {
                         borderRadius: BorderRadius.circular(
                             defaultBorderRadius - internalPadding / 2)),
                     child: ZoomableImage(
-                      provider: CachedNetworkImageProvider(
-                        FdaServerCommunication.getImageUrl(
+                      image: FdaCachedNetworkImage(
+                        url: FdaServerCommunication.getImageUrl(
                           widget.product.imageName!
-                        )
+                        ),
                       ),
                     ),
                   ),

@@ -115,6 +115,7 @@ class CartRepository{
   ) async{
     if(userState is! LoggedInState)
     {
+      print("se");
       cart[product] = (cart[product] ?? 0) + 1; 
 
       SharedPreferences preferences = await SharedPreferences.getInstance();
@@ -126,7 +127,6 @@ class CartRepository{
         userState.username,
         userState.token
       );
-
       
       if(ErrorCodes.isNotSuccesfull(result))
       {

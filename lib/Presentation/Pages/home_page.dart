@@ -8,6 +8,7 @@ import 'package:food_delivery_app/Presentation/UIUtilities/side_menu.dart';
 import 'package:food_delivery_app/Presentation/UIUtilities/ui_utilities.dart';
 import 'package:food_delivery_app/bloc/order_bloc.dart';
 import 'package:food_delivery_app/bloc/user_bloc.dart';
+import 'package:food_delivery_app/cubit/connectivity_cubit.dart';
 import 'package:gap/gap.dart';
 
 /// Pagina principale dell'app che mostra un menu a scorrimento laterale
@@ -142,12 +143,22 @@ class TopBarUserStatus extends StatelessWidget {
           color: Theme.of(context).colorScheme.onPrimary,
           child: TextButton(
             onPressed: () {
-              Navigator.of(context).push(PageRouteBuilder(
-                opaque: false,
-                pageBuilder: (context, animation, secondaryAnimation) {
-                  return const LoginSignupPage();
-                },
-              ));
+              if(BlocProvider.of<ConnectivityCubit>(context).state is Connected)
+              {
+                Navigator.of(context).push(PageRouteBuilder(
+                  opaque: false,
+                  pageBuilder: (context, animation, secondaryAnimation) {
+                    return const LoginSignupPage();
+                  },
+                ));
+              }
+              else{
+                DialogShower.showAlertDialog(
+                  context, 
+                  "Non sei connesso", 
+                  "Sembra che tu non sia connesso. Controlla la tua connessione e riprova."
+                );
+              }
             },
             child: const Row(
               mainAxisSize: MainAxisSize.min,

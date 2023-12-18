@@ -19,3 +19,7 @@ class FetchCart extends CartEvent{
   final Cart? previousCart;
   const FetchCart([this.previousCart]);
 }
+
+class _EmptyCart extends CartEvent{
+  const _EmptyCart();
+}

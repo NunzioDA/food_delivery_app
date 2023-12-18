@@ -11,7 +11,7 @@ part 'user_state.dart';
 class UserBloc extends Bloc<UserEvent, UserState> {
   final UserRepository _userRepository = UserRepository();
 
-  UserBloc() : super(const NotLoggedState()) {
+  UserBloc() : super(NotLoggedState()) {
     on<UserEvent>((event, emit) async{
 
       switch(event)
@@ -26,10 +26,10 @@ class UserBloc extends Bloc<UserEvent, UserState> {
 
             if(ErrorCodes.isSuccesfull(result))
             {
-              emit(const CorrectlySignedinState());
+              emit(CorrectlySignedinState());
             }
             else if(ErrorCodes.codes["username_already_used"]! == result){
-              emit(const UsernameAlreadyUsedState());
+              emit(UsernameAlreadyUsedState());
             }
             else{
               emit(
@@ -102,7 +102,7 @@ class UserBloc extends Bloc<UserEvent, UserState> {
 
           if(result)
           {
-            emit(const LoggedOut());
+            emit(LoggedOut());
           }
           else{
             emit(
@@ -137,18 +137,18 @@ class UserBloc extends Bloc<UserEvent, UserState> {
             if(result)
             {
               emit(
-                LoggedInState(
+                VerifiedLoggedInState(
                   username: username, 
                   token: token
                 )
               );
             }
             else {
-              emit(const VerifiedNotLoggedState());
+              emit(VerifiedNotLoggedState());
             }
           }
           else {
-            emit(const VerifiedNotLoggedState());
+            emit(VerifiedNotLoggedState());
           }
 
           break;

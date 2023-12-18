@@ -50,8 +50,6 @@ class _MakeOrderPageState extends State<MakeOrderPage> {
   @override
   void initState() {
     userBloc = BlocProvider.of<UserBloc>(context);
-    categoriesBloc = CategoriesBloc(userBloc);
-    cartBloc = CartBloc(userBloc, categoriesBloc);
     totalAndConfirmKey = GlobalKey();
 
     connectivityCubit = BlocProvider.of<ConnectivityCubit>(context);
@@ -63,7 +61,9 @@ class _MakeOrderPageState extends State<MakeOrderPage> {
         }
       },
     );
+    categoriesBloc = CategoriesBloc(userBloc);
 
+    cartBloc = CartBloc(userBloc, categoriesBloc, connectivityCubit);
 
     updateCategories();
     
@@ -233,8 +233,18 @@ class _MakeOrderPageState extends State<MakeOrderPage> {
                                                 (e) => CategoryItem(
                                                   category: e,
                                                   onPressed: () {
-                                                    openCategoryPage(
+                                                    if(connectivityCubit.state is Connected)
+                                                    {
+                                                      openCategoryPage(
                                                         e, false, hasPermission);
+                                                    }
+                                                    else{
+                                                      DialogShower.showAlertDialog(
+                                                        context, 
+                                                        "Non sei connesso", 
+                                                        "Sembra che tu non sia connesso. Controlla la tua connessione e riprova."
+                                                      );
+                                                    }
                                                   },
                                                 ),
                                               )

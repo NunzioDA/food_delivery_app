@@ -31,3 +31,7 @@ class ProductDeleteEvent extends CategoriesEvent{
   final Product product;
   const ProductDeleteEvent(this.product);
 } 
+
+class _EmptyCategories extends CategoriesEvent{
+  
+}
