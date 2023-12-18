@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:food_delivery_app/cubit/connectivity_cubit.dart';
 import 'package:http/http.dart' as http;
 
 class FdaResponse
@@ -46,7 +47,7 @@ class FdaServerCommunication
   static const String localServer = "192.168.1.4";
   static const String externalServer = "www.coinquilinipercaso.altervista.org";
   static const bool serverDiscriminator = kDebugMode;
-
+  static ConnectivityCubit? currentConnectivityCubit;
 
   static String getServerBaseLink()
   {
@@ -80,7 +81,7 @@ class FdaServerCommunication
             "/fetch_image.php?image=$imageName";
   }
 
-  static Uri geBackendUri(String phpFile, Map<String, String> parameters)
+  static Uri geBackendUri(String phpFile, Map<String, String>? parameters)
   {
     String serverName = getServerName();
     Uri uri;
@@ -106,11 +107,29 @@ class FdaServerCommunication
     return parametersString;
   }
 
-  static Future<http.Response> getRequest(String phpFile, Map<String, String> parameters) {
-    return http.get(geBackendUri(phpFile, parameters));
+  static Future<http.Response> getRequest(String phpFile, [Map<String, String>? parameters]) async {
+    
+    try{
+      http.Response response = await http.get(geBackendUri(phpFile, parameters));
+      return response;
+    }catch(e)
+    {
+      currentConnectivityCubit?.checkConnectivityCommunication();
+      rethrow;
+    }
+    
   }
 
-  static Future<http.Response> postRequest(String phpFile, {Map<String, String>? getParameters, Map<String, String>? body}) {    
-    return http.post(geBackendUri(phpFile, getParameters ?? {}), body: body);
+  static Future<http.Response> postRequest(
+    String phpFile, 
+    {Map<String, String>? getParameters, Map<String, String>? body}) async{    
+    try{
+      http.Response response = await http.post(geBackendUri(phpFile, getParameters ?? {}), body: body);
+      return response;
+    }catch(e)
+    {
+      currentConnectivityCubit?.checkConnectivityCommunication();
+      rethrow;
+    }
   }
 }

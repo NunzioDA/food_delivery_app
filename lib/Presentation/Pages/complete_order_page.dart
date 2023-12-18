@@ -13,6 +13,7 @@ import 'package:food_delivery_app/Utilities/compute_total.dart';
 import 'package:food_delivery_app/bloc/cart_bloc.dart';
 import 'package:food_delivery_app/bloc/order_bloc.dart';
 import 'package:food_delivery_app/bloc/user_bloc.dart';
+import 'package:food_delivery_app/cubit/connectivity_cubit.dart';
 import 'package:food_delivery_app/cubit/delivery_info_cubit.dart';
 import 'package:gap/gap.dart';
 
@@ -31,7 +32,7 @@ class CompleteOrderPage extends StatefulWidget{
 
 class _CompleteOrderPageState extends State<CompleteOrderPage> {
 
-  GlobalKey<_DeliveryInfoManagementState> deliveryInfoManagement = GlobalKey();
+  GlobalKey<_DeliveryInfoManagementState> deliveryInfoManagement = GlobalKey();  
   late OrderBloc orderBloc;
   late StreamSubscription orderSubscription;
 
@@ -58,11 +59,13 @@ class _CompleteOrderPageState extends State<CompleteOrderPage> {
         debugPrint(event.error);
       }
     });
+
+    
     super.initState();
   }
 
   @override
-  void dispose() {
+  void dispose() {    
     orderSubscription.cancel();
     super.dispose();
   }
@@ -325,7 +328,9 @@ class _DeliveryInfoManagementState extends State<DeliveryInfoManagement>
 
   late GlobalKey<FormState> formKey;
   late DeliveryInfoCubit deliveryInfoCubit;
-  
+  late ConnectivityCubit connectivityCubit;
+  late StreamSubscription connectivitySubscription;
+
   late AnimationController _controllerToAddInfo;
   late Animation<double> animationToAddInfo;
   late Animation<double> animationToAddInfoInverse;
@@ -337,6 +342,16 @@ class _DeliveryInfoManagementState extends State<DeliveryInfoManagement>
     deliveryInfoCubit = DeliveryInfoCubit(BlocProvider.of<UserBloc>(context));
     deliveryInfoCubit.fetchDeliveryInfos();
 
+    connectivityCubit = BlocProvider.of<ConnectivityCubit>(context);
+    connectivitySubscription = connectivityCubit.stream.listen(
+      (event) {
+        if(event is Connected && event.restored)
+        {
+          deliveryInfoCubit.fetchDeliveryInfos();
+        }
+      },
+    );
+
     _controllerToAddInfo = AnimationController(
       vsync: this, 
       duration: const Duration(milliseconds: 100)
@@ -347,6 +362,12 @@ class _DeliveryInfoManagementState extends State<DeliveryInfoManagement>
 
 
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    connectivitySubscription.cancel();
+    super.dispose();
   }
 
 

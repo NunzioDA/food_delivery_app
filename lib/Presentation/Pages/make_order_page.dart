@@ -37,6 +37,7 @@ class MakeOrderPage extends StatefulWidget {
 
 class _MakeOrderPageState extends State<MakeOrderPage> {
   late ConnectivityCubit connectivityCubit;
+  late StreamSubscription connectivitySubscription;
   late CategoriesBloc categoriesBloc;
   late UserBloc userBloc;
   late CartBloc cartBloc;
@@ -46,9 +47,6 @@ class _MakeOrderPageState extends State<MakeOrderPage> {
 
   late GlobalKey<TotalAndConfirmState> totalAndConfirmKey;
 
-  Timer? connectionCheckTimer;
-  bool canCheckConnection = true;
-
   @override
   void initState() {
     userBloc = BlocProvider.of<UserBloc>(context);
@@ -57,33 +55,11 @@ class _MakeOrderPageState extends State<MakeOrderPage> {
     totalAndConfirmKey = GlobalKey();
 
     connectivityCubit = BlocProvider.of<ConnectivityCubit>(context);
-    connectivityCubit.stream.listen(
+    connectivitySubscription = connectivityCubit.stream.listen(
       (event) {
-        print(event);
-        canCheckConnection = true;
-        if(event is AvailableButNotConnected && connectionCheckTimer == null)
+        if(event is Connected && event.restored)
         {
-          print("initTimer");
-          connectionCheckTimer = Timer.periodic(
-            const Duration(seconds: 5), 
-            (timer) { 
-              print("checking");
-              if(canCheckConnection)
-              {
-                canCheckConnection = false;
-                
-                connectivityCubit.checkConnectivityCommunication();
-              }
-            }
-          );
-        }
-        else if(event is! AvailableButNotConnected){
-          connectionCheckTimer?.cancel();
-          connectionCheckTimer = null;
-          if(event is Connected && event.restored)
-          {
-            updateCategories();
-          }
+          updateCategories();
         }
       },
     );
@@ -100,7 +76,6 @@ class _MakeOrderPageState extends State<MakeOrderPage> {
           "Non sono riuscito a recuperare il tuo carrello.\n"
           "Se il problema persiste contattaci!"
         );
-        print(event.error);
       }
     });
     
@@ -108,7 +83,7 @@ class _MakeOrderPageState extends State<MakeOrderPage> {
   }
   @override
   void dispose() {
-    connectionCheckTimer?.cancel();
+    connectivitySubscription.cancel();
     cartSubscription.cancel();
     super.dispose();
   }
