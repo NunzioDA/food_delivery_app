@@ -25,7 +25,7 @@ class ConnectivityCubit extends Cubit<ConnectivityState> {
     }
   }
 
-  void manageConnectivityResult(ConnectivityResult result) async
+  void _manageConnectivityResult(ConnectivityResult result) async
   {
     switch(result)
     {
@@ -35,22 +35,7 @@ class ConnectivityCubit extends Cubit<ConnectivityState> {
       case ConnectivityResult.wifi:
         if(state is NotConnected || state is FirstCheck)
         {
-          String response;
-          try{
-            response = (await FdaServerCommunication.getRequest("check", {})).body;
-          }
-          catch(e)
-          {
-            response = e.toString();
-          }
-          
-          if(ErrorCodes.isSuccesfull(response))
-          {            
-            emit(Connected(state is NotConnected));
-          }
-          else{
-            emit(AvailableButNotConnected(state is Connected));
-          }
+          checkConnectivityCommunication();
         }
       break;
       case ConnectivityResult.none:
@@ -59,10 +44,30 @@ class ConnectivityCubit extends Cubit<ConnectivityState> {
     }
   }
 
+  void checkConnectivityCommunication() async
+  {
+    String response;
+    try{
+      response = (await FdaServerCommunication.getRequest("check", {})).body;
+    }
+    catch(e)
+    {
+      response = e.toString();
+    }
+    
+    if(ErrorCodes.isSuccesfull(response))
+    {            
+      emit(Connected(state is NotConnected));
+    }
+    else{
+      emit(AvailableButNotConnected(state is Connected));
+    }
+  }
+
   ConnectivityCubit() : super(FirstCheck()){
-    subscription = Connectivity().onConnectivityChanged.listen(manageConnectivityResult);
+    subscription = Connectivity().onConnectivityChanged.listen(_manageConnectivityResult);
     print("check");
-    Connectivity().checkConnectivity().then(manageConnectivityResult);
+    Connectivity().checkConnectivity().then(_manageConnectivityResult);
   }
 
   @override

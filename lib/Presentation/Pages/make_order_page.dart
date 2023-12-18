@@ -16,6 +16,7 @@ import 'package:food_delivery_app/bloc/cart_bloc.dart';
 import 'package:food_delivery_app/bloc/categories_bloc.dart';
 import 'package:food_delivery_app/bloc/order_bloc.dart';
 import 'package:food_delivery_app/bloc/user_bloc.dart';
+import 'package:food_delivery_app/cubit/connectivity_cubit.dart';
 import 'package:gap/gap.dart';
 
 /// Questa pagina permette di creare l'ordine
@@ -35,6 +36,7 @@ class MakeOrderPage extends StatefulWidget {
 }
 
 class _MakeOrderPageState extends State<MakeOrderPage> {
+  late ConnectivityCubit connectivityCubit;
   late CategoriesBloc categoriesBloc;
   late UserBloc userBloc;
   late CartBloc cartBloc;
@@ -44,12 +46,48 @@ class _MakeOrderPageState extends State<MakeOrderPage> {
 
   late GlobalKey<TotalAndConfirmState> totalAndConfirmKey;
 
+  Timer? connectionCheckTimer;
+  bool canCheckConnection = true;
+
   @override
   void initState() {
     userBloc = BlocProvider.of<UserBloc>(context);
     categoriesBloc = CategoriesBloc(userBloc);
     cartBloc = CartBloc(userBloc, categoriesBloc);
     totalAndConfirmKey = GlobalKey();
+
+    connectivityCubit = BlocProvider.of<ConnectivityCubit>(context);
+    connectivityCubit.stream.listen(
+      (event) {
+        print(event);
+        canCheckConnection = true;
+        if(event is AvailableButNotConnected && connectionCheckTimer == null)
+        {
+          print("initTimer");
+          connectionCheckTimer = Timer.periodic(
+            const Duration(seconds: 5), 
+            (timer) { 
+              print("checking");
+              if(canCheckConnection)
+              {
+                canCheckConnection = false;
+                
+                connectivityCubit.checkConnectivityCommunication();
+              }
+            }
+          );
+        }
+        else if(event is! AvailableButNotConnected){
+          connectionCheckTimer?.cancel();
+          connectionCheckTimer = null;
+          if(event is Connected && event.restored)
+          {
+            updateCategories();
+          }
+        }
+      },
+    );
+
 
     updateCategories();
     
@@ -70,6 +108,7 @@ class _MakeOrderPageState extends State<MakeOrderPage> {
   }
   @override
   void dispose() {
+    connectionCheckTimer?.cancel();
     cartSubscription.cancel();
     super.dispose();
   }
