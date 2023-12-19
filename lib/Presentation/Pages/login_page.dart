@@ -130,7 +130,7 @@ class _LoginSignupPageState extends State<LoginSignupPage> with SingleTickerProv
           "${(credentialPageCubit.state is LoginMode)? 
             "il login." : 
             "la registrazione."}\n\n"
-          "Se il problema persiste contattaci.";
+          "Controlla la tua connessione e riprova.";
       }
 
       if(errorMessage!=null)

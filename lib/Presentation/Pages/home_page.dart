@@ -65,6 +65,19 @@ class _HomePageState extends State<HomePage> {
               userBloc.add(const FetchUserInfoEvent());
             }
           }
+          
+          if(state is UserErrorState)
+          {
+            if(state.event is LogoutEvent)
+            {
+              DialogShower.showAlertDialog(
+                context, 
+                "Errore", 
+                "Si sono verificati dei problemi provando ad effettuare il logout."
+                "Controlla la tua connessione e riprova."
+              );
+            }
+          }
         },
         builder: (context, state) {
           return SideMenuView(

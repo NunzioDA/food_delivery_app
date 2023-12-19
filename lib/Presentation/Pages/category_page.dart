@@ -152,7 +152,7 @@ class _CategoryPageState extends State<CategoryPage> {
 
     return DialogPageTemplate(
       child: Padding(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.all(10),
         child: FdaLoading(
           loadingNotifier: loading,
           dynamicText: ValueNotifier(""),
@@ -254,49 +254,40 @@ class _CategoryPageState extends State<CategoryPage> {
                                             maxHeight: maxListHeight
                                           ),
                                           child: ListView.builder(
-                                            padding: const EdgeInsets.all(20),
+                                            padding: const EdgeInsets.all(10),
                                             itemCount: myCategory!.products.length +
                                               (widget.hasPermission? 1: 0),
                                             itemBuilder: (context, index) => 
                                             index < myCategory!.products.length?
-                                            Column(
-                                              crossAxisAlignment: CrossAxisAlignment.stretch,
-                                              children: [
-                                                Padding(
-                                                  padding: const EdgeInsets.only(
-                                                    bottom: 10,
-                                                    top: 10
-                                                  ),
-                                                  child: ProductItem(
-                                                    // borderRadius: BorderRadius.zero,
-                                                    // backgroundColor: Colors.grey.shade50,
-                                                    product: myCategory!.products[index],
-                                                    hasPermission: widget.hasPermission,
-                                                    onDeleteRequest: () {
-                                                      DialogShower.showConfirmDenyDialog(
-                                                        context, 
-                                                        "Eliminazione", 
-                                                        "Sei sicuro di voler "
-                                                        "eliminare questo prodotto?",
-                                                        confirmText: "Elimina",
-                                                        denyText: "Annulla",
-                                                        onConfirmPressed: (){
-                                                          loading.value =true;
-                                                          _categoriesBloc.add(
-                                                            ProductDeleteEvent(
-                                                              myCategory!.products[index]
-                                                            )
-                                                          );
-                                                        }
+                                            Padding(
+                                              padding: const EdgeInsets.only(
+                                                bottom: 10,
+                                                top: 10
+                                              ),
+                                              child: ProductItem(
+                                                // borderRadius: BorderRadius.zero,
+                                                // backgroundColor: Colors.grey.shade50,
+                                                product: myCategory!.products[index],
+                                                hasPermission: widget.hasPermission,
+                                                onDeleteRequest: () {
+                                                  DialogShower.showConfirmDenyDialog(
+                                                    context, 
+                                                    "Eliminazione", 
+                                                    "Sei sicuro di voler "
+                                                    "eliminare questo prodotto?",
+                                                    confirmText: "Elimina",
+                                                    denyText: "Annulla",
+                                                    onConfirmPressed: (){
+                                                      loading.value =true;
+                                                      _categoriesBloc.add(
+                                                        ProductDeleteEvent(
+                                                          myCategory!.products[index]
+                                                        )
                                                       );
-                                                    },
-                                                  ),
-                                                ),
-                                                const Divider(
-                                                  height: 0,
-                                                  thickness: 0.1,
-                                                )
-                                              ],
+                                                    }
+                                                  );
+                                                },
+                                              ),
                                             ):
                                             SizedBox(
                                               height: 150,

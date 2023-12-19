@@ -54,8 +54,9 @@ class _OrderInfoHeaderState extends State<OrderInfoHeader> {
     return Text(
       status.visualize,
       style: Theme.of(context).textTheme.titleMedium?.copyWith(
-        color: status != OrderStatus.delivered && 
-        status != OrderStatus.canceled? 
+        color: status == OrderStatus.placed? 
+         Colors.amber:
+          status == OrderStatus.left? 
           Colors.green: 
           status == OrderStatus.delivered?
           Colors.black:

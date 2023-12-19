@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:food_delivery_app/Communication/http_communication.dart';
@@ -22,7 +23,7 @@ import 'package:gap/gap.dart';
 
 class ProductItem extends StatefulWidget {
   static const double imageSize = 80;
-  static const double rowHeight = 150;
+  static const double rowHeight = 120;
 
   final Product product;
   final bool hasPermission;
@@ -107,55 +108,51 @@ class _ProductItemState extends State<ProductItem> {
                     ),
                   ),
                 ),
-                const Gap(20),
+                const Gap(10),
                 Expanded(
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      Text(
+                      AutoSizeText(
                         widget.product.name,
                         style: Theme.of(context).textTheme.titleSmall,
                         textAlign: TextAlign.left,
                       ),                      
                       Expanded(
-                        child: Text(
+                        child: AutoSizeText(
                           widget.product.description,
-                          overflow: TextOverflow.fade,
                         ),
                       ),                      
-                      if(widget.canModifyCart && widget.hasPermission)
-                      GestureDetector(
-                        onTap: widget.onDeleteRequest,
-                        child: Row(
-                          children: [
-                            Text(
-                              "Elimina",
-                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                color: Colors.red
-                              ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        mainAxisSize: MainAxisSize.max,
+                        children: [
+                          if(widget.canModifyCart && widget.hasPermission)
+                          GestureDetector(
+                            onTap: widget.onDeleteRequest,
+                            child: const Icon(
+                              Icons.delete_forever_rounded,
+                              color: Colors.red,
                             ),
-                            const Icon(
-                                Icons.delete_forever_rounded,
-                                color: Colors.red,
-                              ),
-                          ],
-                        ),
-                      )
+                          ),
+                          Expanded(
+                            child: Text(
+                              "${widget.product.price}€",
+                              textAlign: TextAlign.end,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyMedium!
+                                  .copyWith(
+                                      color: Theme.of(context).primaryColor),
+                            ),
+                          ),
+                        ],
+                      ),                      
                     ],
                   ),
                 ),
-                const Gap(10),
-                Text(
-                  "${widget.product.price}€",
-                  textAlign: TextAlign.end,
-                  style: Theme.of(context)
-                      .textTheme
-                      .bodyMedium!
-                      .copyWith(
-                          color: Theme.of(context).primaryColor),
-                ),
-                const Gap(10),
+                const Gap(10),    
                 if(!widget.canModifyCart)
                 Text("x${widget.fixedCount.toString()}"),
                 if(widget.canModifyCart)

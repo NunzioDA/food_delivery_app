@@ -62,9 +62,14 @@ class DialogShower
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Padding(
-                padding: const EdgeInsets.all(20.0),
-                child: Image(image: asset),
+              ConstrainedBox(
+                constraints: const BoxConstraints(
+                  maxWidth: 200
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: Image(image: asset),
+                ),
               ),
               Text(task, textAlign: TextAlign.center,),
               const Gap(20),              

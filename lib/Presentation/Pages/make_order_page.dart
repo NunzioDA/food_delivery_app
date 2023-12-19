@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:food_delivery_app/Data/Model/products_category.dart';
@@ -74,7 +75,7 @@ class _MakeOrderPageState extends State<MakeOrderPage> {
           context, 
           "Oops..", 
           "Non sono riuscito a recuperare il tuo carrello.\n"
-          "Se il problema persiste contattaci!"
+          "Controlla la tua connessione e riprova."
         );
       }
     });
@@ -98,7 +99,7 @@ class _MakeOrderPageState extends State<MakeOrderPage> {
           context,
           "Attenzione!",
           "Si è verificato un errore nella gesione dei dati\n"
-              "Se il problema persiste contattaci!");
+              "Controlla la tua connessione e riprova.");
     } else if (state is CategoryAlreadyExisting) {
       DialogShower.showAlertDialog(
           context,
@@ -380,7 +381,7 @@ class HeaderMakeOrderPage extends StatelessWidget
                                         color: Theme.of(context).colorScheme.secondary
                                       ),
                                     ),
-                                    Text(
+                                    AutoSizeText(
                                       "Direttamente a casa tua "
                                       "in pochi, semplici, passi. ",
                                       style:Theme.of(context)
