@@ -365,7 +365,6 @@ class HeaderMakeOrderPage extends StatelessWidget
                             maxWidth: 700
                           ),
                           child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Expanded(
@@ -374,19 +373,25 @@ class HeaderMakeOrderPage extends StatelessWidget
                                   crossAxisAlignment: CrossAxisAlignment.stretch,
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    Text(
-                                      "I nostri piatti",
-                                      style:Theme.of(context)
-                                      .textTheme.headlineMedium?.copyWith(
-                                        color: Theme.of(context).colorScheme.secondary
+                                    Expanded(
+                                      flex: 1,
+                                      child: AutoSizeText(
+                                        "I nostri piatti",
+                                        style:Theme.of(context)
+                                        .textTheme.headlineMedium?.copyWith(
+                                          color: Theme.of(context).colorScheme.secondary
+                                        ),
                                       ),
                                     ),
-                                    AutoSizeText(
-                                      "Direttamente a casa tua "
-                                      "in pochi, semplici, passi. ",
-                                      style:Theme.of(context)
-                                      .textTheme.titleMedium?.copyWith(
-                                        color: Colors.white
+                                    Expanded(
+                                      flex: 2,
+                                      child: AutoSizeText(
+                                        "Direttamente a casa tua "
+                                        "in pochi, semplici, passi. ",
+                                        style:Theme.of(context)
+                                        .textTheme.titleMedium?.copyWith(
+                                          color: Colors.white
+                                        ),
                                       ),
                                     ),
                                   ],

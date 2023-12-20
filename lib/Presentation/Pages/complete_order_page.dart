@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:math';
 
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -648,12 +649,15 @@ with SingleTickerProviderStateMixin
                   DeliveryInfoWidget(deliveryInfo: (widget.state as DeliveryInfoSelectionChanged).selected!),
                   const Gap(20),
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    mainAxisAlignment: MainAxisAlignment.end,
                     mainAxisSize: MainAxisSize.max,
                     children: [                  
-                      Text(
-                        "Indirizzi recenti",
-                        style: Theme.of(context).textTheme.titleMedium,
+                      Expanded(
+                        child: AutoSizeText(
+                          "Indirizzi recenti",
+                          textAlign: TextAlign.end,
+                          style: Theme.of(context).textTheme.titleMedium,
+                        ),
                       ),
                       Transform.rotate(
                         angle: pi/2 + (_animationExpandOldInfo.value * pi),

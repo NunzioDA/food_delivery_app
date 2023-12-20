@@ -13,18 +13,15 @@ class FdaUser
 
 class FdaUserInfo{
   final String name;
-  final String image;
   final bool hasPermission;
 
   const FdaUserInfo(
     this.name, 
-    this.image,
     this.hasPermission
   );
 
 
   FdaUserInfo.fromJson(json):
     name = json["name"],
-    image = json["profile_pic"],
     hasPermission = json["has_permission"].toString() == "1";
 }
