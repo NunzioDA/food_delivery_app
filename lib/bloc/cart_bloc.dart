@@ -32,23 +32,7 @@ class CartBloc extends Bloc<CartEvent, CartState> {
         add(const _EmptyCart());
       }
     });
-
-    userSubscription = _userBloc.stream.listen((event) { 
-
-      Cart? previousCart;
-
-      if(event is LoggedInState && 
-      event is! VerifiedLoggedInState &&
-      event is! FetchedUserInfoState &&
-      event is! UserErrorLoggedInState
-      )      
-      {
-        previousCart = state.cart;        
-      }
-      
-      add(FetchCart(previousCart));
-    });
-
+    
     on<CartEvent>((event, emit) async{
       switch(event)
       {        

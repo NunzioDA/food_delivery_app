@@ -220,7 +220,26 @@ class _MakeOrderPageState extends State<MakeOrderPage> {
                               bloc: categoriesBloc,
                               listener: reactToCategoriesBlocState,
                               builder: (context, state) { 
-                                return BlocBuilder<UserBloc, UserState>(
+                                return BlocConsumer<UserBloc, UserState>(
+                                  listenWhen: (previous, current) => 
+                                  previous is NotLoggedState &&
+                                  current is LoggedInState || 
+                                  previous is LoggedInState &&
+                                  current is NotLoggedState,
+                                  listener: (context,state){
+                                    Cart? previousCart;
+
+                                    if(state is LoggedInState && 
+                                    state is! VerifiedLoggedInState &&
+                                    state is! FetchedUserInfoState &&
+                                    state is! UserErrorLoggedInState
+                                    )      
+                                    {
+                                      previousCart = cartBloc.state.cart;        
+                                    }
+                                    
+                                    cartBloc.add(FetchCart(previousCart));
+                                  },
                                   builder: (context, state) {
                                     bool hasPermission = false;
                                     
