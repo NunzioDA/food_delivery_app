@@ -5,7 +5,6 @@ import 'package:food_delivery_app/Data/Model/product.dart';
 import 'package:food_delivery_app/Data/Repositories/cart_repository.dart';
 import 'package:food_delivery_app/bloc/categories_bloc.dart';
 import 'package:food_delivery_app/bloc/user_bloc.dart';
-import 'package:food_delivery_app/cubit/connectivity_cubit.dart';
 import 'package:meta/meta.dart';
 
 part 'cart_event.dart';
@@ -13,26 +12,14 @@ part 'cart_state.dart';
 
 class CartBloc extends Bloc<CartEvent, CartState> {
   final UserBloc _userBloc;
-  final ConnectivityCubit _connectivityCubit;
   final CategoriesBloc _categoriesBloc;
   final CartRepository _cartRepository = CartRepository();
-  
-  late final StreamSubscription userSubscription;
-  late final StreamSubscription _connectivitySubscription;
 
   CartBloc(
     this._userBloc, 
     this._categoriesBloc,
-    this._connectivityCubit
   ) : super(CartInitial()) {
 
-    _connectivitySubscription = _connectivityCubit.stream.listen((event) {
-      if(event is NotConnected)
-      {
-        add(const _EmptyCart());
-      }
-    });
-    
     on<CartEvent>((event, emit) async{
       switch(event)
       {        
@@ -107,8 +94,6 @@ class CartBloc extends Bloc<CartEvent, CartState> {
 
   @override
   Future<void> close() {
-    userSubscription.cancel();
-    _connectivitySubscription.cancel();
     return super.close();
   }
 }

@@ -65,7 +65,7 @@ class _MakeOrderPageState extends State<MakeOrderPage> {
     );
     categoriesBloc = CategoriesBloc(userBloc);
 
-    cartBloc = CartBloc(userBloc, categoriesBloc, connectivityCubit);
+    cartBloc = CartBloc(userBloc, categoriesBloc);
 
     updateCategories();
     
@@ -236,6 +236,10 @@ class _MakeOrderPageState extends State<MakeOrderPage> {
                                     )      
                                     {
                                       previousCart = cartBloc.state.cart;        
+                                    }
+
+                                    if(state is LoggedInState){
+
                                     }
                                     
                                     cartBloc.add(FetchCart(previousCart));
