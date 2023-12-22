@@ -26,18 +26,19 @@ class Palette {
 
 }
 
+///Developed by Nunzio D'Amore
 class _ColorWithDarkness extends Color
 {
 
   const _ColorWithDarkness(int color, double darkness)
-  // For each base color (c) it builds two linear equations:
-  // One for values of darkness below 0.5, building a straight line
-  // moving between the point (0, 0xFF - c) [That maximizes the color gain when
-  // darkness is 0 leading to white] and (0.5, 0) [That minimize the color change
-  // leading to the base color].
-  // The other linear equation moves between (0.5, 0) [whitch intersect the previous
-  // equation] and (1, - c) [That maximizes the color loss whe darkness is 
-  // 1 leading to black].
+  /// For each base color (c) it builds two linear equations:
+  /// One for values of darkness below 0.5, building a straight line
+  /// moving between the point (0, 0xFF - c) [That maximizes the color gain when
+  /// darkness is 0 leading to white] and (0.5, 0) [That minimize the color change
+  /// leading to the base color].
+  /// The other linear equation moves between (0.5, 0) [whitch intersect the previous
+  /// equation] and (1, - c) [That maximizes the color loss when darkness is 
+  /// 1 leading to black].
   :super(
     (color & 0xff000000)
     | (((color >> 16) & 0xff) + (

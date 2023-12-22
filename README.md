@@ -74,3 +74,44 @@ Questo widget richiama una pagina ponte che visualizza l'immagine specificata ne
 Resta in attesa della pagina di visualizzazione e quando questa viene chiusa, torna automaticamente alla pagina chiamante.
 Il problema viene risolto poichè le nuove pagine non sono discendenti delle pagine chiamanti nell'albero dei widget.
 
+## Tecnologie 
+### Gestione dello stato
+L'applicazione usa Bloc per la gestione dello stato alternando sia bloc che cubit in base alle necessità.
+Inoltre, si è cercato per quanto possibile di annidare i widget in ascolto dello stato, ottimizzando le performance generali.
+
+### Persistenza dei dati e backend
+La persistenza delle informazioni è garantita sia localmente tramite SharedPreferences (il carrello se l'utente non ha effettuato l'accesso ed user e token per garantire la permanenza dell'accesso), sia salvando informazioni sul database nel caso in cui l'utente fosse loggato.
+Per farlo, l'app comunica con il backend - interamente scritto in PHP - tramite richieste http.
+
+La comuniazione è divisa in tre strati logici:
+
+* Bloc, acquisisce ed riconosce l'evento generato dall'utente o da timer, per poi effettuare la richiesta al repository. In base alla risposta di quest'ultimo verrà generato un nuovo stato.
+* Il repository, è l'oggetto che si occupa di comunicare con le API e di trasformare le risposte di queste in dati riconoscibili dall'app, insanziando gli oggetti delle classi che compongono il model.
+Si occupa, inoltre, di salvare e recuperare i dati in locale.
+* Le API sono classi statiche che si occupano di comunicare con il backend effettuando richieste http.
+
+Tutti i codici di errore del backend sono contenuti - sottoforma di mappa - nella classe ErrorCodes.
+
+### Gestione delle immagini
+Le immagini vengono sempre convertite in png con una risoluzione che non supera il FHD prima dell'invio, per ottimizzare i tempi di caricamento e il consumo dati. Inoltre, qualora dovesse essere specificato, il backend provvede anche ad una conversione della profondità a 8 bit per garantire la trasparenza durante la visualizzazione delle immagini tramite NetworkImage.
+
+Le immagini vengono inoltre visualizzate tramite il widget FdaCachedNetworkImage che provvederà a visualizzare l'immagine tramite il widget CachedNetworkImage, mostrando un'animazione di caricamento e salvando le immagini in cache, evitando di riscaricare ripetutamente le immagini.
+
+### Resilienza a perdite di connessione
+L'app è stata progettata per resistere a perdite di connessione, recuperando l'attività e lo stato non appena una connessione internet torna ad essere disponibile e attiva.
+
+### Package
+L'applicazione usufruisce di vari package aggiuntivi per la gestione di diversi aspetti interni:
+
+* google_fonts: per utilizzare i font forniti da google.
+* flutter_bloc: Bloc
+* cross_file: utilizzata per la gestione dei file (le immagini) su piattaforme diverse
+* mime: verifica del tipo del file recuperato
+* gap: permette di generare uno spazio (gap) nelle righe/colonne. Equivalente ad inserire un SizedBox ma senza la necessità di sapere in quale widget viene inserito.  
+* image_picker: utilizzato per recuperare le immagini da caricare.
+* photo_view: utile per visualizzare le immagini a schermo intero
+* cached_network_image: recupera le immagini dalla rete, salvandole in cache
+* loading_animation_widget: utilizzado in FdaLoading per l'animazione di caricamento
+* shared_preferences: salvataggio di dati in locale (carrello e credenziali)
+* connectivity_plus: utilizzato per ascoltare eventi di connettività
+* auto_size_text: permette di creare un widget testuale che adatta la grandezza del font in base allo spazio a sua disposizione.
