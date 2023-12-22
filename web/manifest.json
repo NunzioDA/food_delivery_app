@@ -1,12 +1,12 @@
 {
-    "name": "food_delivery_app",
-    "short_name": "food_delivery_app",
+    "name": "Food delivery app",
+    "short_name": "FDA",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#0175C2",
-    "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
-    "orientation": "portrait-primary",
+    "background_color": "#22293b",
+    "theme_color": "#22293b",
+    "description": "Food delivery app, PDMIU",
+    "orientation": "any",
     "prefer_related_applications": false,
     "icons": [
         {

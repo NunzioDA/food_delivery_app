@@ -55,6 +55,7 @@ class _CategoryPageState extends State<CategoryPage> {
   ProductsCategory? myCategory;
 
   ValueNotifier<bool> loading = ValueNotifier(false);
+  ValueNotifier<String> loadingText = ValueNotifier("");
 
   late ScrollController _parentScrollController;
 
@@ -86,6 +87,7 @@ class _CategoryPageState extends State<CategoryPage> {
 
   void updateCategory() {
     loading.value = true;
+    loadingText.value = "Sto prendendo il menù...";
     _categoriesBloc.add(const CategoriesFetchEvent());
   }
 
@@ -153,26 +155,26 @@ class _CategoryPageState extends State<CategoryPage> {
     return DialogPageTemplate(
       child: Padding(
         padding: const EdgeInsets.all(10),
-        child: FdaLoading(
-          loadingNotifier: loading,
-          dynamicText: ValueNotifier(""),
-          child: Center(
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(
-                maxWidth: 500
-              ),
-              child: SingleChildScrollView(
-                controller: _parentScrollController,
-                child: NotificationListener<OverscrollNotification>(
-                  onNotification: (notification) => 
-                  scrollParentOnChildOverscroll(notification, _parentScrollController),
-                  child: Stack(
-                    children: [
-                      Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          const Gap(CategoryPage.imageSize / 2),
-                          Center(
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(
+              maxWidth: 500
+            ),
+            child: SingleChildScrollView(
+              controller: _parentScrollController,
+              child: NotificationListener<OverscrollNotification>(
+                onNotification: (notification) => 
+                scrollParentOnChildOverscroll(notification, _parentScrollController),
+                child: Stack(
+                  children: [
+                    Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Gap(CategoryPage.imageSize / 2),
+                        Center(
+                          child: FdaLoading(
+                            loadingNotifier: loading,
+                            dynamicText: loadingText,
                             child: Hero(
                               tag: "Container${myCategory?.name}",
                               child: Material(
@@ -216,6 +218,7 @@ class _CategoryPageState extends State<CategoryPage> {
                                                         "definitivamente questa categoria?",
                                                         onConfirmPressed: () {
                                                       loading.value = true;
+                                                      loadingText.value = "Sto eliminando la categoria...";
                                                       _categoriesBloc.add(
                                                           CategoryDeleteEvent(
                                                               myCategory!));
@@ -278,7 +281,8 @@ class _CategoryPageState extends State<CategoryPage> {
                                                     confirmText: "Elimina",
                                                     denyText: "Annulla",
                                                     onConfirmPressed: (){
-                                                      loading.value =true;
+                                                      loading.value = true;
+                                                      loadingText.value = "Sto eliminando il prodotto...";
                                                       _categoriesBloc.add(
                                                         ProductDeleteEvent(
                                                           myCategory!.products[index]
@@ -308,6 +312,7 @@ class _CategoryPageState extends State<CategoryPage> {
                                               
                                                   if (productPair != null) {
                                                     loading.value = true;
+                                                    loadingText.value = "Sto creando il prodotto...";
                                                     _categoriesBloc.add(
                                                         ProductCreateEvent(
                                                       myCategory!,
@@ -376,34 +381,34 @@ class _CategoryPageState extends State<CategoryPage> {
                               ),
                             ),
                           ),
-                        ],
-                      ),
-                      Align(
-                        alignment: Alignment.topCenter,
-                        child: !widget.creationMode
-                            ? Hero(
-                                tag: "Image${myCategory?.name}",
-                                child: SizedBox(
-                                  height: CategoryPage.imageSize,
-                                  width: CategoryPage.imageSize,
-                                  child: FdaCachedNetworkImage(
-                                    url: FdaServerCommunication.getImageUrl(
-                                      myCategory!.imageName
-                                    ),
-                                  ),
-                                ))
-                            : ImageChooser(
-                                heroTag: "Image${myCategory?.name}",
+                        ),
+                      ],
+                    ),
+                    Align(
+                      alignment: Alignment.topCenter,
+                      child: !widget.creationMode
+                          ? Hero(
+                              tag: "Image${myCategory?.name}",
+                              child: SizedBox(
                                 height: CategoryPage.imageSize,
                                 width: CategoryPage.imageSize,
-                                editable: true,
-                                onImageChanged: (img) {
-                                  newCategoryImage = img;
-                                },
-                              ),
-                      ),
-                    ],
-                  ),
+                                child: FdaCachedNetworkImage(
+                                  url: FdaServerCommunication.getImageUrl(
+                                    myCategory!.imageName
+                                  ),
+                                ),
+                              ))
+                          : ImageChooser(
+                              heroTag: "Image${myCategory?.name}",
+                              height: CategoryPage.imageSize,
+                              width: CategoryPage.imageSize,
+                              editable: true,
+                              onImageChanged: (img) {
+                                newCategoryImage = img;
+                              },
+                            ),
+                    ),
+                  ],
                 ),
               ),
             ),

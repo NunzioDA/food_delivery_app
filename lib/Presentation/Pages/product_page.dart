@@ -5,7 +5,6 @@ import 'package:food_delivery_app/Presentation/Pages/Templates/dialog_page_templ
 import 'package:food_delivery_app/Presentation/UIUtilities/dialog_manager.dart';
 import 'package:food_delivery_app/Presentation/UIUtilities/image_chooser.dart';
 import 'package:food_delivery_app/Presentation/UIUtilities/ui_utilities.dart';
-import 'package:food_delivery_app/Utilities/credential_validation.dart';
 import 'package:gap/gap.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -67,8 +66,13 @@ class _CreateProductPageState extends State<CreateProductPage> {
                         child: Column(
                           children: [
                             TextFormField(
-                              validator: (value) => !validateName(name)? 
-                              "Inserire un nome dai 3 ai 20 caratteri":null,
+                              validator: (value) {
+                                if(value==null || value.isEmpty)
+                                {
+                                  return "Inserire un nome";
+                                }
+                                return null;
+                              },
                               decoration: const InputDecoration(
                                 label: Text("Nome")
                               ),

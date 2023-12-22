@@ -45,6 +45,7 @@ class _MakeOrderPageState extends State<MakeOrderPage> {
   late StreamSubscription cartSubscription;
 
   ValueNotifier<bool> loading = ValueNotifier(false);
+  ValueNotifier<String> loadingText = ValueNotifier("");
 
   late GlobalKey<TotalAndConfirmState> totalAndConfirmKey;
 
@@ -77,6 +78,10 @@ class _MakeOrderPageState extends State<MakeOrderPage> {
           "Non sono riuscito a recuperare il tuo carrello.\n"
           "Controlla la tua connessione e riprova."
         );
+      }
+      else if(loadingText.value == "Recupero il carrello...")
+      {
+        loading.value = false;
       }
     });
     
@@ -114,6 +119,8 @@ class _MakeOrderPageState extends State<MakeOrderPage> {
     }
     else if(state is CategoriesFetched)
     {
+      loading.value = true;
+      loadingText.value = "Recupero il carrello...";
       cartBloc.add(const FetchCart());
     }
   }
@@ -145,15 +152,19 @@ class _MakeOrderPageState extends State<MakeOrderPage> {
     ));
 
     if (newCategoryPair != null) {
+      loading.value = true;
+      loadingText.value = "Creo la categoria...";
       categoriesBloc.add(CategoriesCreateEvent(
-          ProductsCategory(newCategoryPair.$1, "", []),
-          newCategoryPair.$2 //Immagine
-          ));
+        ProductsCategory(newCategoryPair.$1, "", []),
+        newCategoryPair.$2 //Immagine
+        )
+      );
     }
   }
 
   void updateCategories() {
     loading.value = true;
+    loadingText.value = "Sto prendendo il menù...";
     categoriesBloc.add(const CategoriesFetchEvent());
   }
 
@@ -172,7 +183,7 @@ class _MakeOrderPageState extends State<MakeOrderPage> {
             create: (context) => cartBloc,
             child: FdaLoading(
               loadingNotifier: loading,
-              dynamicText: ValueNotifier("Sto caricando i dati.."),
+              dynamicText: loadingText,
               child: Stack(
                 fit: StackFit.expand,
                 children: [
