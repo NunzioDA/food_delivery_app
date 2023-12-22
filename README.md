@@ -1,20 +1,20 @@
-# food_delivery_app
-<<<<<<< HEAD
-Progetto esame PDMIU
+# Food Delivery App
+<<<< Progetto esame PDMIU
 =======
 
-A new Flutter project.
+Nunzio D'Amore,
+Mat.329163
 
-## Getting Started
+## In breve
 
-This project is a starting point for a Flutter application.
+Il presente progetto ha come obiettivo quello di creare un'app di ordinazione online di un ristorante generico.
+L'app permette ai clienti del ristorante di effettuare le ordinazioni, scegliendo i prodotti che più preferiscono; e permette al ristorante di gestire questi prodotti e gli ordini effettuati dai clienti.
 
-A few resources to get you started if this is your first Flutter project:
+## Casi d'uso
+I casi d'uso di FDA sono visualizzati nel seguente diagramma.
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+![alt text](./readmeImgs/usecases.png)
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
->>>>>>> ea0299c (Primo commit)
+## UX e UI
+
+L'app è state progettata per rendere l'esperienza utente più semplice ma 
