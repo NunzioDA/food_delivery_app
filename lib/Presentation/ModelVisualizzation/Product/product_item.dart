@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:food_delivery_app/Communication/http_communication.dart';
 import 'package:food_delivery_app/Data/Model/product.dart';
-import 'package:food_delivery_app/Presentation/Pages/to_visualizer_bridge.dart';
+import 'package:food_delivery_app/Presentation/UIUtilities/to_visualizer_bridge.dart';
 import 'package:food_delivery_app/Presentation/UIUtilities/add_remove_selector.dart';
 import 'package:food_delivery_app/Presentation/UIUtilities/cached_image.dart';
 import 'package:food_delivery_app/Presentation/UIUtilities/loading.dart';
