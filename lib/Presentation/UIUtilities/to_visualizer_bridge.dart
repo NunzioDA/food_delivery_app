@@ -132,9 +132,7 @@ class _BridgePage extends StatefulWidget
   State<_BridgePage> createState() => _BridgePageState();
 }
 
-class _BridgePageState extends State<_BridgePage> {
-
-  
+class _BridgePageState extends State<_BridgePage> {  
   (Size,Offset) getImageSizeAndPosition()
   {
      final RenderBox renderBox = widget.childKey.currentContext?.findRenderObject() as RenderBox;
@@ -149,13 +147,6 @@ class _BridgePageState extends State<_BridgePage> {
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((_) async => 
       await Navigator.of(context).push(
-        // PageRouteBuilder(
-        //   opaque: false,
-        //   pageBuilder: (context, animation, secondaryAnimation) => ImageVisualizer(
-        //     image: widget.imageProvider,
-        //     heroTag: "ImageBridgeToVisualizer",
-        //   ),
-        // )
         widget.route
       ).then((value) => Navigator.of(context).pop(value))
     );
