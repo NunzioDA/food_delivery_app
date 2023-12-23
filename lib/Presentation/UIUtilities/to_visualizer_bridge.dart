@@ -2,11 +2,76 @@ import 'package:flutter/material.dart';
 import 'package:food_delivery_app/Presentation/Pages/image_show.dart';
 import 'package:food_delivery_app/Presentation/UIUtilities/cached_image.dart';
 
-/// Permette di effettuare l'animazione di visualizzazione di un immagine
+/// Permette di effettuare l'animazione di transizione 
 /// con [Hero] evitando la restrizione di discendenza tra widget [Hero]
-/// utilizzando una pagina che fa da ponte [_ToVisualizerBridge]
+/// passando per una pagina che fa da ponte [_BridgePage]
+class SuperHero extends StatefulWidget
+{
+  final Object? tag;
+  final Route<dynamic> Function() generateRoute;
+  final void Function(dynamic value) onPageReturn;
+  final Widget? childWithHeros;
+  final Widget child;
 
-class ZoomableImage extends StatefulWidget
+  const SuperHero({
+    super.key,
+    required this.onPageReturn,
+    required this.tag,
+    required this.generateRoute,
+    required this.child,
+    this.childWithHeros,
+  });
+
+  @override
+  State<SuperHero> createState() => _SuperHeroState();
+}
+
+class _SuperHeroState extends State<SuperHero> {
+  bool visualizing = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final GlobalKey key = GlobalKey();
+    return Listener(
+      behavior: HitTestBehavior.translucent,
+      onPointerUp: (e){
+        setState(() => visualizing = true);
+        Navigator.of(context).push(
+          PageRouteBuilder(
+            opaque: false,
+            pageBuilder: (context, animation, secondaryAnimation) {
+              return _BridgePage(
+                tag: widget.tag,
+                route: widget.generateRoute.call(),
+                childKey: key,
+                hasHero:  widget.childWithHeros != null,
+                child: widget.childWithHeros ?? widget.child,
+              );
+            },
+          )
+        ).then((value) async{
+          widget.onPageReturn.call(value);
+          // Attesa del completamento dell'animazione
+          await Future.delayed(const Duration(milliseconds: 300));
+          setState(() => visualizing = false);
+        });
+
+      },
+      child: Container(
+        key: key,
+        child: !visualizing? 
+        widget.child
+        : null,
+      ),
+    );
+  }
+}
+
+
+/// Permette di effettuare l'animazione di visualizzazione di un immagine
+/// con [SuperHero] 
+
+class ZoomableImage extends StatelessWidget
 {
   final ImageProvider? provider;
   final FdaCachedNetworkImage? image;
@@ -17,77 +82,62 @@ class ZoomableImage extends StatefulWidget
   }) : assert((image != null) != (provider != null));
 
   @override
-  State<ZoomableImage> createState() => _ZoomableImageState();
-}
-
-class _ZoomableImageState extends State<ZoomableImage> {
-
-  bool visualizing = false;
-
-  @override
   Widget build(BuildContext context) {
-    final GlobalKey key = GlobalKey();
-    return GestureDetector(
-      onTap: (){
-        setState(() => visualizing = true);
-
-        Navigator.of(context).push(
-          PageRouteBuilder(
-            opaque: false,
-            pageBuilder: (context, animation, secondaryAnimation) {
-              return _ToVisualizerBridge(
-                imageProvider: widget.provider ?? widget.image!.getImageProvider(), 
-                imgKey: key
-              );
-            },
-          )
-        ).then((value) async{
-          // Attesa del completamento dell'animazione
-          await Future.delayed(const Duration(milliseconds: 300));
-          setState(() => visualizing = false);
-        });
-
-      },
-      child: Container(
-        key: key,
-        child: !visualizing? widget.provider != null? Image(
-          image: widget.provider!,
+    return SuperHero(
+      onPageReturn: (v){}, 
+      tag: "ImageToBridge", 
+      generateRoute: () => PageRouteBuilder(
+        opaque: false,
+        pageBuilder: (context, animation, secondaryAnimation) {
+          return ImageVisualizer(
+            image: provider ?? image!.getImageProvider(),
+            heroTag: "ImageBridgeToVisualizer",
+          );
+        },
+      ), 
+      child: provider != null? Image(
+          image: provider!,
           fit: BoxFit.cover,
-        ):widget.image
-        : null,
-      ),
+        ): image!
     );
   }
 }
 
-/// Questa pagina è il ponte tra [ZoomableImage] e [ImageVisualizer]
-/// andando a visualizzare un'immagine identica a quella contenuta 
-/// in [ZoomableImage] nella stessa posizione e con le stesse dimensioni usando 
+/// Questa pagina è il ponte tra [SuperHero] e la pagina da visualizzare
+/// andando a visualizzare un widget identico a quello contenuto
+/// in [SuperHero] nella stessa posizione e con le stesse dimensioni usando 
 /// uno [Stack] e le informazioni ricavate dalla chiave appartenente al 
-/// container nel widget [ZoomableImage].
-/// Quando il widget è stato costruito questo procede al push di [ImageVisualizer]
+/// container che circonda il figlio di [SuperHero].
+/// Quando il widget è stato costruito questo procede al push della pagina specificata
 /// per avviare l'animazione di transizione tramite [Hero].
-/// Resta poi in attesa del pop dell'[ImageVisualizer] per effettuare a sua volta
+/// Resta poi in attesa del pop della pagina per effettuare a sua volta
 /// il pop tornando alla pagina chiamante.
-class _ToVisualizerBridge extends StatefulWidget
+class _BridgePage extends StatefulWidget
 {
-  final ImageProvider imageProvider;
-  final GlobalKey imgKey;
-  const _ToVisualizerBridge({
-    required this.imageProvider,
-    required this.imgKey
+  final Route<dynamic> route;
+  final Object? tag;
+  final GlobalKey childKey;
+  final bool hasHero;
+  final Widget child;
+
+  const _BridgePage({
+    required this.tag,
+    required this.child,
+    required this.childKey,
+    required this.route,
+    required this.hasHero
   });
 
   @override
-  State<_ToVisualizerBridge> createState() => _ToVisualizerBridgeState();
+  State<_BridgePage> createState() => _BridgePageState();
 }
 
-class _ToVisualizerBridgeState extends State<_ToVisualizerBridge> {
+class _BridgePageState extends State<_BridgePage> {
 
   
   (Size,Offset) getImageSizeAndPosition()
   {
-     final RenderBox renderBox = widget.imgKey.currentContext?.findRenderObject() as RenderBox;
+     final RenderBox renderBox = widget.childKey.currentContext?.findRenderObject() as RenderBox;
  
     final Size size = renderBox.size; 
     final Offset offset = renderBox.localToGlobal(Offset.zero);
@@ -99,14 +149,15 @@ class _ToVisualizerBridgeState extends State<_ToVisualizerBridge> {
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((_) async => 
       await Navigator.of(context).push(
-        PageRouteBuilder(
-          opaque: false,
-          pageBuilder: (context, animation, secondaryAnimation) => ImageVisualizer(
-            image: widget.imageProvider,
-            heroTag: "ImageBridgeToVisualizer",
-          ),
-        )
-      ).then((value) => Navigator.of(context).pop())
+        // PageRouteBuilder(
+        //   opaque: false,
+        //   pageBuilder: (context, animation, secondaryAnimation) => ImageVisualizer(
+        //     image: widget.imageProvider,
+        //     heroTag: "ImageBridgeToVisualizer",
+        //   ),
+        // )
+        widget.route
+      ).then((value) => Navigator.of(context).pop(value))
     );
     super.initState();
   }
@@ -126,12 +177,10 @@ class _ToVisualizerBridgeState extends State<_ToVisualizerBridge> {
           height: size.height,
           left: position.dx,
           top: position.dy,          
-          child: Hero(
+          child: widget.hasHero? widget.child:
+          Hero(
             tag:"ImageBridgeToVisualizer",
-            child: Image(
-              image: widget.imageProvider,
-              fit: BoxFit.cover,
-            )
+            child: widget.child
           )
         )
       ],
