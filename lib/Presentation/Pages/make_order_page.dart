@@ -282,8 +282,7 @@ class _MakeOrderPageState extends State<MakeOrderPage> {
                                                     }
                                                   },
                                                 ),
-                                              )
-                                              .toList(),
+                                              ),
                                           if (hasPermission)
                                             AddElementWidget(
                                               onPressed: () {
