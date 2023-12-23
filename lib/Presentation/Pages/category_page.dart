@@ -172,17 +172,18 @@ class _CategoryPageState extends State<CategoryPage> {
                       children: [
                         const Gap(CategoryPage.imageSize / 2),
                         Center(
-                          child: FdaLoading(
-                            loadingNotifier: loading,
-                            dynamicText: loadingText,
-                            child: Hero(
-                              tag: "Container${myCategory?.name}",
-                              child: Material(
-                                elevation: defaultElevation,
-                                color: Theme.of(context).scaffoldBackgroundColor,
-                                borderRadius:BorderRadius.circular(
-                                  defaultBorderRadius
-                                ),
+                          child: Hero(
+                            tag: "Container${myCategory?.name}",
+                            child: Material(
+                              clipBehavior: Clip.hardEdge,
+                              elevation: defaultElevation,
+                              color: Theme.of(context).scaffoldBackgroundColor,
+                              borderRadius:BorderRadius.circular(
+                                defaultBorderRadius
+                              ),
+                              child: FdaLoading(
+                                loadingNotifier: loading,
+                                dynamicText: loadingText,
                                 child: Padding(
                                   padding: const EdgeInsets.only(
                                     top: CategoryPage.imageSize /2, 
