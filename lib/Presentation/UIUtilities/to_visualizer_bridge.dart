@@ -6,7 +6,7 @@ import 'package:food_delivery_app/Presentation/UIUtilities/cached_image.dart';
 /// con [Hero] evitando la restrizione di discendenza tra widget [Hero]
 /// utilizzando una pagina che fa da ponte [_ToVisualizerBridge]
 
-class ZoomableImage extends StatelessWidget
+class ZoomableImage extends StatefulWidget
 {
   final ImageProvider? provider;
   final FdaCachedNetworkImage? image;
@@ -17,28 +17,44 @@ class ZoomableImage extends StatelessWidget
   }) : assert((image != null) != (provider != null));
 
   @override
+  State<ZoomableImage> createState() => _ZoomableImageState();
+}
+
+class _ZoomableImageState extends State<ZoomableImage> {
+
+  bool visualizing = false;
+
+  @override
   Widget build(BuildContext context) {
     final GlobalKey key = GlobalKey();
     return GestureDetector(
       onTap: (){
+        setState(() => visualizing = true);
+
         Navigator.of(context).push(
           PageRouteBuilder(
             opaque: false,
             pageBuilder: (context, animation, secondaryAnimation) {
               return _ToVisualizerBridge(
-                imageProvider: provider ?? image!.getImageProvider(), 
+                imageProvider: widget.provider ?? widget.image!.getImageProvider(), 
                 imgKey: key
               );
             },
           )
-        );
+        ).then((value) async{
+          // Attesa del completamento dell'animazione
+          await Future.delayed(const Duration(milliseconds: 300));
+          setState(() => visualizing = false);
+        });
+
       },
       child: Container(
         key: key,
-        child: provider != null? Image(
-          image: provider!,
+        child: !visualizing? widget.provider != null? Image(
+          image: widget.provider!,
           fit: BoxFit.cover,
-        ):image,
+        ):widget.image
+        : null,
       ),
     );
   }
