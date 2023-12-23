@@ -73,10 +73,10 @@ Carrello verticale            |  Carrello orizzontale
 
 ### Risoluzione limiti di Hero
 
-Quasi tutte le transizioni tra pagine sono state animate tramite Hero, per garantire un collegamento logico e visivo tra tutte le azioni dell'utente, migliorandone la UX. Hero ha però un limite: non possono esserci discendenze tra widget Hero. Per garantire consistenza nella UI e UX è stato quindi creato un ulteriore widget per ovviare a questo problema: ZoomableImage.
+Quasi tutte le transizioni tra pagine sono state animate tramite Hero, per garantire un collegamento logico e visivo tra tutte le azioni dell'utente, migliorandone la UX. Hero ha però un limite: non possono esserci discendenze tra widget Hero. Per garantire consistenza nella UI e UX è stato quindi creato un ulteriore widget per ovviare a questo problema: SuperHero.
 
-Questo widget richiama una pagina "ponte" che visualizza l'immagine specificata nella posizione esatta in cui era ZoomableImage sovrapponendola, e avvia successivamente la navigazione verso la pagina di visualizzazione delle immagini tramite un Hero widget.
-Resta in attesa della pagina di visualizzazione e quando questa viene chiusa, torna automaticamente alla pagina chiamante.
+Questo widget richiama una pagina "ponte" che visualizza il figlio sovrapponendolo al SuperHero chiamante, e avvia successivamente la navigazione verso la pagina specificata avviando l'animazione Hero.
+Resta in attesa della pagina e quando questa viene chiusa, torna automaticamente alla pagina chiamante (restituendone anche l'eventuale risultato).
 Il problema viene risolto poichè le nuove pagine non sono discendenti delle pagine chiamanti nell'albero dei widget.
 
 ## Tecnologie 
