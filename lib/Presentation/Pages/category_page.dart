@@ -14,6 +14,7 @@ import 'package:food_delivery_app/Presentation/UIUtilities/cached_image.dart';
 import 'package:food_delivery_app/Presentation/UIUtilities/dialog_manager.dart';
 import 'package:food_delivery_app/Presentation/UIUtilities/image_chooser.dart';
 import 'package:food_delivery_app/Presentation/UIUtilities/loading.dart';
+import 'package:food_delivery_app/Presentation/UIUtilities/to_visualizer_bridge.dart';
 import 'package:food_delivery_app/Presentation/UIUtilities/ui_utilities.dart';
 import 'package:food_delivery_app/bloc/categories_bloc.dart';
 import 'package:gap/gap.dart';
@@ -296,21 +297,18 @@ class _CategoryPageState extends State<CategoryPage> {
                                             ):
                                             SizedBox(
                                               height: 150,
-                                              child: AddElementWidget(
-                                                onPressed: () async {
-                                                  var productPair =
-                                                      await Navigator.of(
-                                                              context)
-                                                          .push(
-                                                              PageRouteBuilder(
-                                                    opaque: false,
-                                                    pageBuilder: (context,
-                                                        animation,
-                                                        secondaryAnimation) {
-                                                      return const CreateProductPage();
-                                                    },
-                                                  ));
-                                              
+                                              child: SuperHero(
+                                                tag: "",
+                                                generateRoute: () => PageRouteBuilder(
+                                                  opaque: false,
+                                                  pageBuilder: (context,
+                                                    animation,
+                                                    secondaryAnimation
+                                                  ) {
+                                                    return const CreateProductPage();
+                                                  },
+                                                ),
+                                                onPageReturn: (productPair) {
                                                   if (productPair != null) {
                                                     loading.value = true;
                                                     loadingText.value = "Sto creando il prodotto...";
@@ -322,6 +320,29 @@ class _CategoryPageState extends State<CategoryPage> {
                                                     ));
                                                   }
                                                 },
+                                                childWithHeros: AddElementWidget(
+                                                  containerTag: "ProductCreate",
+                                                  iconTag: "ImageChooser",
+                                                  onPressed: (){},
+                                                ),
+                                                child: AddElementWidget(
+                                                  onPressed: () async {
+                                                    // var productPair =
+                                                    //     await Navigator.of(
+                                                    //             context)
+                                                    //         .push(
+                                                    //             PageRouteBuilder(
+                                                    //   opaque: false,
+                                                    //   pageBuilder: (context,
+                                                    //       animation,
+                                                    //       secondaryAnimation) {
+                                                    //     return const CreateProductPage();
+                                                    //   },
+                                                    // ));
+                                                
+                                                    
+                                                  },
+                                                ),
                                               ),
                                             ),
                                                  

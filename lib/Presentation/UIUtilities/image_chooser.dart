@@ -75,62 +75,62 @@ class _ImageChooserState extends State<ImageChooser> {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: (){
-        late ImageProvider? provider;
-        
-        if(myImage != null || 
-          widget.defaultImage != null ||
-          (
-            widget.defaultBackground != null 
-            && widget.defaultBackground is FdaCachedNetworkImage
-          )
-         )
-        {
-          provider = 
-          (myImage != null)? 
-            (kIsWeb)? 
-              Image.network(
-                myImage!.path, 
-                fit: BoxFit.cover,
-                height: double.infinity,
-                width: double.infinity,
-              ).image : 
-              Image.file(
-                File(myImage!.path), 
-                fit: BoxFit.cover,
-                height: double.infinity,
-                width: double.infinity,
-              ).image
-            : widget.defaultImage;
-
-            if(provider != null || widget.defaultBackground is FdaCachedNetworkImage)
-            {
-              
-              Navigator.of(context).push(
-              PageRouteBuilder(
-                opaque: false,
-                pageBuilder: (context, animation, secondaryAnimation) => ImageVisualizer(
-                  image: provider ?? (widget.defaultBackground as FdaCachedNetworkImage).getImageProvider(),
-                  heroTag: heroTag,
-                ),
-              ));
-            }        
-        }
-       
-      },
-      child: Container(
-        color: myImage!= null || widget.defaultImage != null ? 
-                Colors.transparent : 
-                Colors.grey.shade100, 
-        width: widget.width,
-        height: widget.height,        
-        child: Stack(
-          children: [
-            const SizedBox(width: double.infinity,height: double.infinity,),
-            Hero(
-              tag: heroTag, 
-              child: Container(
+    return Hero(
+      tag: heroTag, 
+      child: GestureDetector(
+        onTap: (){
+          late ImageProvider? provider;
+          
+          if(myImage != null || 
+            widget.defaultImage != null ||
+            (
+              widget.defaultBackground != null 
+              && widget.defaultBackground is FdaCachedNetworkImage
+            )
+           )
+          {
+            provider = 
+            (myImage != null)? 
+              (kIsWeb)? 
+                Image.network(
+                  myImage!.path, 
+                  fit: BoxFit.cover,
+                  height: double.infinity,
+                  width: double.infinity,
+                ).image : 
+                Image.file(
+                  File(myImage!.path), 
+                  fit: BoxFit.cover,
+                  height: double.infinity,
+                  width: double.infinity,
+                ).image
+              : widget.defaultImage;
+      
+              if(provider != null || widget.defaultBackground is FdaCachedNetworkImage)
+              {
+                
+                Navigator.of(context).push(
+                PageRouteBuilder(
+                  opaque: false,
+                  pageBuilder: (context, animation, secondaryAnimation) => ImageVisualizer(
+                    image: provider ?? (widget.defaultBackground as FdaCachedNetworkImage).getImageProvider(),
+                    heroTag: heroTag,
+                  ),
+                ));
+              }        
+          }
+         
+        },
+        child: Container(
+          color: myImage!= null || widget.defaultImage != null ? 
+                  Colors.transparent : 
+                  Colors.grey.shade100, 
+          width: widget.width,
+          height: widget.height,        
+          child: Stack(
+            children: [
+              const SizedBox(width: double.infinity,height: double.infinity,),
+              Container(
                 clipBehavior: Clip.hardEdge,
                 decoration: BoxDecoration(
                   shape: widget.shape,
@@ -162,42 +162,42 @@ class _ImageChooserState extends State<ImageChooser> {
                     widget.defaultBackground!,
                   ],
                 ),
-              )
-            ),
-            if(widget.editable)
-            Align(
-              alignment: Alignment.center,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      shape: const CircleBorder(),
-                      backgroundColor: Theme.of(context).primaryColor.withAlpha(150),
-                    ),
-                    onPressed: () => _getFromGallery(),
-                    child: Icon(
-                      myImage == null && widget.defaultImage == null &&  widget.defaultBackground == null?
-                      Icons.add : Icons.edit, 
-                      color: Colors.white,
-                    ),
-                  ),                  
-                  Container(
-                    decoration: BoxDecoration(
-                      borderRadius: const BorderRadius.all(Radius.circular(20)),
-                      color: Theme.of(context).primaryColor.withAlpha(150),
-                    ),
-                    child: Text(
-                      myImage == null && widget.defaultImage == null &&  widget.defaultBackground == null? 
-                        "Aggiungi immagine" : "Modifica immagine", 
-                      style: const TextStyle(color: Colors.white),
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  )
-                ],
               ),
-            )          
-          ],
+              if(widget.editable)
+              Align(
+                alignment: Alignment.center,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        shape: const CircleBorder(),
+                        backgroundColor: Theme.of(context).primaryColor.withAlpha(150),
+                      ),
+                      onPressed: () => _getFromGallery(),
+                      child: Icon(
+                        myImage == null && widget.defaultImage == null &&  widget.defaultBackground == null?
+                        Icons.add : Icons.edit, 
+                        color: Colors.white,
+                      ),
+                    ),                  
+                    Container(
+                      decoration: BoxDecoration(
+                        borderRadius: const BorderRadius.all(Radius.circular(20)),
+                        color: Theme.of(context).primaryColor.withAlpha(150),
+                      ),
+                      child: Text(
+                        myImage == null && widget.defaultImage == null &&  widget.defaultBackground == null? 
+                          "Aggiungi immagine" : "Modifica immagine", 
+                        style: const TextStyle(color: Colors.white),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    )
+                  ],
+                ),
+              )          
+            ],
+          ),
         ),
       ),
     );

@@ -142,10 +142,13 @@ class _MakeOrderPageState extends State<MakeOrderPage> {
               value: cartBloc,
             ),
           ],
-          child: CategoryPage(
-            category: category,
-            creationMode: creationMode,
-            hasPermission: hasPermission,
+          child: FadeTransition(
+            opacity: (creationMode)? animation : Tween<double>(begin: 1,end: 1).animate(animation),
+            child: CategoryPage(
+              category: category,
+              creationMode: creationMode,
+              hasPermission: hasPermission,
+            ),
           ),
         );
       },
@@ -285,6 +288,8 @@ class _MakeOrderPageState extends State<MakeOrderPage> {
                                               ),
                                           if (hasPermission)
                                             AddElementWidget(
+                                              containerTag: "Containernull",
+                                              iconTag: "Imagenull",
                                               onPressed: () {
                                                 openCategoryPage(
                                                     null, true, hasPermission);
@@ -310,18 +315,30 @@ class _MakeOrderPageState extends State<MakeOrderPage> {
                         if(cartBloc.state.cart.isNotEmpty)
                         {
                           Navigator.of(context).push(
-                            PageRouteBuilder(
-                              pageBuilder: (newC, animation, secondaryAnimation) => MultiBlocProvider(
-                              providers: [
-                                BlocProvider.value(
-                                  value: cartBloc,
+                            PageRouteBuilder(     
+                              transitionDuration: const Duration(milliseconds: 250),                         
+                              reverseTransitionDuration: const Duration(milliseconds: 250),                         
+                              pageBuilder: (newC, animation, secondaryAnimation) =>
+                                MultiBlocProvider(
+                                  providers: [
+                                    BlocProvider.value(
+                                      value: cartBloc,
+                                    ),
+                                    BlocProvider.value(
+                                      value: BlocProvider.of<OrderBloc>(context),
+                                    )
+                                  ],
+                                  child: const CompleteOrderPage(),
                                 ),
-                                BlocProvider.value(
-                                  value: BlocProvider.of<OrderBloc>(context),
-                                )
-                              ],
-                              child: const CompleteOrderPage(),
-                            ),
+                              transitionsBuilder: (context, animation, secondaryAnimation, child) => 
+                              SlideTransition(
+                                position: Tween<Offset>(
+                                  begin: const Offset(0,1),
+                                  end: Offset.zero
+                                ).animate(animation),
+                                child: child
+                              ),
+                              
                             )
                           );
                         }

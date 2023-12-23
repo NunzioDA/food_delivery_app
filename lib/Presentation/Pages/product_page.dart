@@ -39,112 +39,127 @@ class _CreateProductPageState extends State<CreateProductPage> {
           padding: const EdgeInsets.all(20.0),
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 500),
-            child: Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(defaultBorderRadius),
-                color: Theme.of(context).dialogBackgroundColor
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(20.0),
-                child: SingleChildScrollView(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Align(
-                        child: ImageChooser(
-                          height: CreateProductPage.imageSize,
-                          width: CreateProductPage.imageSize,
-                          onImageChanged: (value) {
-                            image = value;
-                          },
-                        ),
+            child: SingleChildScrollView(
+              child: Stack(
+                children: [
+                  Hero(
+                    tag: "ProductCreate",
+                    child: Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(defaultBorderRadius),
+                        color: Theme.of(context).dialogBackgroundColor
                       ),
-                      const Gap(20),
-                      Form(
-                        key: formKey,
+                      child: Padding(
+                        padding: const EdgeInsets.all(20.0),
                         child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
-                            TextFormField(
-                              validator: (value) {
-                                if(value==null || value.isEmpty)
-                                {
-                                  return "Inserire un nome";
-                                }
-                                return null;
-                              },
-                              decoration: const InputDecoration(
-                                label: Text("Nome")
-                              ),
-                              onChanged: (value) => name = value,
+                            const SizedBox(
+                              height: CreateProductPage.imageSize,
+                              width: CreateProductPage.imageSize,
+                            ),                      
+                            const Gap(20),
+                            Form(
+                              key: formKey,
+                              child: Column(
+                                children: [
+                                  TextFormField(
+                                    validator: (value) {
+                                      if(value==null || value.isEmpty)
+                                      {
+                                        return "Inserire un nome";
+                                      }
+                                      return null;
+                                    },
+                                    decoration: const InputDecoration(
+                                      label: Text("Nome")
+                                    ),
+                                    onChanged: (value) => name = value,
+                                  ),
+                                  const Gap(20),
+                                  TextFormField(
+                                    validator: (value) {
+                                      if(value==null || value.isEmpty)
+                                      {
+                                        return "Inserire una descrizione";
+                                      }
+                                      return null;
+                                    },
+                                    decoration: const InputDecoration(
+                                      label: Text("Descrizione")
+                                    ),
+                                    onChanged: (value) => description = value,
+                                  ),
+                                  const Gap(20),
+                                  TextFormField(
+                                    validator: (value) {
+                                      if(value==null || value.isEmpty)
+                                      {
+                                        return "Inserire un prezzo";
+                                      }
+                                      return null;
+                                    },
+                                    decoration: const InputDecoration(
+                                      label: Text("Prezzo")
+                                    ),
+                                    inputFormatters: [
+                                      FilteringTextInputFormatter.allow(RegExp(r'(^\d*\.?\d*)'))
+                                    ],
+                                    keyboardType: TextInputType.number,
+                                    onChanged: (value) => price = double.parse(value),
+                                  )
+                                ],
+                              )
                             ),
                             const Gap(20),
-                            TextFormField(
-                              validator: (value) {
-                                if(value==null || value.isEmpty)
-                                {
-                                  return "Inserire una descrizione";
-                                }
-                                return null;
-                              },
-                              decoration: const InputDecoration(
-                                label: Text("Descrizione")
+                            SizedBox(
+                              height: 60,
+                              child: ElevatedButton(
+                                onPressed: (){
+                                  if(formKey.currentState?.validate()??false)
+                                  {
+                                    if(image != null)
+                                    {
+                                      var product = Product(
+                                        name!, 
+                                        description!,
+                                        price!
+                                      );
+                        
+                                      Navigator.of(context).pop((product, image));
+                                    }
+                                    else{
+                                      DialogShower.showAlertDialog(
+                                        context, 
+                                        "Immagine", 
+                                        "Prima di procedere inserisci un'immagine che rappresenta il prodotto."
+                                      );
+                                    }
+                                  }                            
+                                }, 
+                                child: const Text("Crea prodotto")
                               ),
-                              onChanged: (value) => description = value,
-                            ),
-                            const Gap(20),
-                            TextFormField(
-                              validator: (value) {
-                                if(value==null || value.isEmpty)
-                                {
-                                  return "Inserire un prezzo";
-                                }
-                                return null;
-                              },
-                              decoration: const InputDecoration(
-                                label: Text("Prezzo")
-                              ),
-                              inputFormatters: [
-                                FilteringTextInputFormatter.allow(RegExp(r'(^\d*\.?\d*)'))
-                              ],
-                              keyboardType: TextInputType.number,
-                              onChanged: (value) => price = double.parse(value),
                             )
                           ],
-                        )
-                      ),
-                      const Gap(20),
-                      SizedBox(
-                        height: 60,
-                        child: ElevatedButton(
-                          onPressed: (){
-                            if(formKey.currentState?.validate()??false)
-                            {
-                              if(image != null)
-                              {
-                                var product = Product(
-                                  name!, 
-                                  description!,
-                                  price!
-                                );
-                  
-                                Navigator.of(context).pop((product, image));
-                              }
-                              else{
-                                DialogShower.showAlertDialog(
-                                  context, 
-                                  "Immagine", 
-                                  "Prima di procedere inserisci un'immagine che rappresenta il prodotto."
-                                );
-                              }
-                            }                            
-                          }, 
-                          child: const Text("Crea prodotto")
                         ),
-                      )
-                    ],
+                      ),
+                    ),
                   ),
-                ),
+                  Padding(
+                    padding: const EdgeInsets.only(top:20.0),
+                    child: Align(
+                      child: ImageChooser(
+                        heroTag: "ImageChooser",
+                        height: CreateProductPage.imageSize,
+                        width: CreateProductPage.imageSize,
+                        onImageChanged: (value) {
+                          image = value;
+                        },
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
