@@ -656,7 +656,9 @@ with SingleTickerProviderStateMixin
                         child: AutoSizeText(
                           "Indirizzi recenti",
                           textAlign: TextAlign.end,
-                          style: Theme.of(context).textTheme.titleMedium,
+                          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                            decoration: TextDecoration.underline
+                          ),
                         ),
                       ),
                       Transform.rotate(

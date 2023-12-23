@@ -154,7 +154,10 @@ class _ProductItemState extends State<ProductItem> {
                 ),
                 const Gap(10),    
                 if(!widget.canModifyCart)
-                Text("x${widget.fixedCount.toString()}"),
+                Align(
+                  alignment: Alignment.bottomCenter,
+                  child: Text("x${widget.fixedCount.toString()}")
+                ),
                 if(widget.canModifyCart)
                 Align(
                   alignment: Alignment.centerRight,
