@@ -48,6 +48,9 @@ class SideMenuView extends StatefulWidget{
 class _SideMenuViewState extends State<SideMenuView> 
   with SingleTickerProviderStateMixin{  
 
+  final double buttonFractionScaleDown = 1/3;
+  final double rotation3dAngle = pi/7;
+
   SideMenuButton? lastActive;
 
   AnimationController? _controller;
@@ -76,7 +79,8 @@ class _SideMenuViewState extends State<SideMenuView>
     ).map((e) => _textWidth(e.name, Theme.of(context).textTheme.bodyMedium!)).reduce(max);
 
 
-    return (largerButtonNameWidth + 20/*paddind*/) / (2*MediaQuery.of(context).size.width);
+    return buttonFractionScaleDown * (largerButtonNameWidth + SideMenuButton.iconSize + 15) 
+    / (MediaQuery.of(context).size.width);
   } 
 
   // Controlla che la pagina correntemente visualizzata
@@ -171,7 +175,7 @@ class _SideMenuViewState extends State<SideMenuView>
       vsync: this,
       duration: const Duration(milliseconds: 100),
     )..addListener(() {
-      setState(() {});
+      if(mounted)setState(() {});
     });
 
     animation = Tween<double>(begin: 0, end: 1).animate(_controller!);    
@@ -200,12 +204,27 @@ class _SideMenuViewState extends State<SideMenuView>
 
   @override
   Widget build(BuildContext context) {    
+
+    if(isOpened() && UIUtilities.isHorizontal(context))
+    {
+      close();
+    }
+
     if(!currentPageStillExists())
     {
       checkAndFetchContent();
     }
-    double menuLeftPositionOpened = 
-    2 * scaleDownPercentage() * MediaQuery.of(context).size.width + 20;
+
+    double scaledWidth = (1 - scaleDownPercentage()) 
+    * MediaQuery.of(context).size.width ;
+
+    double menuLeftPositionOpened = 20 + (MediaQuery.of(context).size.width -
+    scaledWidth) / buttonFractionScaleDown;
+
+    if(widget.rotate3D && isWithTopBarMode())
+    {
+      menuLeftPositionOpened -= (scaledWidth - scaledWidth * cos(rotation3dAngle))/1.5;
+    }
 
     double? left = isWithTopBarMode()?
                   menuLeftPositionOpened * animation.value : null;
@@ -214,7 +233,7 @@ class _SideMenuViewState extends State<SideMenuView>
 
     double? width = isWithTopBarMode()?
                   MediaQuery.of(context).size.width : 
-                  MediaQuery.of(context).size.width - menuLeftPositionOpened - 40;
+                  MediaQuery.of(context).size.width - menuLeftPositionOpened - 20;
 
     return PopScope(
       canPop: animation.value == 0,
@@ -254,13 +273,11 @@ class _SideMenuViewState extends State<SideMenuView>
                     child: Transform(
                       transform: Matrix4.identity()
                       ..setEntry(3, 2, 0.0005)
-                      ..rotateY(widget.rotate3D? pi/5 * animation.value : 0),
+                      ..rotateY(widget.rotate3D? rotation3dAngle * animation.value : 0),
                       alignment: Alignment.center,
                       child: MediaQuery(
                         data: MediaQuery.of(context).copyWith(
                           size: Size(
-                            isWithTopBarMode()?
-                            MediaQuery.of(context).size.width:
                             width, 
                             MediaQuery.of(context).size.height
                           ) 
@@ -455,6 +472,8 @@ class SideMenuGroup extends StatelessWidget
 /// sia di selezionare un nuovo contenuto da visualizzare [content], sia di effettuare
 /// delle azioni [onPressed].
 class SideMenuButton extends StatefulWidget{
+  static const double iconSize = 20;
+
   final String name;
   final Widget icon;
   final Widget? content;
@@ -471,8 +490,7 @@ class SideMenuButton extends StatefulWidget{
   State<SideMenuButton> createState() => _SideMenuButtonState();
 }
 
-class _SideMenuButtonState extends State<SideMenuButton> {
-
+class _SideMenuButtonState extends State<SideMenuButton> {  
   bool _isActive = false;
 
 
@@ -516,14 +534,14 @@ class _SideMenuButtonState extends State<SideMenuButton> {
                 if(widget.icon is Icon)
                 Icon(
                   (widget.icon as Icon).icon,
-                  size: 20,
+                  size: SideMenuButton.iconSize,
                   color: !_isActive? (widget.icon as Icon).color:
                   Theme.of(context).colorScheme.primary,
                 ),
                 if(widget.icon is ImageIcon)
                 ImageIcon(
                   (widget.icon as ImageIcon).image,
-                  size: 20,
+                  size: SideMenuButton.iconSize,
                   color: !_isActive? (widget.icon as ImageIcon).color:
                   Theme.of(context).colorScheme.primary,
                 ),
@@ -579,6 +597,7 @@ class _ContentVisualizerState extends State<ContentVisualizer> {
 
   @override
   Widget build(BuildContext context) {
+     
     return Container(
       clipBehavior: Clip.hardEdge,
       decoration: BoxDecoration(
