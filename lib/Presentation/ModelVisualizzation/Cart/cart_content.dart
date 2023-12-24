@@ -22,10 +22,14 @@ class CartContent extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       mainAxisSize: MainAxisSize.min,
       children: [
-        Text(
-          "Carrello",
-          style: Theme.of(context).textTheme.headlineLarge,
+        Padding(
+          padding: const EdgeInsets.only(left:20.0, right: 20),
+          child: Text(
+            "Carrello",
+            style: Theme.of(context).textTheme.headlineLarge,
+          ),
         ),
+        const Gap(10),
         Expanded(
           child: SingleChildScrollView(
             child: BlocBuilder<CartBloc, CartState>(

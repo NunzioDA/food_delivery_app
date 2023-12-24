@@ -109,7 +109,7 @@ class TotalAndConfirmState extends State<TotalAndConfirm>
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          if(UIUtilities.isHorizontal(context))
+          if(UIUtilities.isHorizontal(context) && animation.value == 0)
           Align(
             alignment: Alignment.topRight,
             child: GestureDetector(
@@ -165,70 +165,73 @@ class TotalAndConfirmState extends State<TotalAndConfirm>
                   borderRadius: !UIUtilities.isHorizontal(context)? const BorderRadius.only(
                       topLeft: Radius.circular(defaultBorderRadius),
                       topRight: Radius.circular(defaultBorderRadius)):null,
-                  boxShadow: !UIUtilities.isHorizontal(context)? 
+                  boxShadow: !UIUtilities.isHorizontal(context) || isOpened()? 
                   const [BoxShadow(blurRadius: 5, color: Colors.grey)] : null
                 ),
               child: Padding(
-                padding: const EdgeInsets.all(20.0),
+                padding: const EdgeInsets.only(top:20.0, bottom: 20),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Text("Totale"),
-                            BlocBuilder<CartBloc, CartState>(
-                              bloc: BlocProvider.of<CartBloc>(context),
-                              builder: (context, state) {
-                                return Text(
-                                  "${getTotal(state.cart)}€",
-                                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                      fontWeight: FontWeight.w700,
-                                      color: Theme.of(context).primaryColor),
-                                );
-                              },
-                            )
-                          ],
-                        ),
-                        if(!UIUtilities.isHorizontal(context))
-                        SizedBox(
-                          height: 40,
-                          child: ElevatedButton(
-                            onPressed: (){
-                              if(!isOpened())
-                              {
-                                open();
-                              }
-                              else{
-                                close();
-                              }
-                            }, 
-                            child: IntrinsicHeight(
-                              child: Row(
-                                children: [
-                                  Text(animation.value == 0? "Carrello" : "Chiudi"),
-                                  const VerticalDivider(
-                                    width: 20, 
-                                    thickness: 0.5, 
-                                    color: Colors.white,
-                                    endIndent: 0,
-                                    indent: 0,
-                                  ),
-                                  Icon(
-                                    animation.value == 0? 
-                                    Icons.shopping_cart_outlined : 
-                                    Icons.close_rounded,
-                                    size: 20,                                                 
-                                  ),
-                                ],
-                              ),
-                            )
+                    Padding(
+                      padding: const EdgeInsets.only(left:20.0, right: 20),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text("Totale"),
+                              BlocBuilder<CartBloc, CartState>(
+                                bloc: BlocProvider.of<CartBloc>(context),
+                                builder: (context, state) {
+                                  return Text(
+                                    "${getTotal(state.cart)}€",
+                                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                        fontWeight: FontWeight.w700,
+                                        color: Theme.of(context).primaryColor),
+                                  );
+                                },
+                              )
+                            ],
                           ),
-                        )
-                      ],
+                          // if(!UIUtilities.isHorizontal(context))
+                          SizedBox(
+                            height: 40,
+                            child: ElevatedButton(
+                              onPressed: (){
+                                if(!isOpened())
+                                {
+                                  open();
+                                }
+                                else{
+                                  close();
+                                }
+                              }, 
+                              child: IntrinsicHeight(
+                                child: Row(
+                                  children: [
+                                    Text(animation.value == 0? "Carrello" : "Chiudi"),
+                                    const VerticalDivider(
+                                      width: 20, 
+                                      thickness: 0.5, 
+                                      color: Colors.white,
+                                      endIndent: 0,
+                                      indent: 0,
+                                    ),
+                                    Icon(
+                                      animation.value == 0? 
+                                      Icons.shopping_cart_outlined : 
+                                      Icons.close_rounded,
+                                      size: 20,                                                 
+                                    ),
+                                  ],
+                                ),
+                              )
+                            ),
+                          )
+                        ],
+                      ),
                     ),
                     if(animation.value != 0)
                     const Gap(20),
@@ -239,11 +242,14 @@ class TotalAndConfirmState extends State<TotalAndConfirm>
                     if(animation.value != 0)
                     const Gap(20),
                     if(animation.value != 0)
-                    SizedBox(
-                      height: 60,
-                      child: ElevatedButton(
-                        onPressed: widget.onCompleteOrderRequest,
-                        child: const Text("Completa l'ordine"),
+                    Padding(
+                      padding: const EdgeInsets.only(left:20.0, right: 20),
+                      child: SizedBox(
+                        height: 60,
+                        child: ElevatedButton(
+                          onPressed: widget.onCompleteOrderRequest,
+                          child: const Text("Completa l'ordine"),
+                        ),
                       ),
                     )
                   ],
