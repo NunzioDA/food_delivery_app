@@ -26,13 +26,31 @@ class SuperHero extends StatefulWidget
 
 class _SuperHeroState extends State<SuperHero> {
   bool visualizing = false;
+  late GlobalKey key;
+  Size? childSize;
+
+
+  @override
+  void initState() {
+    key = GlobalKey();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if(!visualizing)
+      {
+        childSize = key.currentContext?.size;
+      }      
+    } 
+    );
+
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
-    final GlobalKey key = GlobalKey();
-    return Listener(
-      behavior: HitTestBehavior.translucent,
-      onPointerUp: (e){
+    
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: (){
         setState(() => visualizing = true);
         Navigator.of(context).push(
           PageRouteBuilder(
@@ -55,11 +73,15 @@ class _SuperHeroState extends State<SuperHero> {
         });
 
       },
-      child: Container(
-        key: key,
-        child: !visualizing? 
-        widget.child
-        : null,
+      child: IgnorePointer(
+        child: SizedBox(
+          key: key,
+          width: visualizing? childSize?.width : null,
+          height: visualizing? childSize?.height : null,
+          child: !visualizing? 
+          widget.child
+          : null,
+        ),
       ),
     );
   }

@@ -17,10 +17,12 @@ class AddElementWidget extends StatelessWidget {
 
   Widget icon(BuildContext context)
   {
-    return Icon(
-      Icons.add,
-      size: 40,
-      color: Theme.of(context).primaryColor,
+    return IgnorePointer(
+      child: Icon(
+        Icons.add,
+        size: 40,
+        color: Theme.of(context).primaryColor,
+      ),
     );
   }
 
@@ -31,7 +33,7 @@ class AddElementWidget extends StatelessWidget {
       color: Theme.of(context).primaryColorLight,
       clipBehavior: Clip.hardEdge,
       borderRadius: BorderRadius.circular(defaultBorderRadius),
-      child: InkWell(
+      child: InkWell(   
         onTap: onPressed.call,
       ),
     );

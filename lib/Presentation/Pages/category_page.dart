@@ -326,22 +326,7 @@ class _CategoryPageState extends State<CategoryPage> {
                                                   onPressed: (){},
                                                 ),
                                                 child: AddElementWidget(
-                                                  onPressed: () async {
-                                                    // var productPair =
-                                                    //     await Navigator.of(
-                                                    //             context)
-                                                    //         .push(
-                                                    //             PageRouteBuilder(
-                                                    //   opaque: false,
-                                                    //   pageBuilder: (context,
-                                                    //       animation,
-                                                    //       secondaryAnimation) {
-                                                    //     return const CreateProductPage();
-                                                    //   },
-                                                    // ));
-                                                
-                                                    
-                                                  },
+                                                  onPressed: () {},
                                                 ),
                                               ),
                                             ),
