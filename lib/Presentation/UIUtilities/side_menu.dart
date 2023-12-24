@@ -251,7 +251,7 @@ class _SideMenuViewState extends State<SideMenuView>
             isWithTopBarMode: isWithTopBarMode(),
             onCloseRequest: close,
             onOpenRequest: open,
-            onChangeStateRequest: (state) => changeState(state),
+            onChangePageRequest: (state) => changeState(state),
             lastActive: lastActive,
             content: lastActive?.content ?? Container(),
             child: Stack(
@@ -333,9 +333,9 @@ class SideMenuViewInherited extends InheritedWidget{
     required this.opened,
     required this.onCloseRequest,
     required this.onOpenRequest,
-    required void Function(SideMenuButton? button) onChangeStateRequest,
+    required void Function(SideMenuButton? button) onChangePageRequest,
     required super.child,
-  }): _onChangeStateRequest = onChangeStateRequest;
+  }): _onChangeStateRequest = onChangePageRequest;
   
 
   static SideMenuViewInherited? _maybeOf(BuildContext context) {
@@ -344,7 +344,7 @@ class SideMenuViewInherited extends InheritedWidget{
 
   static SideMenuViewInherited of(BuildContext context) {
     final SideMenuViewInherited? result = _maybeOf(context);
-    assert(result != null, 'No _SideMenuViewInherited found in context');
+    assert(result != null, 'No SideMenuViewInherited found in context');
     return result!;
   }
 
@@ -684,7 +684,11 @@ class _ContentVisualizerTopBarState extends State<ContentVisualizerTopBar> {
                   onTap: () {
                     menuPressed();
                   },
-                  child: const Icon(Icons.menu),
+                  child: Icon(
+                    SideMenuViewInherited.of(context).opened?
+                    Icons.close:
+                    Icons.menu 
+                  ),
                 ),
                 Text(
                   title ?? "Vuoto",
