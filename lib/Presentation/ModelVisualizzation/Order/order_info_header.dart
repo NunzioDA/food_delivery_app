@@ -39,6 +39,7 @@ class _OrderInfoHeaderState extends State<OrderInfoHeader> {
     if(!widget.static){
       orderBloc = BlocProvider.of<OrderBloc>(context);
     }
+
     super.initState();
   }
 
@@ -68,6 +69,11 @@ class _OrderInfoHeaderState extends State<OrderInfoHeader> {
   @override
   Widget build(BuildContext context) {
     var finalV = widget.order.content.entries.length != 1? "i":"o";
+
+    Duration currentOffset = DateTime.now().timeZoneOffset;
+
+    DateTime timeInLocal = widget.order.dateTime.add(currentOffset);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -139,9 +145,9 @@ class _OrderInfoHeaderState extends State<OrderInfoHeader> {
         Row(
           children: [
               Text(
-              "Data: ${widget.order.dateTime.day}-${widget.order.dateTime.month}-${widget.order.dateTime.year} "
-              "${widget.order.dateTime.hour.toString().padLeft(2,'0')}:"
-              "${widget.order.dateTime.minute.toString().padLeft(2,'0')}"
+              "Data: ${timeInLocal.day}-${timeInLocal.month}-${timeInLocal.year} "
+              "${timeInLocal.hour.toString().padLeft(2,'0')}:"
+              "${timeInLocal.minute.toString().padLeft(2,'0')}"
             ),     
             Icon(
               Icons.access_time_outlined, 
