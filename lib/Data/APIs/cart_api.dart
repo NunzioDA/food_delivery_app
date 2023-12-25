@@ -37,6 +37,7 @@ class CartApi{
 
   static Future<String> removeProduct(
     String productId,
+    bool removeAll,
     String username,
     String token
   )async
@@ -44,9 +45,10 @@ class CartApi{
     return await FdaServerCommunication.getRequest(
       "remove_product_from_cart", 
       {
-        "username":username,
-        "token":token,
-        "product_id":productId
+        "username": username,
+        "token": token,
+        "product_id": productId,
+        "remove_all": removeAll? "1": "0"
       },
     ).then((value) {
       return value.body;

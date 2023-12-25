@@ -180,6 +180,29 @@ class _ProductItemState extends State<ProductItem> {
                     },
                   ),
                 ),
+                if(widget.canModifyCart)
+                const VerticalDivider(
+                  color: Colors.black,
+                  width: 0,
+                  thickness: 0.1,
+                  endIndent: 10,
+                  indent: 10,
+                ),
+                if(widget.canModifyCart)
+                SizedBox(
+                  width: 30,
+                  child: InkWell(
+                    onTap: (){
+                      cartBloc.add(
+                        RemoveProductFromCart(
+                          widget.product,
+                          true
+                        )
+                      );
+                    },
+                    child: const Icon(Icons.close)
+                  ),
+                )
               ],
             ),
           ),

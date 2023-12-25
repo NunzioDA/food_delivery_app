@@ -144,6 +144,7 @@ class CartRepository{
 
   Future<Cart> removeProduct(
     Product product,
+    bool removeAll,
     UserState userState,
     Cart cart,
     List<ProductsCategory> currentCategories
@@ -154,7 +155,7 @@ class CartRepository{
 
       if(cart.containsKey(product))
       {
-        if(cart[product]! > 1)
+        if(cart[product]! > 1 && !removeAll)
         {
           cart[product] = cart[product]! - 1;
         }
@@ -170,6 +171,7 @@ class CartRepository{
     else{
       String result = await CartApi.removeProduct(
         "${product.id}", 
+        removeAll,
         userState.username,
         userState.token
       );

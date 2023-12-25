@@ -47,7 +47,8 @@ class CartBloc extends Bloc<CartEvent, CartState> {
           
           try{
             Cart cart = await _cartRepository.removeProduct(
-              event.product, 
+              event.product,
+              event.removeAll, 
               _userBloc.state, 
               state.cart,
               _categoriesBloc.state.categories

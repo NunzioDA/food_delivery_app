@@ -12,7 +12,8 @@ class AddProductToCart extends CartEvent{
 
 class RemoveProductFromCart extends CartEvent{
   final Product product;
-  const RemoveProductFromCart(this.product);
+  final bool removeAll;
+  const RemoveProductFromCart(this.product, [this.removeAll=false]);
 }
 
 class FetchCart extends CartEvent{
