@@ -37,6 +37,8 @@ class TotalAndConfirm extends StatefulWidget {
 class TotalAndConfirmState extends State<TotalAndConfirm> 
   with SingleTickerProviderStateMixin{
 
+  bool wasOpened = false;
+
   late AnimationController controller;
   late Animation<double> animation;
 
@@ -53,7 +55,7 @@ class TotalAndConfirmState extends State<TotalAndConfirm>
 
   bool isOpened()
   {
-    return controller.isCompleted;
+    return controller.value > 0.5;
   }
 
   void open()
@@ -69,8 +71,7 @@ class TotalAndConfirmState extends State<TotalAndConfirm>
 
 
   @override
-  Widget build(BuildContext context) {
-
+  Widget build(BuildContext context) {    
     double? top;
     double? bottom;
     double? width;
@@ -169,10 +170,41 @@ class TotalAndConfirmState extends State<TotalAndConfirm>
                   const [BoxShadow(blurRadius: 5, color: Colors.grey)] : null
                 ),
               child: Padding(
-                padding: const EdgeInsets.only(top:20.0, bottom: 20),
+                padding: EdgeInsets.only(
+                  top: UIUtilities.isHorizontal(context)? 20 : 5,
+                  bottom: 20
+                ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
+                    if(!UIUtilities.isHorizontal(context))
+                    Listener(
+                      onPointerDown: (event){
+                        wasOpened = isOpened();
+                      },
+                      onPointerMove: (event) {
+                        double screenHeight = MediaQuery.of(context).size.height;
+                        double positionFromBottom = screenHeight - event.position.dy - 
+                        TotalAndConfirm.closedPanelHeight;
+                        controller.value = positionFromBottom / (widget.maxHeight - TotalAndConfirm.closedPanelHeight);
+                      },
+                      onPointerUp: (event){
+                        if(!wasOpened && controller.value < 0.1 || 
+                        wasOpened && controller.value < 0.9)
+                        {
+                          controller.reverse();
+                        }
+                        else if(wasOpened || controller.value > 0.1)
+                        {
+                          controller.forward();
+                        }
+                      },
+                      child: const Center(
+                        child: Icon(
+                          Icons.remove
+                        ),
+                      ),
+                    ),
                     Padding(
                       padding: const EdgeInsets.only(left:20.0, right: 20),
                       child: Row(
