@@ -164,7 +164,16 @@ class _ProductItemState extends State<ProductItem> {
                   alignment: Alignment.centerRight,
                   child: AddRemove<CartBloc, CartState>(
                     bloc: cartBloc,
-                    listener: (context, state) => loading.value = false,
+                    listener: (context, state) {
+                      if(state is CartError || 
+                      (state is CartProductAdded 
+                      && state.addedProduct == widget.product) ||
+                      (state is CartProductRemoved 
+                      && state.removedProduct == widget.product))
+                      {
+                        loading.value = false;
+                      }
+                    },
                     stateToCount: (state) => state.cart[widget.product] ?? 0,
                     onAddPressed: () {
                       loading.value = true;
@@ -193,6 +202,7 @@ class _ProductItemState extends State<ProductItem> {
                   width: 30,
                   child: InkWell(
                     onTap: (){
+                      loading.value = true;                      
                       cartBloc.add(
                         RemoveProductFromCart(
                           widget.product,
