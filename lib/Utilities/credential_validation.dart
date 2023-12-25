@@ -21,7 +21,7 @@ bool _anyMetch(String string1, String string2)
 int minUsernameLength = 6;
 int minPassLength = 6;
 int minNameLength = 3;
-int maxNameLength = 20;
+int maxNameLength = 50;
 
 bool  validateName(String? name)
 {
@@ -36,7 +36,7 @@ bool validateUsername(String? username)
   return username != null && 
     username.isNotEmpty && 
     username.length >= 6 && 
-    RegExp(r'^(\_?[a-zA-Z]+\_?[a-zA-Z]*)+$').hasMatch(username);
+    RegExp(r'^_*([a-zA-Z0-9]+_*)+$').hasMatch(username);
 }
 
 enum PasswordValidationErrors{
