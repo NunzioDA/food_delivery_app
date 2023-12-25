@@ -179,6 +179,7 @@ class TotalAndConfirmState extends State<TotalAndConfirm>
                   children: [
                     if(!UIUtilities.isHorizontal(context))
                     Listener(
+                      behavior: HitTestBehavior.translucent,
                       onPointerDown: (event){
                         wasOpened = isOpened();
                       },
