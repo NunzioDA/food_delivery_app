@@ -816,7 +816,7 @@ class OrderSummary extends StatelessWidget{
                           )
                         ],
                       )
-                    ).toList(),
+                    ),
                     const Divider(color: Colors.black,),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,

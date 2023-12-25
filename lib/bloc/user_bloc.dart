@@ -190,9 +190,6 @@ class UserBloc extends Bloc<UserEvent, UserState> {
             }
           }
           break;
-        case ChangeUserInfoEvent():
-          // TODO: Handle this case.
-          break;
       }
     });
   }

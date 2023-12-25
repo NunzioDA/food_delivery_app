@@ -47,6 +47,9 @@ dependencies:
   shared_preferences: ^2.2.2
   connectivity_plus: ^5.0.2
   auto_size_text: ^3.0.0
+  bloc: ^8.1.2
+  meta: ^1.10.0
+  http: ^1.1.2
   
 dev_dependencies:
   flutter_test:

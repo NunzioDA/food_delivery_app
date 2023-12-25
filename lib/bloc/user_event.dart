@@ -34,8 +34,3 @@ class FetchUserInfoEvent extends UserEvent
 {
   const FetchUserInfoEvent();
 }
-
-class ChangeUserInfoEvent extends UserEvent{
-  final String newName;
-  const ChangeUserInfoEvent(this.newName);
-}

@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:bloc/bloc.dart';
 import 'package:food_delivery_app/Data/Model/product.dart';
 import 'package:food_delivery_app/Data/Repositories/cart_repository.dart';
@@ -90,10 +88,5 @@ class CartBloc extends Bloc<CartEvent, CartState> {
           emit(const CartFetched({}));
       }
     });
-  }
-
-  @override
-  Future<void> close() {
-    return super.close();
   }
 }
