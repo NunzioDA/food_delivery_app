@@ -200,9 +200,14 @@ class _LoginSignupPageState extends State<LoginSignupPage> with SingleTickerProv
                             child: LoginSignInForm(
                               credentialPageCubit: credentialPageCubit,
                               nameValidator: (value) {
+                                if(value == null || (value as String).isEmpty)
+                                {
+                                  return "Inserisci un nome";
+                                }
+                                
                                 if(!validateName(value))
                                 {
-                                  return "Inserisci un nome tra i 3 e 20 caratteri.";
+                                  return "Solo lettere con spazi (max 50, min 3).";
                                 }
                                                 
                                 return null;
@@ -210,16 +215,15 @@ class _LoginSignupPageState extends State<LoginSignupPage> with SingleTickerProv
                               usernameValidator: (value) {
                                 if(!validateUsername(value))
                                 {
-                                  return "Solo lettere e più di 6";
+                                  return "Solo lettere, numeri e underscore (>6)";
                                 }
                                                 
                                 return null;
                               },
                               passwordValidator: (value) {
                                 PasswordValidationErrors error = validatePassword(value);
-                                                
-                                if(credentialPageCubit.state is SignupMode)
-                                {
+
+                                if(credentialPageCubit.state is SignupMode){                                       
                                   if(error != PasswordValidationErrors.good &&
                                   error != PasswordValidationErrors.empty)
                                   {                              
@@ -231,9 +235,9 @@ class _LoginSignupPageState extends State<LoginSignupPage> with SingleTickerProv
                                     return "Inserisci la password";
                                   }
                                 }
-                                else if(error != PasswordValidationErrors.good){
-                                  return "Password errata";
-                                }
+                                else if(error == PasswordValidationErrors.empty){
+                                  return "Inserisci la password";
+                                }                               
                                                 
                                 return null;
                               },
@@ -359,7 +363,7 @@ class _LoginSignInFormState extends State<LoginSignInForm>
                     return null;
                   },
                   decoration: const InputDecoration(label: Text("Nome")),
-                  onChanged: (value) => name = value,
+                  onChanged: (value) => name = value.trim(),
                 ),
               ),
               Gap(20 * animation.value),
@@ -375,7 +379,7 @@ class _LoginSignInFormState extends State<LoginSignInForm>
                   return null;
                 },
                 decoration: const InputDecoration(label: Text("Username")),
-                onChanged: (value) => username = value,
+                onChanged: (value) => username = value.trim(),
               ),
               const Gap(20),
               BlocBuilder<CredentialPageCubit, CredentialPageState>(
@@ -393,7 +397,7 @@ class _LoginSignInFormState extends State<LoginSignInForm>
                       return null;
                     },
                     decoration: const InputDecoration(label: Text("Password")),
-                    onChanged: (value) => password = value,
+                    onChanged: (value) => password = value.trim(),
                     obscureText: state is LoginMode,
                     enableSuggestions: false,
                     autocorrect: false,
