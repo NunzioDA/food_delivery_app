@@ -14,7 +14,7 @@ import 'package:food_delivery_app/Presentation/UIUtilities/cached_image.dart';
 import 'package:food_delivery_app/Presentation/UIUtilities/dialog_manager.dart';
 import 'package:food_delivery_app/Presentation/UIUtilities/image_chooser.dart';
 import 'package:food_delivery_app/Presentation/UIUtilities/loading.dart';
-import 'package:food_delivery_app/Presentation/UIUtilities/to_visualizer_bridge.dart';
+import 'package:food_delivery_app/Presentation/UIUtilities/super_hero.dart';
 import 'package:food_delivery_app/Presentation/UIUtilities/ui_utilities.dart';
 import 'package:food_delivery_app/bloc/categories_bloc.dart';
 import 'package:gap/gap.dart';

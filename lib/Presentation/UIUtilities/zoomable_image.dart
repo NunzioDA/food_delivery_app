@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:food_delivery_app/Presentation/Pages/image_show.dart';
 import 'package:food_delivery_app/Presentation/UIUtilities/cached_image.dart';
-import 'package:food_delivery_app/Presentation/UIUtilities/to_visualizer_bridge.dart';
+import 'package:food_delivery_app/Presentation/UIUtilities/super_hero.dart';
 
 
 /// Permette di effettuare l'animazione di visualizzazione di un immagine
