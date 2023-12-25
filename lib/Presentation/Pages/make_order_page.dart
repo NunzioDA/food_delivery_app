@@ -8,6 +8,7 @@ import 'package:food_delivery_app/Presentation/ModelVisualizzation/Cart/total_an
 import 'package:food_delivery_app/Presentation/ModelVisualizzation/Category/category_item.dart';
 import 'package:food_delivery_app/Presentation/Pages/category_page.dart';
 import 'package:food_delivery_app/Presentation/Pages/complete_order_page.dart';
+import 'package:food_delivery_app/Presentation/Pages/login_page.dart';
 import 'package:food_delivery_app/Presentation/UIUtilities/add_element.dart';
 import 'package:food_delivery_app/Presentation/UIUtilities/dialog_manager.dart';
 import 'package:food_delivery_app/Presentation/UIUtilities/dynamic_grid_view.dart';
@@ -351,11 +352,12 @@ class _MakeOrderPageState extends State<MakeOrderPage> {
                         }
                       }
                       else {
-                        DialogShower.showAlertDialog(
-                          context, 
-                          "Login", 
-                          "Effettua il login prima di completare l'ordine."
-                        );
+                        Navigator.of(context).push(PageRouteBuilder(
+                          opaque: false,
+                          pageBuilder: (context, animation, secondaryAnimation) {
+                            return const LoginSignupPage();
+                          },
+                        ));
                       }
                     },
                   )
