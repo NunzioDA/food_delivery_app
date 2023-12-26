@@ -48,7 +48,7 @@ class _CompleteOrderPageState extends State<CompleteOrderPage> {
           "L'ordine è stato completato con successo"
         ).then((value) {
           BlocProvider.of<CartBloc>(context).add(const FetchCart());
-          Navigator.of(context).pop();
+          Navigator.of(context).pop(true);
         });
       }
       else if(event is OrderError && event.event is ConfirmOrderEvent){

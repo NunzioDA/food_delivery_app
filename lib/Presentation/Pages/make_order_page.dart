@@ -47,6 +47,7 @@ class _MakeOrderPageState extends State<MakeOrderPage> {
 
   ValueNotifier<bool> loading = ValueNotifier(false);
   ValueNotifier<String> loadingText = ValueNotifier("");
+  bool isLoadingCartRelated = false;
 
   late GlobalKey<TotalAndConfirmState> totalAndConfirmKey;
 
@@ -80,8 +81,9 @@ class _MakeOrderPageState extends State<MakeOrderPage> {
           "Controlla la tua connessione e riprova."
         );
       }
-      else if(loadingText.value == "Recupero il carrello...")
+      else if(isLoadingCartRelated)
       {
+        isLoadingCartRelated = false;
         loading.value = false;
       }
     });
@@ -122,6 +124,7 @@ class _MakeOrderPageState extends State<MakeOrderPage> {
     {
       loading.value = true;
       loadingText.value = "Recupero il carrello...";
+      isLoadingCartRelated = true;
       cartBloc.add(const FetchCart());
     }
   }
@@ -341,7 +344,14 @@ class _MakeOrderPageState extends State<MakeOrderPage> {
                               ),
                               
                             )
-                          );
+                          ).then((value) {
+                            if(value != null)
+                            {
+                              loading.value = true;
+                              loadingText.value = "Un attimo...";
+                              isLoadingCartRelated = true;
+                            }
+                          },);
                         }
                         else{
                           DialogShower.showAlertDialog(
