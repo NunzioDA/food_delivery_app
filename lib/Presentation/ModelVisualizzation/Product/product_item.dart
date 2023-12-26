@@ -88,7 +88,12 @@ class _ProductItemState extends State<ProductItem> {
           loadingNotifier: loading,
           dynamicText: ValueNotifier(""),
           child: Padding(
-            padding: EdgeInsets.all(internalPadding),
+            padding: EdgeInsets.only(
+              left: internalPadding,
+              top: internalPadding,
+              bottom: internalPadding,
+              right: 10
+            ),
             child: Row(
               mainAxisSize: MainAxisSize.max,
               crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -199,7 +204,7 @@ class _ProductItemState extends State<ProductItem> {
                 ),
                 if(widget.canModifyCart)
                 SizedBox(
-                  width: 30,
+                  width: 20,
                   child: InkWell(
                     onTap: (){
                       loading.value = true;                      
