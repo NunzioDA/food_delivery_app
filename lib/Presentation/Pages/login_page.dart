@@ -215,7 +215,7 @@ class _LoginSignupPageState extends State<LoginSignupPage> with SingleTickerProv
                               usernameValidator: (value) {
                                 if(!validateUsername(value))
                                 {
-                                  return "Solo lettere, numeri e underscore (>6)";
+                                  return "Solo lettere, numeri e underscore più di 3";
                                 }
                                                 
                                 return null;
