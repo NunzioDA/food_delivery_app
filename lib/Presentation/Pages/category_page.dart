@@ -171,7 +171,16 @@ class _CategoryPageState extends State<CategoryPage> {
                     Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        const Gap(CategoryPage.imageSize / 2),
+                        GestureDetector(
+                          behavior: HitTestBehavior.translucent,
+                          onTap: (){
+                            Navigator.of(context).pop();
+                          },
+                          child: const SizedBox(
+                            width: double.infinity,
+                            height: CategoryPage.imageSize/2,
+                          )
+                        ),
                         Center(
                           child: Hero(
                             tag: "Container${myCategory?.name}",
@@ -414,7 +423,7 @@ class _CategoryPageState extends State<CategoryPage> {
                                 newCategoryImage = img;
                               },
                             ),
-                    ),
+                    ),                    
                   ],
                 ),
               ),
