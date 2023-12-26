@@ -18,7 +18,7 @@ bool _anyMetch(String string1, String string2)
   return false;
 }
 
-int minUsernameLength = 6;
+int minUsernameLength = 3;
 int minPassLength = 6;
 int minNameLength = 3;
 int maxNameLength = 50;
