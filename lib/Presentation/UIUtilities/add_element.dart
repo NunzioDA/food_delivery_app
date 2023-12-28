@@ -18,10 +18,13 @@ class AddElementWidget extends StatelessWidget {
   Widget icon(BuildContext context)
   {
     return IgnorePointer(
-      child: Icon(
-        Icons.add,
-        size: 40,
-        color: Theme.of(context).primaryColor,
+      child: Material(
+        color: Theme.of(context).primaryColorLight,
+        child: Icon(
+          Icons.add,
+          size: 40,
+          color: Theme.of(context).primaryColor,
+        ),
       ),
     );
   }
