@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:food_delivery_app/Communication/http_communication.dart';
 import 'package:food_delivery_app/Data/Model/products_category.dart';
+import 'package:food_delivery_app/Presentation/ModelVisualizzation/Category/category_image.dart';
 import 'package:food_delivery_app/Presentation/ModelVisualizzation/Category/category_info.dart';
 import 'package:food_delivery_app/Presentation/Pages/category_page.dart';
-import 'package:food_delivery_app/Presentation/UIUtilities/cached_image.dart';
 import 'package:food_delivery_app/Presentation/UIUtilities/ui_utilities.dart';
 import 'package:gap/gap.dart';
 
@@ -72,16 +71,10 @@ class _CategoryItemState extends State<CategoryItem> {
         ),
         Align(
           alignment: Alignment.topCenter,
-          child: Hero(
+          child: CategoryImage(
             tag: "Image${widget.category.name}",
-            child: SizedBox(
-              height: CategoryItem.imageSize,
-              width: CategoryItem.imageSize,
-              child: FdaCachedNetworkImage(
-                url: FdaServerCommunication.getImageUrl(
-                    widget.category.imageName),
-              ),
-            ),
+            size: CategoryItem.imageSize,
+            imageName: widget.category.imageName,
           ),
         )
       ]),

@@ -2,15 +2,14 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:food_delivery_app/Communication/http_communication.dart';
 import 'package:food_delivery_app/Data/Model/product.dart';
 import 'package:food_delivery_app/Data/Model/products_category.dart';
+import 'package:food_delivery_app/Presentation/ModelVisualizzation/Category/category_image.dart';
 import 'package:food_delivery_app/Presentation/ModelVisualizzation/Category/category_info.dart';
 import 'package:food_delivery_app/Presentation/ModelVisualizzation/Product/product_item.dart';
 import 'package:food_delivery_app/Presentation/Pages/Templates/dialog_page_template.dart';
 import 'package:food_delivery_app/Presentation/Pages/product_page.dart';
 import 'package:food_delivery_app/Presentation/UIUtilities/add_element.dart';
-import 'package:food_delivery_app/Presentation/UIUtilities/cached_image.dart';
 import 'package:food_delivery_app/Presentation/UIUtilities/dialog_manager.dart';
 import 'package:food_delivery_app/Presentation/UIUtilities/image_chooser.dart';
 import 'package:food_delivery_app/Presentation/UIUtilities/loading.dart';
@@ -403,17 +402,11 @@ class _CategoryPageState extends State<CategoryPage> {
                     Align(
                       alignment: Alignment.topCenter,
                       child: !widget.creationMode
-                          ? Hero(
-                              tag: "Image${myCategory?.name}",
-                              child: SizedBox(
-                                height: CategoryPage.imageSize,
-                                width: CategoryPage.imageSize,
-                                child: FdaCachedNetworkImage(
-                                  url: FdaServerCommunication.getImageUrl(
-                                    myCategory!.imageName
-                                  ),
-                                ),
-                              ))
+                          ? CategoryImage(
+                            tag: "Image${myCategory?.name}",
+                            size: CategoryPage.imageSize,
+                            imageName: widget.category!.imageName,
+                          )
                           : ImageChooser(
                               heroTag: "Image${myCategory?.name}",
                               height: CategoryPage.imageSize,
