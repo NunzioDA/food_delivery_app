@@ -6,6 +6,8 @@ import 'package:gap/gap.dart';
 /// [AlertDialog] di diverso genere da qualunque [BuildContext].
 class DialogShower
 {
+  static const double buttonsHeight = 40;
+
   /// [AlertDialog] per visualizzare qualsiasi messaggio generico.
   static Future<void> showAlertDialog(
     BuildContext context, 
@@ -26,15 +28,18 @@ class DialogShower
           ),
           content: Text(text),
           actions: <Widget>[
-            TextButton(
-              style: TextButton.styleFrom(
-                textStyle: Theme.of(context).textTheme.labelLarge,
+            SizedBox(
+              height: buttonsHeight,
+              child: TextButton(
+                style: TextButton.styleFrom(
+                  textStyle: Theme.of(context).textTheme.labelLarge,
+                ),
+                child: Text((confirmText != null)? confirmText : "Ok"),
+                onPressed: () {
+                  onConfirmPressed?.call();
+                  Navigator.of(context).pop();
+                },
               ),
-              child: Text((confirmText != null)? confirmText : "Ok"),
-              onPressed: () {
-                onConfirmPressed?.call();
-                Navigator.of(context).pop();
-              },
             ),
           ],
         );
@@ -75,15 +80,18 @@ class DialogShower
             ],
           ),
           actions: [
-            TextButton(
-              style: TextButton.styleFrom(
-                textStyle: Theme.of(context).textTheme.labelLarge,
+            SizedBox(
+              height: buttonsHeight,
+              child: TextButton(
+                style: TextButton.styleFrom(
+                  textStyle: Theme.of(context).textTheme.labelLarge,
+                ),
+                child: Text((confirmText != null)? confirmText : "Ok"),
+                onPressed: () {
+                  onConfirmPressed?.call();
+                  Navigator.of(context).pop();
+                },
               ),
-              child: Text((confirmText != null)? confirmText : "Ok"),
-              onPressed: () {
-                onConfirmPressed?.call();
-                Navigator.of(context).pop();
-              },
             ),
           ],
         );
@@ -118,22 +126,28 @@ class DialogShower
           content: Text(text),
           
           actions: <Widget>[
-            TextButton(
-              style: TextButton.styleFrom(
-                textStyle: Theme.of(context).textTheme.labelLarge,
+            SizedBox(
+              height: buttonsHeight,
+              child: TextButton(
+                style: TextButton.styleFrom(
+                  textStyle: Theme.of(context).textTheme.labelLarge,
+                ),
+                child: Text(denyText ?? "Annulla", 
+                style: const TextStyle(color: Colors.grey),),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
               ),
-              child: Text(denyText ?? "Annulla", 
-              style: const TextStyle(color: Colors.grey),),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
             ),
-            ElevatedButton(
-              onPressed: () {
-                onConfirmPressed?.call();
-                Navigator.of(context).pop();
-              },
-              child: Text(confirmText ?? "Conferma"),
+            SizedBox(
+              height: buttonsHeight,
+              child: ElevatedButton(
+                onPressed: () {
+                  onConfirmPressed?.call();
+                  Navigator.of(context).pop();
+                },
+                child: Text(confirmText ?? "Conferma"),
+              ),
             ),
           ],
         );
