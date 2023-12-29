@@ -9,6 +9,8 @@ class FdaResponse
   FdaResponse(this.successful, this.body);
 }
 
+
+/// Codici di errore che il backend può restituire
 class ErrorCodes
 {
   static Map<String, String> codes = {
@@ -47,6 +49,9 @@ class FdaServerCommunication
   static const bool serverSwitch = !kReleaseMode;  
   static ConnectivityCubit? currentConnectivityCubit;
 
+
+  // Seleziona il protocollo da usare.
+  // Se in release https altrimenti http
   static String getServerBaseLink()
   {
     String protocol;
@@ -60,23 +65,30 @@ class FdaServerCommunication
     return "$protocol${getServerName()}";
   }
 
+  /// Richiesta definizione della variabile d'ambiente BACKEND
+  /// con l'indirizzo del backend. La funzione, restituisce l'indirizzo contenuto
+  /// nella variabile d'ambiente.
   static String getServerName()
   {    
     return const String.fromEnvironment("BACKEND");
   }
 
+  /// Restituisce la cartella in cui viene situato il backend
   static String getBackendFolder()
   {
     return "/FDA/backendFda";
   }
 
-
+  /// Restituisce il link dell'immagine specificata tramite il nome nella variabile
+  /// [imageName], facendo riferimento al file php apposito nel backend
   static String getImageUrl(String imageName)
   {
     return "${getServerBaseLink()}${getBackendFolder()}"
             "/fetch_image.php?image=$imageName";
   }
 
+  /// Restituisce l'uri della richiesta che si sta facendo
+  /// usando https se in release altrimenti http
   static Uri geBackendUri(String phpFile, Map<String, String>? parameters)
   {
     String serverName = getServerName();
@@ -92,8 +104,11 @@ class FdaServerCommunication
     return uri;
   }
 
+  /// Effettua richieste get al file php - di cui non bisogna indicare l'estenzione -
+  /// specificato in [phpFile] con i parametri indicati dalla mappa [parameters]
+  /// In caso di fallimento chiede al [currentConnectivityCubit] di effettuare un
+  /// check sulla connessione.
   static Future<http.Response> getRequest(String phpFile, [Map<String, String>? parameters]) async {
-    // print(geBackendUri(phpFile, parameters));
     try{
       http.Response response = await http.get(geBackendUri(phpFile, parameters));
       return response;
@@ -105,9 +120,15 @@ class FdaServerCommunication
     
   }
 
+  /// Effettua richieste post al file php - di cui non bisogna indicare l'estenzione -
+  /// specificato in [phpFile] con i parametri get indicati dalla mappa [getParameters]
+  /// e il corpo in [body].
+  /// In caso di fallimento chiede al [currentConnectivityCubit] di effettuare un
+  /// check sulla connessione.
   static Future<http.Response> postRequest(
     String phpFile, 
-    {Map<String, String>? getParameters, Map<String, String>? body}) async{    
+    {Map<String, String>? getParameters, Map<String, String>? body}
+  ) async{    
     try{
       http.Response response = await http.post(geBackendUri(phpFile, getParameters ?? {}), body: body);
       return response;
