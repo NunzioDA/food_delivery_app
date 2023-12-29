@@ -8,7 +8,7 @@
             "program": "lib/main.dart",
             "flutterMode": "debug",
             "args": [
-                "--dart-define-from-file=.env",
+                "--dart-define-from-file=./env/debug/.env",
             ],
         },
         {
@@ -18,7 +18,7 @@
             "program": "lib/main.dart",
             "flutterMode": "profile",
             "args": [
-                "--dart-define-from-file=.env",
+                "--dart-define-from-file=./env/debug/.env",
             ],
         },
         {
@@ -28,7 +28,7 @@
             "program": "lib/main.dart",
             "flutterMode": "release",
             "args": [
-                "--dart-define-from-file=.env",
+                "--dart-define-from-file=./env/release/.env",
             ],
         },
     ]
