@@ -29,7 +29,7 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     userBloc = UserBloc();
     connectivityCubit = ConnectivityCubit();
-    connectivityCubit.stream.listen(
+    streamSubscription = connectivityCubit.stream.listen(
       (event) {
         if(event is Connected)
         {
