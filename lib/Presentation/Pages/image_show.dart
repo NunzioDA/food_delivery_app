@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:food_delivery_app/Presentation/UIUtilities/ui_utilities.dart';
 import 'package:photo_view/photo_view.dart';
 
 /// Questa pagina permete di visualizzare in primo piano
@@ -19,17 +20,28 @@ class ImageVisualizer extends StatelessWidget
       backgroundColor: Colors.transparent,
       body: Stack(
         children: [
-          PhotoView(
-            imageProvider: image, 
-            gestureDetectorBehavior: HitTestBehavior.translucent, 
-            heroAttributes: PhotoViewHeroAttributes(
-              tag: heroTag
+          GestureDetector(
+            onTap: (){
+              Navigator.of(context).pop();
+            },
+            child: Container(
+              color: defaultTransparentScaffoldBackgrounColor(context),
             ),
-            backgroundDecoration: BoxDecoration(
-              color: Colors.black.withAlpha(230)                      
+          ),
+          Center(
+            child: PhotoView(        
+              tightMode: true,              
+              imageProvider: image, 
+              gestureDetectorBehavior: HitTestBehavior.translucent, 
+              heroAttributes: PhotoViewHeroAttributes(
+                tag: heroTag
+              ),
+              backgroundDecoration: const BoxDecoration(
+                color: Colors.transparent                  
+              ),
+              minScale: PhotoViewComputedScale.contained,
+              maxScale: 1.5,
             ),
-            minScale: PhotoViewComputedScale.contained,
-            maxScale: 1.5,
           ),
           SafeArea(
             child: Align(
