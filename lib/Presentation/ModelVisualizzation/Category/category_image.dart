@@ -30,6 +30,7 @@ class CategoryImage extends StatelessWidget{
               imageFilter: ImageFilter.blur(
                 sigmaX: 5.0,
                 sigmaY: 5.0,
+                tileMode: TileMode.decal
               ),
               child: ImageIcon(
                 CachedNetworkImageProvider(
