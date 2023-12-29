@@ -25,26 +25,29 @@ class CategoryImage extends StatelessWidget{
         width: size,
         height: size,
         child: Stack(
+          alignment: Alignment.topLeft,
           children: [
             ImageFiltered(
               imageFilter: ImageFilter.blur(
-                sigmaX: 5.0,
-                sigmaY: 5.0,
+                sigmaX: 2.0,
+                sigmaY: 2.0,
                 tileMode: TileMode.decal
               ),
-              child: ImageIcon(
-                CachedNetworkImageProvider(
+              child: Image(
+                image: CachedNetworkImageProvider(
                   FdaServerCommunication.getImageUrl(
                     imageName
                   ),
                 ),
-                color: Colors.black.withAlpha(100),
-                size: size,
+                color: Colors.black.withAlpha(70),
+                width: size,
+                height: size,
+                fit: BoxFit.cover,
               ),
             ),
             SizedBox(
-              height: size-1,
-              width: size-1,
+              height: size-3,
+              width: size-3,
               child: FdaCachedNetworkImage(
                 url: FdaServerCommunication.getImageUrl(
                   imageName
