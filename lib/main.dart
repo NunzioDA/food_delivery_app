@@ -31,7 +31,7 @@ class _MyAppState extends State<MyApp> {
     connectivityCubit = ConnectivityCubit();
     streamSubscription = connectivityCubit.stream.listen(
       (event) {
-        if(event is Connected)
+        if(event is Connected && userBloc.state is! LoggedInState)
         {
           userBloc.add(const VerifyLoggedInEvent());
         }
