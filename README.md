@@ -51,7 +51,7 @@ O ancora la pagina di checkout è stato implementato un sistema di adattamento m
 
 Checkout largo            |  Checkout stretto 
 :-------------------------:|:-------------------------:
-![alt cl_sid](./readmeImgs/wide_checkout.png)  |  ![alt op_sid](./readmeImgs/narrow_checkout.png)
+![Alt widech](./readmeImgs/wide_checkout.png)|  ![alt op_sid](./readmeImgs/narrow_checkout.png)
 
 A questo aspetto contribuisce ampiamente anche il widget SideMenuView che inserisce un menu a scomparsa laterale, permettendo sia di navigare tra diverse pagine che di effettuare delle azioni.
 Questo widget si adatta dinamicamente a seconda che lo schermo sia in orizzontale o verticale. Come comportamento di default in caso di visuale orizzontale, il menu resta fisso al lato sinistro dello schermo.
@@ -62,14 +62,14 @@ Menu in verticale chiuso   |  Menu in verticale aperto
 
 
 **Menu in orizzontale**
-![alt h_sid](./readmeImgs/horizontal_side_view.png) 
+![Alt text](./readmeImgs/horizontal_side_view.png)
 
 Nelle immagini precedenti si può anche notare il widget TotalAndConfirm che permette di visualizzare il totale in denaro, dei prodotti selezionati e su richiesta il carrello. Anche questo si adatta a seconda che lo spazio in cui viene visualizzato sia orizzontale o verticale. In caso di visualizzazione verticale viene mostrato il pulsante carrello che permette - attraverso un animazione di entrata a scorrimento dal basso verso l'alto - di visualizzare il carrello.
 Mentre, in caso di visualizzazione orizzontale viene mostrato un pulsante in alto a destra dello schermo (raffigurante un carrello) che permette - attraverso un animazione di entrata a scorrimento da destra verso sinistra - di visualizzare il carrello.
 
 Carrello verticale            |  Carrello orizzontale
 :----------------------:|:-------------------------:
-![alt v_cart](./readmeImgs/vertical_cart.png)  |![alt h_cart](./readmeImgs/horizontal_cart.png)
+![alt v_cart](./readmeImgs/vertical_cart.png)  |![Alt text](./readmeImgs/horizontal_cart.png)
 
 ### Risoluzione limiti di Hero
 
