@@ -103,9 +103,11 @@ SuperHero richiama una pagina "ponte" (senza opacità) che visualizza il figlio 
 Resta in attesa della pagina e quando questa viene chiusa, torna automaticamente alla pagina chiamante (restituendone anche l'eventuale risultato).
 Il problema viene risolto poichè le nuove pagine non sono discendenti delle pagine chiamanti nell'albero dei widget.
 
+Ovviamente, il widget viene utilizzato solo dove strettamente necessario.
+
 ## Tecnologie 
 ### Gestione dello stato
-L'applicazione usa Bloc per la gestione dello stato alternando sia bloc che cubit in base alle necessità.
+L'applicazione usa Bloc per la gestione dello stato, alternando sia bloc che cubit in base alle necessità.
 Inoltre, si è cercato per quanto possibile di annidare i widget in ascolto dello stato, aggiornando solo i widget necessari.
 
 ### Architettura
