@@ -49,6 +49,8 @@ class _ImageChooserState extends State<ImageChooser> {
   void _getFromGallery() async {
     XFile? pickedFile = await ImagePicker().pickImage(
         source: ImageSource.gallery,
+        maxHeight: 1920,
+        maxWidth: 1920,        
     );
     
     if (pickedFile != null) {
