@@ -44,29 +44,25 @@ class ErrorCodes
 
 class FdaServerCommunication
 {
-  static const String localServer = "192.168.1.18";
-  static const String externalServer = "www.coinquilinipercaso.altervista.org";
-  static const bool serverDiscriminator = kDebugMode;
+  static const bool serverSwitch = !kReleaseMode;  
   static ConnectivityCubit? currentConnectivityCubit;
 
   static String getServerBaseLink()
   {
-    if(serverDiscriminator) {
-      return "http://$localServer";
+    String protocol;
+    if(serverSwitch) {
+      protocol = "http://";
     } 
     else {
-      return "https://$externalServer";
+      protocol = "https://";
     }
+
+    return "$protocol${getServerName()}";
   }
 
   static String getServerName()
-  {
-    if(serverDiscriminator) {
-      return localServer;
-    } 
-    else {
-      return externalServer;
-    }
+  {    
+    return const String.fromEnvironment("BACKEND");
   }
 
   static String getBackendFolder()
@@ -85,30 +81,19 @@ class FdaServerCommunication
   {
     String serverName = getServerName();
     Uri uri;
-    if(serverDiscriminator) {
+    if(serverSwitch) {
+      //http request
       uri = Uri.http(serverName,'${getBackendFolder()}/$phpFile.php', parameters);
     }
     else {
+      //https request
       uri = Uri.https(serverName,'${getBackendFolder()}/$phpFile.php', parameters);
     }
     return uri;
   }
 
-  static String mapToRequestList(Map<String, String> parameters)
-  {
-    String parametersString = "";
-
-    List<String> keys = parameters.keys.toList();
-    for(String key in keys)
-    {
-      parametersString += '$key=${parameters[key]!}&';
-    }
-
-    return parametersString;
-  }
-
   static Future<http.Response> getRequest(String phpFile, [Map<String, String>? parameters]) async {
-    
+    // print(geBackendUri(phpFile, parameters));
     try{
       http.Response response = await http.get(geBackendUri(phpFile, parameters));
       return response;
