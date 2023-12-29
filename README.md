@@ -123,7 +123,7 @@ Questa architettura è un adattamento dello standard model-controller-view - il 
 
 ### Persistenza dei dati e backend
 La persistenza delle informazioni è garantita sia localmente tramite SharedPreferences (il carrello, in caso l'utente non si sia ancora autenticato e le credenziali di mantenimento della sessione, in caso di utente atuenticato), sia salvando informazioni sul database nel caso in cui l'utente fosse loggato.
-Per farlo, l'app comunica con il [backend](../backendFda) - interamente scritto in PHP - tramite richieste http. L'indirizzo del server è specificato nella variabile d'ambiente BACKEND.
+Per farlo, l'app comunica con il [backend](https://github.com/NunzioDA/backendFda) - interamente scritto in PHP - tramite richieste http. L'indirizzo del server è specificato nella variabile d'ambiente BACKEND.
 
 La comuniazione è divisa in tre strati logici:
 
