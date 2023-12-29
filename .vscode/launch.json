@@ -1,0 +1,35 @@
+{
+    "version": "0.2.0",
+    "configurations": [        
+        {
+            "name": "food_delivery_app",
+            "type": "dart",
+            "request": "launch",
+            "program": "lib/main.dart",
+            "flutterMode": "debug",
+            "args": [
+                "--dart-define-from-file=.env",
+            ],
+        },
+        {
+            "name": "food_delivery_app (profile)",
+            "request": "launch",
+            "type": "dart",
+            "program": "lib/main.dart",
+            "flutterMode": "profile",
+            "args": [
+                "--dart-define-from-file=.env",
+            ],
+        },
+        {
+            "name": "food_delivery_app (release)",
+            "request": "launch",
+            "type": "dart",
+            "program": "lib/main.dart",
+            "flutterMode": "release",
+            "args": [
+                "--dart-define-from-file=.env",
+            ],
+        },
+    ]
+}
