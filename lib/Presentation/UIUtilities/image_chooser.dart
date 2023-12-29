@@ -78,6 +78,7 @@ class _ImageChooserState extends State<ImageChooser> {
     return Hero(
       tag: heroTag, 
       child: Material(
+        color: Colors.transparent,
         child: GestureDetector(
           onTap: (){
             late ImageProvider? provider;
