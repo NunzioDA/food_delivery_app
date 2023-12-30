@@ -32,17 +32,20 @@ class _CategoryItemState extends State<CategoryItem> {
       color: Theme.of(context).dialogBackgroundColor,
       borderRadius: BorderRadius.circular(defaultBorderRadius),
       child: Padding(
-        padding: const EdgeInsets.only(left:20.0, right: 20, bottom: 20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          mainAxisAlignment: MainAxisAlignment.start,
+        padding: const EdgeInsets.only(top: CategoryPage.imageSize / 2,left:20.0, right: 20, bottom: 20),
+        child: Stack(
+          fit: StackFit.expand,
           children: [
-            const Gap(CategoryPage.imageSize / 2),
-            CategoryInfo(
-              category: widget.category,
-              onCountChanged: (value) => count = value,
-              fixedCount: (animation != null) ? count : null,
-            ),            
+            Positioned(
+              top: 0,
+              right: 0,
+              left: 0,
+              child: CategoryInfo(
+                category: widget.category,
+                onCountChanged: (value) => count = value,
+                fixedCount: (animation != null) ? count : null,
+              ),
+            ),
           ],
         ),
       ),
@@ -62,8 +65,7 @@ class _CategoryItemState extends State<CategoryItem> {
               child: Hero(
                   flightShuttleBuilder: (flightContext, animation,
                           flightDirection, fromHeroContext, toHeroContext) =>
-                      categoryWidgetContent(
-                          flightContext, animation, flightDirection),
+                      categoryWidgetContent(flightContext, animation, flightDirection),
                   tag: "Container${widget.category.name}",
                   child: categoryWidgetContent(context)),
             )
