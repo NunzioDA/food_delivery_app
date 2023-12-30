@@ -6,6 +6,10 @@ import 'package:food_delivery_app/Communication/http_communication.dart';
 import 'package:food_delivery_app/Presentation/UIUtilities/cached_image.dart';
 
 class CategoryImage extends StatelessWidget{
+
+  static const double imgDelta = 2;
+  static const double blurSigma = 2.5;
+
   final String imageName;
   final double size;
   final Object tag;
@@ -27,27 +31,30 @@ class CategoryImage extends StatelessWidget{
         child: Stack(
           alignment: Alignment.topCenter,
           children: [
-            ImageFiltered(
-              imageFilter: ImageFilter.blur(
-                sigmaX: 3,
-                sigmaY: 3,
-                tileMode: TileMode.decal
-              ),
-              child: Image(
-                image: CachedNetworkImageProvider(
-                  FdaServerCommunication.getImageUrl(
-                    imageName
-                  ),
+            Padding(
+              padding: const EdgeInsets.only(top:imgDelta),
+              child: ImageFiltered(
+                imageFilter: ImageFilter.blur(
+                  sigmaX: blurSigma,
+                  sigmaY: blurSigma,
+                  tileMode: TileMode.decal
                 ),
-                color: Colors.black.withAlpha(110),
-                width: size,
-                height: size,
-                fit: BoxFit.cover,
+                child: Image(
+                  image: CachedNetworkImageProvider(
+                    FdaServerCommunication.getImageUrl(
+                      imageName
+                    ),
+                  ),
+                  color: Colors.black.withAlpha(150),
+                  width: size-imgDelta,
+                  height: size-imgDelta,
+                  fit: BoxFit.cover,
+                ),
               ),
             ),
             SizedBox(
-              height: size-2.5,
-              width: size-2.5,
+              height: size-imgDelta,
+              width: size-imgDelta,
               child: FdaCachedNetworkImage(
                 url: FdaServerCommunication.getImageUrl(
                   imageName
