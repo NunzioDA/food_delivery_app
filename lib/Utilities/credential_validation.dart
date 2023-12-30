@@ -35,7 +35,7 @@ bool validateUsername(String? username)
 {
   return username != null && 
     username.isNotEmpty && 
-    username.length >= 6 && 
+    username.length >= minUsernameLength && 
     RegExp(r'^_*([a-zA-Z0-9]+_*)+$').hasMatch(username);
 }
 
