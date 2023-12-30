@@ -25,12 +25,12 @@ class CategoryImage extends StatelessWidget{
         width: size,
         height: size,
         child: Stack(
-          alignment: Alignment.topLeft,
+          alignment: Alignment.topCenter,
           children: [
             ImageFiltered(
               imageFilter: ImageFilter.blur(
-                sigmaX: 2.0,
-                sigmaY: 2.0,
+                sigmaX: 1.5,
+                sigmaY: 1.5,
                 tileMode: TileMode.decal
               ),
               child: Image(
@@ -39,15 +39,15 @@ class CategoryImage extends StatelessWidget{
                     imageName
                   ),
                 ),
-                color: Colors.black.withAlpha(70),
+                color: Colors.black.withAlpha(90),
                 width: size,
                 height: size,
                 fit: BoxFit.cover,
               ),
             ),
             SizedBox(
-              height: size-3,
-              width: size-3,
+              height: size-2.5,
+              width: size-2.5,
               child: FdaCachedNetworkImage(
                 url: FdaServerCommunication.getImageUrl(
                   imageName
