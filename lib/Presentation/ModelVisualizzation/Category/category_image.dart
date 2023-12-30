@@ -29,8 +29,8 @@ class CategoryImage extends StatelessWidget{
           children: [
             ImageFiltered(
               imageFilter: ImageFilter.blur(
-                sigmaX: 1.5,
-                sigmaY: 1.5,
+                sigmaX: 3,
+                sigmaY: 3,
                 tileMode: TileMode.decal
               ),
               child: Image(
@@ -39,7 +39,7 @@ class CategoryImage extends StatelessWidget{
                     imageName
                   ),
                 ),
-                color: Colors.black.withAlpha(90),
+                color: Colors.black.withAlpha(110),
                 width: size,
                 height: size,
                 fit: BoxFit.cover,
