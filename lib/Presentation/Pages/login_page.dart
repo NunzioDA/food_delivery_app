@@ -319,7 +319,7 @@ class _LoginSignInFormState extends State<LoginSignInForm>
     controller = AnimationController(
       vsync: this, duration: const Duration(milliseconds: 100))
     ..addListener(() {
-      setState(() {});
+      if(mounted) setState(() {});
     });
 
     widget.credentialPageCubit.stream.listen((event) { 
