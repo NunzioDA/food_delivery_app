@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:food_delivery_app/Presentation/UIUtilities/ui_utilities.dart';
 import 'package:photo_view/photo_view.dart';
 
 /// Questa pagina permete di visualizzare in primo piano
@@ -25,7 +24,7 @@ class ImageVisualizer extends StatelessWidget
               Navigator.of(context).pop();
             },
             child: Container(
-              color: defaultTransparentScaffoldBackgrounColor(context),
+              color: Colors.black.withAlpha(230),
             ),
           ),
           Center(
