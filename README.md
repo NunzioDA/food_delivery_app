@@ -25,8 +25,7 @@ FdaLoading ricopre il widget figlio con un'animazione di caricamento che disabil
 
 Loading            |  Dialogo
 :-------------------------:|:-------------------------:
-![Alt loading](./readmeImgs/loading.png) | ![Alt dialogo](./readmeImgs/dialogo.png) 
-
+![Alt loading](./readmeImgs/loading.png) | ![Alt dialogo](./readmeImgs/dialogo.png)
 
 Il flusso dell'ordinazione è il seguente:
 1. Scelta dei prodotti 
@@ -84,7 +83,6 @@ Questo widget si adatta dinamicamente a seconda che lo schermo sia in orizzontal
 Menu in verticale chiuso   |  Menu in verticale aperto
 :-------------------------:|:-------------------------:
 ![alt cl_sid](./readmeImgs/vertical_side_view_closed.png)  |  ![alt op_sid](./readmeImgs/vertical_side_view_opened.png) 
-
 
 **Menu in orizzontale**
 ![Alt text](./readmeImgs/horizontal_side_view.png)
