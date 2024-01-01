@@ -21,17 +21,15 @@ class ConnectivityCubit extends Cubit<ConnectivityState> {
   void _manageConnectivityResult(ConnectivityResult result) async
   {
     switch(result)
-    {
-      
+    {      
       case ConnectivityResult.ethernet:
       case ConnectivityResult.mobile: 
       case ConnectivityResult.wifi:
-        if(state is NotConnected || state is FirstCheck)
-        {
-          checkConnectivityCommunication();
-        }
+        print("rilevata connessione");
+        checkConnectivityCommunication();
       break;
       case ConnectivityResult.none:
+        print("persa connessione");
         if(state is Connected || state is FirstCheck){
           emit(NotConnected(state is Connected));
           canCheckConnection = true;
@@ -92,11 +90,13 @@ class ConnectivityCubit extends Cubit<ConnectivityState> {
       }
       canCheckConnection = true;
       if(ErrorCodes.isSuccesfull(response))
-      {            
+      {        
+        print("connesso");    
         emit(Connected(state is NotConnected));
         _stopCommunicationCheckerIfAvailable();
       }
       else{
+        print("connesso ma non disponibile");   
         emit(AvailableButNotConnected(state is Connected));
         if(connectionCheckTimer == null)
         {
