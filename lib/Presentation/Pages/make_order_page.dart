@@ -209,20 +209,15 @@ class _MakeOrderPageState extends State<MakeOrderPage> {
                               expanded: MediaQuery.of(context).size.width > 680,
                               padding: const EdgeInsets.only(top: 25, right: 25, left: 25),
                             ),
+                            const Gap(15),
                             Padding(
-                              padding: const EdgeInsets.only(top: 25, right: 25, left: 25),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.stretch,
-                                children: [                                      
-                                  const Gap(20),
-                                  Text(
-                                    "Il nostro menu",
-                                    style: Theme.of(context).textTheme.titleMedium,
-                                  ),
-                                ],
-                              )
+                              padding: const EdgeInsets.only(right: 25, left: 25),
+                              child: Text(
+                                "Il nostro menu",
+                                style: Theme.of(context).textTheme.titleMedium,
+                              ),
                             ),        
-                            const Gap(10),
+                            const Gap(15),
                             BlocConsumer<CategoriesBloc, CategoriesState>(
                               bloc: categoriesBloc,
                               listener: reactToCategoriesBlocState,
