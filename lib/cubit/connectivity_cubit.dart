@@ -7,6 +7,18 @@ import 'package:meta/meta.dart';
 
 part 'connectivity_state.dart';
 
+/// Gestisce gli eventi sulla connettività, distinguendo 
+/// 3 stati diversi:
+/// 
+/// [Connected] connessione presente e attiva
+/// [NotConnected] connessione assente
+/// [AvailableButNotConnected] connessione presente ma non è possibile comunicare
+/// 
+/// Per il check della presenza di una connessione, si basa su [Connectivity]
+/// che fornisce uno stream di eventi sulla connettività del dispositivo.
+/// Mentre per il check della comunicazione effettua una richiesta http al 
+/// backend, verso l'apposita API "check" che fornisce un messaggio di successo.
+
 class ConnectivityCubit extends Cubit<ConnectivityState> {
   late final StreamSubscription subscription;
   Timer? connectionCheckTimer;
@@ -18,6 +30,7 @@ class ConnectivityCubit extends Cubit<ConnectivityState> {
     FdaServerCommunication.currentConnectivityCubit = this;
   }
 
+  /// Gestisce gli eventi di connettività restituito da [Connectivity]
   void _manageConnectivityResult(ConnectivityResult result) async
   {
     switch(result)
@@ -25,11 +38,9 @@ class ConnectivityCubit extends Cubit<ConnectivityState> {
       case ConnectivityResult.ethernet:
       case ConnectivityResult.mobile: 
       case ConnectivityResult.wifi:
-        print("rilevata connessione");
         checkConnectivityCommunication();
       break;
       case ConnectivityResult.none:
-        print("persa connessione");
         if(state is Connected || state is FirstCheck){
           emit(NotConnected(state is Connected));
           canCheckConnection = true;
@@ -39,6 +50,8 @@ class ConnectivityCubit extends Cubit<ConnectivityState> {
         
     }
   }
+
+  /// Trasforma lo stato della connessione in un messaggio visualizzabile
 
   String stateToMessage()
   {
@@ -55,6 +68,7 @@ class ConnectivityCubit extends Cubit<ConnectivityState> {
     }
   }
 
+  /// Avvia un checker della connessione
   void _startConnectionChecker()
   {
     canCheckConnection = true;
@@ -70,12 +84,15 @@ class ConnectivityCubit extends Cubit<ConnectivityState> {
     );
   }
 
+  /// Se dovesse essere attivo un checker della comunicazione, lo ferma.
   void _stopCommunicationCheckerIfAvailable()
   {
     connectionCheckTimer?.cancel();
     connectionCheckTimer = null;
   }
 
+
+  /// Effettua il check della comunicazione se possibile
   void checkConnectivityCommunication() async
   {
     if(canCheckConnection)
@@ -90,13 +107,11 @@ class ConnectivityCubit extends Cubit<ConnectivityState> {
       }
       canCheckConnection = true;
       if(ErrorCodes.isSuccesfull(response))
-      {        
-        print("connesso");    
+      {         
         emit(Connected(state is NotConnected));
         _stopCommunicationCheckerIfAvailable();
       }
       else{
-        print("connesso ma non disponibile");   
         emit(AvailableButNotConnected(state is Connected));
         if(connectionCheckTimer == null)
         {
