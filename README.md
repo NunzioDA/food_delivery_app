@@ -19,8 +19,9 @@ I casi d'uso di FDA sono visualizzati nel seguente diagramma.
 L'app è state progettata per rendere l'esperienza utente più semplice ma allo stesso tempo piacevole possibile, aggiungendo animazioni e transizioni che rendono l'UI fluida e reattiva.
 
 ### UX
-Per migliorare la user experience l'interfaccia è stata progettata per fornire sempre un feedback all'utente, anche corredandola con animazioni di caricamento, tramite il widget FdaLoading. Questo ricopre il widget figlio con un'animazione di caricamento che disabilita ogni input. Mostra eventualmente anche un testo, che è possibile modificare dinamicamente.
-Con lo stesso obiettivo, l'interazione con l'utente viene corredata con dialog che informano l'utente di un qualsiasi evento (di errore e non).
+Per migliorare la user experience, l'interfaccia è stata progettata per fornire sempre un feedback all'utente, corredandola con animazioni di caricamento - tramite il widget FdaLoading - e dialoghi che informano l'utente su un qualsiasi evento (di errore e non). 
+
+FdaLoading ricopre il widget figlio con un'animazione di caricamento che disabilita ogni input. Mostra eventualmente anche un testo, che è possibile modificare dinamicamente.
 
 Loading            |  Dialogo
 :-------------------------:|:-------------------------:
@@ -60,7 +61,7 @@ I miei ordini            |  Dettagli ordine
 ![alt your_orders](./readmeImgs/your_orders.png)  |  ![alt details](./readmeImgs/details.png)
 
 ### Utente avanzato
-Un utente con permessi protrà, inoltre, visualizzare - nell'apposita schermata "Ordini ricevuti" - e gestire tutti gli ordini in arrivo dai clienti.
+Un utente con permessi protrà, inoltre, visualizzare e gestire - nell'apposita schermata "Ordini ricevuti" - tutti gli ordini in arrivo dai clienti.
 La gestione dell'ordine consiste nella possibilità di cambiare lo stato dell'ordine scegliendolo tra : "In elaborazione", "Partito", "Consegnato" e "Annullato".
 
 Ordini ricevuti           |  Modifica stato ordine
@@ -71,7 +72,7 @@ Ordini ricevuti           |  Modifica stato ordine
 La UI è stata progettata per adattarsi a qualsiasi schermo, di qualsiasi dimensione e in qualsiasi orientamento.
 Per farlo si è usufruito degli strumenti base di flutter, ma sono stati implementati anche widget dinamici come DynamicGridView che si basa su Wrap, in grado di adattare una lista di widget alla larghezza attuale dello schermo, incastrandoli nel miglior modo possibile rispettando i limiti imposti (l'effetto è visibile successivamente nelle immagini raffiguranti il menu in verticale/orizzontale, dove si vede come le categorie di prodotti si adattano alla schermata).
 
-O ancora la pagina di checkout è stato implementato un sistema di adattamento matematico che si adatta fluidamente al variare della dimensione della schermata. Questo fa in modo che per schermate larghe la sezione di raccolta delle informazioni prenda due terzi della schermata, mentre per schermate strette ci sia una divisione del 50 e 50.
+O ancora, per la pagina di checkout è stato implementato un sistema di adattamento matematico che si adatta fluidamente al variare della dimensione della schermata. Questo fa in modo che per schermate larghe la sezione di raccolta delle informazioni prenda due terzi della schermata, mentre per schermate strette ci sia una divisione del 50 e 50.
 
 Checkout largo            |  Checkout stretto 
 :-------------------------:|:-------------------------:
@@ -116,7 +117,7 @@ L'architettura dell'applicazione è divisa in tre parti fondamentali:
 * Data che a sua volta è diviso in:
     * Model: la descrizione di tutti i dati gestiti dall'app
     * APIs: utile per la comunicazione con le API lato server
-    * Repositories: ponte nella comunicazione tra bloc e le API, trasformando le risposte nei dati descritti nel model, ma si occupa anche nella gestione dei dati salvati in locale sul dispositivo.
+    * Repositories: traduttore nella comunicazione tra bloc e le API, trasformando le risposte dell'API nei dati descritti nel model e viceversa, ma si occupa anche nella gestione dei dati salvati in locale sul dispositivo.
 * Presentation: si occupa della visualizzazione dello stato dell'app, tramite widget generici o pagine.
 
 Questa architettura è un adattamento dello standard model-controller-view - il quale è stato integrato con bloc - rendendo l'applicazione facilmente mantenibile, scalabile e testabile, aumentandone la stabilità.
@@ -129,13 +130,12 @@ La comuniazione è divisa in tre strati logici:
 
 * Bloc, acquisisce ed riconosce l'evento generato dall'utente o da timer, per poi effettuare la richiesta al repository. In base alla risposta di quest'ultimo verrà generato un nuovo stato.
 * Il repository, è l'oggetto che si occupa di comunicare con le API e di trasformare le risposte di queste in dati riconoscibili dall'app, insanziando gli oggetti delle classi che compongono il model.
-Si occupa, inoltre, di salvare e recuperare i dati in locale.
 * Le API sono classi statiche che si occupano di comunicare con il backend effettuando richieste http.
 
 Tutti i codici di errore del backend sono contenuti - sottoforma di mappa - nella classe ErrorCodes.
 
 ### Gestione delle immagini
-Le immagini vengono sempre convertite in png con una risoluzione che non supera il FHD prima dell'invio, per ottimizzare i tempi di caricamento e il consumo dati. Inoltre, qualora dovesse essere specificato, il backend provvede anche ad una conversione della profondità a 8 bit, per garantire la trasparenza durante la visualizzazione delle immagini tramite CachedNetworkImage.
+Le immagini vengono sempre convertite in png; con una risoluzione che non supera il FHD prima dell'invio, per ottimizzare i tempi di caricamento e il consumo dati. Inoltre, qualora dovesse essere specificato, il backend provvede anche ad una conversione della profondità a 8 bit, per garantire la trasparenza durante la visualizzazione delle immagini tramite CachedNetworkImage.
 
 Le immagini vengono visualizzate tramite il widget FdaCachedNetworkImage; il quale si basa sul widget CachedNetworkImage, settando delle impostazioni di base e mostrando un'animazione di caricamento. CachedNetwordImage permette di salvare le immagini in cache senza la necessità di riscaricare continuamente le immagini, risparmiando consumo dati e velocizzando la visualizzazione delle immagini.
 
@@ -155,7 +155,7 @@ L'applicazione usufruisce di vari package aggiuntivi per la gestione di diversi 
 * cross_file: utilizzata per la gestione dei file (le immagini) su piattaforme diverse
 * mime: verifica del tipo del file recuperato
 * gap: permette di generare uno spazio (gap) nelle righe/colonne. Equivalente ad inserire un SizedBox ma senza la necessità di sapere in quale widget viene inserito.  
-* image_picker: utilizzato per recuperare le immagini da caricare.
+* image_picker: utilizzato per recuperare le immagini dal file system.
 * photo_view: utile per visualizzare le immagini a schermo intero
 * cached_network_image: recupera le immagini dalla rete, salvandole in cache
 * loading_animation_widget: utilizzato in FdaLoading per l'animazione di caricamento
