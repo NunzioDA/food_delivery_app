@@ -45,7 +45,7 @@ class _OrderInfoHeaderState extends State<OrderInfoHeader> {
 
   int productsCount()
   {
-    return widget.order.content.entries.fold(0, 
+    return widget.order.content.entries.fold<int>(0, 
       (previousValue, element) => previousValue + element.value
     );
   }
