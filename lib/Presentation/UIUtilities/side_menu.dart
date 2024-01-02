@@ -27,6 +27,7 @@ class SideMenuView extends StatefulWidget{
   final int initialContentIndex;
   final List<SideMenuGroup> groups;
   final bool rotate3D;
+  final bool overrideMediaQuery;
   final bool showTopBarOnHorizontalView;
   final Widget? topBarActionWidget;
   final double contentBorderRadius;
@@ -36,6 +37,7 @@ class SideMenuView extends StatefulWidget{
     required this.groups,
     this.initialContentIndex = 0,
     this.rotate3D = true,
+    this.overrideMediaQuery = true,
     this.showTopBarOnHorizontalView = false,
     this.topBarActionWidget,
     this.contentBorderRadius = 10
@@ -278,8 +280,14 @@ class _SideMenuViewState extends State<SideMenuView>
                       child: MediaQuery(
                         data: MediaQuery.of(context).copyWith(
                           size: Size(
-                            width, 
-                            MediaQuery.of(context).size.height
+                            widget.overrideMediaQuery?
+                            width:
+                            MediaQuery.of(context).size.width, 
+                            isWithTopBarMode() &&  widget.overrideMediaQuery? 
+                              MediaQuery.of(context).size.height - 
+                              ContentVisualizerTopBar.barHeight:
+                              
+                              MediaQuery.of(context).size.height
                           ) 
                         ),
                         child: ContentVisualizer(
