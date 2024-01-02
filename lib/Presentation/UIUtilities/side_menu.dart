@@ -22,6 +22,11 @@ import 'package:gap/gap.dart';
 /// 
 /// [topBarActionWidget] permette di specificare un widget che verrà visualizzato
 /// a lato sulla top bar [ContentVisualizerTopBar].
+/// 
+/// [overrideMediaQuery] permette di specificare se il menu deve sovrascrivere 
+/// i mediaquery con lo spazio effettivamente a disposizione del contenuto
+/// rimuovendo quello occupato dalla topbar o eventualmente in visione orizzontale
+/// dal menu al lato.
 
 class SideMenuView extends StatefulWidget{
   final int initialContentIndex;
