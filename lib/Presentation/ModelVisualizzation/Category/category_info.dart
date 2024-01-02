@@ -37,10 +37,11 @@ class _CategoryInfoState extends State<CategoryInfo> {
   int count = 0;
 
   void countCategoryProductsInCart() {
-    count = widget.category.products.fold(
+    count = widget.category.products.fold<int>(
         0,
         (previousValue, product) =>
-            previousValue + (cartBloc?.state.cart[product] ?? 0));
+            previousValue + (cartBloc?.state.cart[product] ?? 0)
+    );
 
     widget.onCountChanged.call(count);
   }
