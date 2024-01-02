@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:food_delivery_app/Presentation/ModelVisualizzation/Cart/cart_content.dart';
+import 'package:food_delivery_app/Presentation/UIUtilities/side_menu.dart';
 import 'package:food_delivery_app/Presentation/UIUtilities/ui_utilities.dart';
 import 'package:food_delivery_app/Utilities/compute_total.dart';
 import 'package:food_delivery_app/bloc/cart_bloc.dart';
@@ -79,7 +80,7 @@ class TotalAndConfirmState extends State<TotalAndConfirm>
     double? right;
 
     // Impostazione parametri di posizionamento
-    if(UIUtilities.isHorizontal(context))
+    if(!SideMenuViewInherited.of(context).isWithTopBarMode)
     {
       double screenBasedWidth = (MediaQuery.of(context).size.width / 3);
       width = screenBasedWidth < TotalAndConfirm.minPanelWidthHorizontal? 
@@ -101,197 +102,207 @@ class TotalAndConfirmState extends State<TotalAndConfirm>
       bottom = (widget.maxHeight - TotalAndConfirm.closedPanelHeight) * (-1+ animation.value );
     }    
 
-    return Positioned(
-      top: top,
-      bottom: bottom,
-      width: width,
-      right:right,
-      height: height,
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          if(UIUtilities.isHorizontal(context) && animation.value == 0)
-          Align(
-            alignment: Alignment.topRight,
-            child: GestureDetector(
-              onTap: () {
-                if(!isOpened())
-                {
-                  open();
-                }
-                else{
-                  close();
-                }
-              },
-              child: Padding(
-                padding: const EdgeInsets.only(top: 20),
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    border: Border(
-                      top: BorderSide(
-                        width: 2, 
-                        color: Theme.of(context).colorScheme.secondary
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        if(isOpened())
+        GestureDetector(
+          behavior: HitTestBehavior.translucent,
+          onTap: close,
+        ),
+        Positioned(
+          top: top,
+          bottom: bottom,
+          width: width,
+          right:right,
+          height: height,
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              if(!SideMenuViewInherited.of(context).isWithTopBarMode && animation.value == 0)
+              Align(
+                alignment: Alignment.topRight,
+                child: GestureDetector(
+                  onTap: () {
+                    if(!isOpened())
+                    {
+                      open();
+                    }
+                    else{
+                      close();
+                    }
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 20),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        border: Border(
+                          top: BorderSide(
+                            width: 2, 
+                            color: Theme.of(context).colorScheme.secondary
+                          ),
+                          left: BorderSide(
+                            width: 2, 
+                            color: Theme.of(context).colorScheme.secondary
+                          ),
+                          bottom: BorderSide(
+                            width: 2, 
+                            color: Theme.of(context).colorScheme.secondary
+                          ),
+                        ),
+                        borderRadius: const BorderRadius.only(
+                          topLeft: Radius.circular(defaultBorderRadius),
+                          bottomLeft: Radius.circular(defaultBorderRadius)
+                        )
                       ),
-                      left: BorderSide(
-                        width: 2, 
-                        color: Theme.of(context).colorScheme.secondary
-                      ),
-                      bottom: BorderSide(
-                        width: 2, 
-                        color: Theme.of(context).colorScheme.secondary
+                      height: TotalAndConfirm.closedPanelButtonSize,
+                      width: TotalAndConfirm.closedPanelButtonSize,
+                      child: Icon(
+                        animation.value == 0? 
+                          Icons.shopping_cart_outlined : 
+                          Icons.close_rounded,
+                        color: Theme.of(context).primaryColor,
                       ),
                     ),
-                    borderRadius: const BorderRadius.only(
-                      topLeft: Radius.circular(defaultBorderRadius),
-                      bottomLeft: Radius.circular(defaultBorderRadius)
-                    )
-                  ),
-                  height: TotalAndConfirm.closedPanelButtonSize,
-                  width: TotalAndConfirm.closedPanelButtonSize,
-                  child: Icon(
-                    animation.value == 0? 
-                      Icons.shopping_cart_outlined : 
-                      Icons.close_rounded,
-                    color: Theme.of(context).primaryColor,
                   ),
                 ),
               ),
-            ),
-          ),
-          Expanded(
-            child: Container(
-              decoration: BoxDecoration(
-                  color: Theme.of(context).dialogBackgroundColor,
-                  borderRadius: !UIUtilities.isHorizontal(context)? const BorderRadius.only(
-                      topLeft: Radius.circular(defaultBorderRadius),
-                      topRight: Radius.circular(defaultBorderRadius)):null,
-                  boxShadow: !UIUtilities.isHorizontal(context) || isOpened()? 
-                  const [BoxShadow(blurRadius: 5, color: Colors.grey)] : null
-                ),
-              child: Padding(
-                padding: EdgeInsets.only(
-                  top: UIUtilities.isHorizontal(context)? 20 : 5,
-                  bottom: 20
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    if(!UIUtilities.isHorizontal(context))
-                    Listener(
-                      behavior: HitTestBehavior.translucent,
-                      onPointerDown: (event){
-                        wasOpened = isOpened();
-                      },
-                      onPointerMove: (event) {
-                        double screenHeight = MediaQuery.of(context).size.height;
-                        double positionFromBottom = screenHeight - event.position.dy - 
-                        TotalAndConfirm.closedPanelHeight;
-                        controller.value = positionFromBottom / (widget.maxHeight - TotalAndConfirm.closedPanelHeight);
-                      },
-                      onPointerUp: (event){
-                        if(!wasOpened && controller.value < 0.1 || 
-                        wasOpened && controller.value < 0.9)
-                        {
-                          controller.reverse();
-                        }
-                        else if(wasOpened || controller.value > 0.1)
-                        {
-                          controller.forward();
-                        }
-                      },
-                      child: const Center(
-                        child: Icon(
-                          Icons.remove
-                        ),
-                      ),
+              Expanded(
+                child: Container(
+                  decoration: BoxDecoration(
+                      color: Theme.of(context).dialogBackgroundColor,
+                      borderRadius: SideMenuViewInherited.of(context).isWithTopBarMode? const BorderRadius.only(
+                          topLeft: Radius.circular(defaultBorderRadius),
+                          topRight: Radius.circular(defaultBorderRadius)):null,
+                      boxShadow: SideMenuViewInherited.of(context).isWithTopBarMode || isOpened()? 
+                      const [BoxShadow(blurRadius: 5, color: Colors.grey)] : null
                     ),
-                    Padding(
-                      padding: const EdgeInsets.only(left:20.0, right: 20),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                  child: Padding(
+                    padding: EdgeInsets.only(
+                      top: !SideMenuViewInherited.of(context).isWithTopBarMode? 20 : 5,
+                      bottom: 20
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        if(SideMenuViewInherited.of(context).isWithTopBarMode)
+                        Listener(
+                          behavior: HitTestBehavior.translucent,
+                          onPointerDown: (event){
+                            wasOpened = isOpened();
+                          },
+                          onPointerMove: (event) {
+                            double screenHeight = MediaQuery.of(context).size.height;
+                            double positionFromBottom = screenHeight - event.position.dy - 
+                            TotalAndConfirm.closedPanelHeight;
+                            controller.value = positionFromBottom / (widget.maxHeight - TotalAndConfirm.closedPanelHeight);
+                          },
+                          onPointerUp: (event){
+                            if(!wasOpened && controller.value < 0.1 || 
+                            wasOpened && controller.value < 0.9)
+                            {
+                              controller.reverse();
+                            }
+                            else if(wasOpened || controller.value > 0.1)
+                            {
+                              controller.forward();
+                            }
+                          },
+                          child: const Center(
+                            child: Icon(
+                              Icons.remove
+                            ),
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(left:20.0, right: 20),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              const Text("Totale"),
-                              BlocBuilder<CartBloc, CartState>(
-                                bloc: BlocProvider.of<CartBloc>(context),
-                                builder: (context, state) {
-                                  return Text(
-                                    "${getTotal(state.cart)}€",
-                                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                        fontWeight: FontWeight.w700,
-                                        color: Theme.of(context).primaryColor),
-                                  );
-                                },
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const Text("Totale"),
+                                  BlocBuilder<CartBloc, CartState>(
+                                    bloc: BlocProvider.of<CartBloc>(context),
+                                    builder: (context, state) {
+                                      return Text(
+                                        "${getTotal(state.cart)}€",
+                                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                            fontWeight: FontWeight.w700,
+                                            color: Theme.of(context).primaryColor),
+                                      );
+                                    },
+                                  )
+                                ],
+                              ),
+                              // if(SideMenuViewInherited.of(context).isWithTopBarMode)
+                              SizedBox(
+                                height: 40,
+                                child: ElevatedButton(
+                                  onPressed: (){
+                                    if(!isOpened())
+                                    {
+                                      open();
+                                    }
+                                    else{
+                                      close();
+                                    }
+                                  }, 
+                                  child: IntrinsicHeight(
+                                    child: Row(
+                                      children: [
+                                        Text(animation.value == 0? "Carrello" : "Chiudi"),
+                                        const VerticalDivider(
+                                          width: 20, 
+                                          thickness: 0.5, 
+                                          color: Colors.white,
+                                          endIndent: 0,
+                                          indent: 0,
+                                        ),
+                                        Icon(
+                                          animation.value == 0? 
+                                          Icons.shopping_cart_outlined : 
+                                          Icons.close_rounded,
+                                          size: 20,                                                 
+                                        ),
+                                      ],
+                                    ),
+                                  )
+                                ),
                               )
                             ],
                           ),
-                          // if(!UIUtilities.isHorizontal(context))
-                          SizedBox(
-                            height: 40,
-                            child: ElevatedButton(
-                              onPressed: (){
-                                if(!isOpened())
-                                {
-                                  open();
-                                }
-                                else{
-                                  close();
-                                }
-                              }, 
-                              child: IntrinsicHeight(
-                                child: Row(
-                                  children: [
-                                    Text(animation.value == 0? "Carrello" : "Chiudi"),
-                                    const VerticalDivider(
-                                      width: 20, 
-                                      thickness: 0.5, 
-                                      color: Colors.white,
-                                      endIndent: 0,
-                                      indent: 0,
-                                    ),
-                                    Icon(
-                                      animation.value == 0? 
-                                      Icons.shopping_cart_outlined : 
-                                      Icons.close_rounded,
-                                      size: 20,                                                 
-                                    ),
-                                  ],
-                                ),
-                              )
-                            ),
-                          )
-                        ],
-                      ),
-                    ),
-                    if(animation.value != 0)
-                    const Gap(20),
-                    if(animation.value != 0)
-                    const Expanded(
-                      child: CartContent()
-                    ),
-                    if(animation.value != 0)
-                    const Gap(20),
-                    if(animation.value != 0)
-                    Padding(
-                      padding: const EdgeInsets.only(left:20.0, right: 20),
-                      child: SizedBox(
-                        height: 60,
-                        child: ElevatedButton(
-                          onPressed: widget.onCompleteOrderRequest,
-                          child: const Text("Completa l'ordine"),
                         ),
-                      ),
-                    )
-                  ],
+                        if(animation.value != 0)
+                        const Gap(20),
+                        if(animation.value != 0)
+                        const Expanded(
+                          child: CartContent()
+                        ),
+                        if(animation.value != 0)
+                        const Gap(20),
+                        if(animation.value != 0)
+                        Padding(
+                          padding: const EdgeInsets.only(left:20.0, right: 20),
+                          child: SizedBox(
+                            height: 60,
+                            child: ElevatedButton(
+                              onPressed: widget.onCompleteOrderRequest,
+                              child: const Text("Completa l'ordine"),
+                            ),
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
                 ),
               ),
-            ),
+            ],
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }
