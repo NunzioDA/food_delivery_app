@@ -1,3 +1,4 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:food_delivery_app/Data/Model/delivery_info.dart';
@@ -5,6 +6,7 @@ import 'package:food_delivery_app/Data/Model/order.dart';
 import 'package:food_delivery_app/Presentation/UIUtilities/dialog_manager.dart';
 import 'package:food_delivery_app/Presentation/UIUtilities/ui_utilities.dart';
 import 'package:food_delivery_app/bloc/order_bloc.dart';
+import 'package:gap/gap.dart';
 
 /// Questo widget rappresenta un header raffigurante informazioni base
 /// riguardanti un [Order] tra cui le informazioni di consegna [DeliveryInfo]
@@ -68,7 +70,8 @@ class _OrderInfoHeaderState extends State<OrderInfoHeader> {
 
   @override
   Widget build(BuildContext context) {
-    var finalV = widget.order.content.entries.length != 1? "i":"o";
+    int productCount = productsCount();
+    var finalV = productCount != 1? "i":"o";
 
     Duration currentOffset = DateTime.now().timeZoneOffset;
 
@@ -109,7 +112,9 @@ class _OrderInfoHeaderState extends State<OrderInfoHeader> {
                 DropdownButton(
                   borderRadius: BorderRadius.circular(defaultBorderRadius),
                   alignment: Alignment.centerRight,
-                  value: order.status,                  
+                  value: order.status,       
+                  isDense: true,
+                  iconSize: 0,
                   items: OrderStatus.values.map(
                     (e) => DropdownMenuItem(
                       value: e,
@@ -128,35 +133,46 @@ class _OrderInfoHeaderState extends State<OrderInfoHeader> {
             statusText(widget.order.status)
           ],
         ),
-        Text(
-          widget.order.deliveryInfo.intercom,
-          style: Theme.of(context).textTheme.titleSmall,
-        ),
+        const Gap(5),
         Row(
           children: [
-            Text("${widget.order.deliveryInfo.city}, ${widget.order.deliveryInfo.address}, ${widget.order.deliveryInfo.houseNumber}"),
             Icon(
               Icons.location_on_rounded, 
               color: Theme.of(context).primaryColor,
               size: 20,
             ),
+            const Gap(10),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  widget.order.deliveryInfo.intercom,
+                  style: Theme.of(context).textTheme.titleSmall,
+                ),
+                AutoSizeText("${widget.order.deliveryInfo.city},\n${widget.order.deliveryInfo.address}, ${widget.order.deliveryInfo.houseNumber}"),
+              ],
+            ),
           ],
         ),
+        const Gap(5),
         Row(
           children: [
-              Text(
-              "Data: ${timeInLocal.day}-${timeInLocal.month}-${timeInLocal.year} "
-              "${timeInLocal.hour.toString().padLeft(2,'0')}:"
-              "${timeInLocal.minute.toString().padLeft(2,'0')}"
-            ),     
             Icon(
               Icons.access_time_outlined, 
               color: Theme.of(context).primaryColor,
               size: 20,
             ),
+            const Gap(10),
+            AutoSizeText(
+              "Data: ${timeInLocal.day}-${timeInLocal.month}-${timeInLocal.year} "
+              "${timeInLocal.hour.toString().padLeft(2,'0')}:"
+              "${timeInLocal.minute.toString().padLeft(2,'0')}"
+            ),     
           ],
-        ),                      
-        Text("${productsCount()} prodott$finalV ordinat$finalV"),
+        ),           
+        const Gap(5),           
+        Text("$productCount prodott$finalV ordinat$finalV"),
       ],
     );
   }
