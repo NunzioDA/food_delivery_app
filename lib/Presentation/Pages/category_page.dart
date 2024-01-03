@@ -87,7 +87,7 @@ class _CategoryPageState extends State<CategoryPage> {
 
   void updateCategory() {
     loading.value = true;
-    loadingText.value = "Sto prendendo il menù...";
+    loadingText.value = "Recupero il menù...";
     _categoriesBloc.add(const CategoriesFetchEvent());
   }
 

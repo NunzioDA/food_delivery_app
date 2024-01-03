@@ -171,7 +171,7 @@ class _MakeOrderPageState extends State<MakeOrderPage> {
 
   void updateCategories() {
     loading.value = true;
-    loadingText.value = "Sto prendendo il menù...";
+    loadingText.value = "Recupero il menù...";
     categoriesBloc.add(const CategoriesFetchEvent());
   }
 
