@@ -193,6 +193,9 @@ class _ShowOrdersPageState extends State<ShowOrdersPage> {
                           " te effettuati." : 
                           "Qui puoi visualizzare tutti gli ordini dei tuoi clienti"
                           " gestendone lo stato." ,
+                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            fontSize: 18
+                          ),
                         ),
                       ],
                     ),
@@ -214,22 +217,24 @@ class _ShowOrdersPageState extends State<ShowOrdersPage> {
                   const Gap(50),
                   if(orders.isEmpty)
                   Center(
-                    child: ConstrainedBox(
-                      constraints: const BoxConstraints(maxWidth: 300),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          Image.asset("assets/empty.png"),
-                          const Gap(25),
-                          AutoSizeText(
-                            "Non ci sono ancora ordini",
-                            textAlign: TextAlign.center,
-                            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                              color: Colors.grey
-                            ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Align(
+                          child: ConstrainedBox(
+                            constraints: const BoxConstraints(maxWidth: 200),
+                            child: Image.asset("assets/empty.png")
                           ),
-                        ],
-                      ),
+                        ),
+                        const Gap(25),
+                        AutoSizeText(
+                          "Non ci sono ancora ordini",
+                          textAlign: TextAlign.center,
+                          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                            color: Colors.grey
+                          ),
+                        ),
+                      ],
                     ),
                   )
                 ],
