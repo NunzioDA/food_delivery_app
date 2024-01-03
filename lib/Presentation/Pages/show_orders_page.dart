@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:food_delivery_app/Data/Model/order.dart';
@@ -7,8 +8,11 @@ import 'package:food_delivery_app/Presentation/ModelVisualizzation/Order/order_i
 import 'package:food_delivery_app/Presentation/UIUtilities/dialog_manager.dart';
 import 'package:food_delivery_app/Presentation/UIUtilities/dynamic_grid_view.dart';
 import 'package:food_delivery_app/Presentation/UIUtilities/loading.dart';
+import 'package:food_delivery_app/Presentation/UIUtilities/palette.dart';
+import 'package:food_delivery_app/Presentation/UIUtilities/ui_utilities.dart';
 import 'package:food_delivery_app/bloc/order_bloc.dart';
 import 'package:food_delivery_app/cubit/connectivity_cubit.dart';
+import 'package:gap/gap.dart';
 
 
 /// Questa pagina permette di visualizzare tutti gli ordini 
@@ -195,6 +199,7 @@ class _ShowOrdersPageState extends State<ShowOrdersPage> {
                       ],
                     ),
                   ),
+                  if(orders.isNotEmpty)
                   DynamicGridView(
                     targetItemWidth: 300,
                     spacing: 20,
@@ -207,6 +212,28 @@ class _ShowOrdersPageState extends State<ShowOrdersPage> {
                       ),
                     ).toList()
                   ),
+                  if(orders.isEmpty)
+                  const Gap(50),
+                  if(orders.isEmpty)
+                  Center(
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(maxWidth: 300),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          Image.asset("assets/empty.png"),
+                          const Gap(25),
+                          AutoSizeText(
+                            "Non ci sono ancora ordini",
+                            textAlign: TextAlign.center,
+                            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                              color: Colors.grey
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  )
                 ],
               ),
             );
