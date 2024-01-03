@@ -66,6 +66,9 @@ class _ShowOrdersPageState extends State<ShowOrdersPage> {
       loading.value = true;
       orderBloc.add(fetchEvent);
     }
+    else{
+      canMakeRequest = true;
+    }
 
     if(orderBloc.state is OrdersFetched)
     {
