@@ -460,7 +460,7 @@ class SideMenuGroup extends StatelessWidget
           padding: const EdgeInsets.only(left: 10.0, top: 10),
           child: Text(
             title.toUpperCase(),
-            style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
               color: Theme.of(context).colorScheme.onPrimary,
               fontWeight: FontWeight.w600,
               fontSize: 12
@@ -563,7 +563,7 @@ class _SideMenuButtonState extends State<SideMenuButton> {
                 const Gap(10),
                 Text(
                   widget.name,
-                  style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                     color: !_isActive? Theme.of(context).colorScheme.onPrimary : 
                     Theme.of(context).colorScheme.primary,
                   ),

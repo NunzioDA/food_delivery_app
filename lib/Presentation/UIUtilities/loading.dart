@@ -135,7 +135,7 @@ class _FdaLoadingVisualizerState extends State<_FdaLoadingVisualizer> {
                   if(widget.dynamicText.value.isNotEmpty)         
                   Text(
                     widget.dynamicText.value,                  
-                    style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
                       color: Colors.white
                     )
                   ),
