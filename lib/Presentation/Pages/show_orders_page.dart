@@ -8,8 +8,6 @@ import 'package:food_delivery_app/Presentation/ModelVisualizzation/Order/order_i
 import 'package:food_delivery_app/Presentation/UIUtilities/dialog_manager.dart';
 import 'package:food_delivery_app/Presentation/UIUtilities/dynamic_grid_view.dart';
 import 'package:food_delivery_app/Presentation/UIUtilities/loading.dart';
-import 'package:food_delivery_app/Presentation/UIUtilities/palette.dart';
-import 'package:food_delivery_app/Presentation/UIUtilities/ui_utilities.dart';
 import 'package:food_delivery_app/bloc/order_bloc.dart';
 import 'package:food_delivery_app/cubit/connectivity_cubit.dart';
 import 'package:gap/gap.dart';
