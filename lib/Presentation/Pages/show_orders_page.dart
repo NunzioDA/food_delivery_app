@@ -60,9 +60,10 @@ class _ShowOrdersPageState extends State<ShowOrdersPage> {
     else {
       fetchEvent = FetchMyOrders();
     }
-    loading.value = true;
+    
     if(connectivityCubit.state is Connected)
     {
+      loading.value = true;
       orderBloc.add(fetchEvent);
     }
 
@@ -70,13 +71,15 @@ class _ShowOrdersPageState extends State<ShowOrdersPage> {
     {
       orders = (orderBloc.state as OrdersFetched).orders;
     }
+
+    if(!(updateTimer?.isActive ?? false))
+    {
+      initTimer();
+    }
   }
 
-  @override
-  void initState() {
-    orderBloc = BlocProvider.of<OrderBloc>(context);
-    connectivityCubit = BlocProvider.of<ConnectivityCubit>(context);
-
+  void initTimer()
+  {
     updateTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
       if(canMakeRequest && connectivityCubit.state is Connected)
       {
@@ -84,6 +87,12 @@ class _ShowOrdersPageState extends State<ShowOrdersPage> {
         orderBloc.add(fetchEvent);
       }
     });
+  }
+
+  @override
+  void initState() {
+    orderBloc = BlocProvider.of<OrderBloc>(context);
+    connectivityCubit = BlocProvider.of<ConnectivityCubit>(context);    
 
     super.initState();
   }
