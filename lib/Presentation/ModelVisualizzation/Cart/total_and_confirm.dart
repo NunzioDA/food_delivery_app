@@ -193,7 +193,7 @@ class TotalAndConfirmState extends State<TotalAndConfirm>
                             wasOpened = isOpened();
                           },
                           onPointerMove: (event) {
-                            double screenHeight = MediaQuery.of(context).size.height;
+                            double screenHeight = MediaQuery.of(context).size.height + ContentVisualizerTopBar.barHeight;
                             double positionFromBottom = screenHeight - event.position.dy - 
                             TotalAndConfirm.closedPanelHeight;
                             controller.value = positionFromBottom / (widget.maxHeight - TotalAndConfirm.closedPanelHeight);
