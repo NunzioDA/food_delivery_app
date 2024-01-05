@@ -36,7 +36,7 @@ class AddElementWidget extends StatelessWidget {
       color: Theme.of(context).primaryColorLight,
       clipBehavior: Clip.hardEdge,
       borderRadius: BorderRadius.circular(defaultBorderRadius),
-      child: InkWell(   
+      child: GestureDetector(   
         onTap: onPressed.call,
       ),
     );
