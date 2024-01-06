@@ -6,7 +6,7 @@ Nunzio D'Amore, Mat.329163
 
 ## In breve
 
-Il presente progetto ha come obiettivo quello di creare un'app di ordinazione online di un ristorante generico.
+Il presente progetto ha come obiettivo quello di creare un'app di ordinazione online di un ristorante.
 L'app permette ai clienti del ristorante di effettuare le ordinazioni, scegliendo i prodotti che più preferiscono; e permette al ristorante di gestire questi prodotti e gli ordini effettuati dai clienti.
 
 ## Casi d'uso
@@ -19,13 +19,18 @@ I casi d'uso di FDA sono visualizzati nel seguente diagramma.
 L'app è state progettata per rendere l'esperienza utente più semplice ma allo stesso tempo piacevole possibile, aggiungendo animazioni e transizioni che rendono l'UI fluida e reattiva.
 
 ### UX
-Per migliorare la user experience, l'interfaccia è stata progettata per fornire sempre un feedback all'utente, corredandola con animazioni di caricamento - tramite il widget FdaLoading - e dialoghi che informano l'utente su un qualsiasi evento (di errore e non). 
+Per migliorare la user experience - secondo il principio di reattività - l'interfaccia è stata progettata per fornire sempre un feedback all'utente, corredandola con animazioni di caricamento - tramite il widget FdaLoading - e dialoghi che informano l'utente su un qualsiasi evento (di errore e non). 
 
 FdaLoading ricopre il widget figlio con un'animazione di caricamento che disabilita ogni input. Mostra eventualmente anche un testo, che è possibile modificare dinamicamente.
 
 Loading            |  Dialogo
 :-------------------------:|:-------------------------:
 ![Alt loading](./readmeImgs/loading.png) | ![Alt dialogo](./readmeImgs/dialogo.png)
+
+Seguendo la legge di Miller, si è cercato di semplificare più possibile l'interfaccia, limitando il numero di informazioni contemporaneamente visibili sullo schermo.
+
+A tale scopo, i prodotti sono stati divisi in categorie: questo rende i prodotti facilmente rintracciabili; permette di avere una visione generica di ciò che si sta facendo; e questa suddivisione gerarchica permette solo su richiesta di visualizzare i dettagli di ogni categoria di prodotto.
+
 
 Il flusso dell'ordinazione è il seguente:
 1. Scelta dei prodotti 
@@ -34,7 +39,7 @@ Il flusso dell'ordinazione è il seguente:
 
 
 ### Scelta dei prodotti 
-Per facilitare l'ordinazione i prodotti vengono divisi in categorie, dove per ognuna viene indicato il numero di prodotti inseriti nel carrello.
+Come preannunciato, per facilitare l'ordinazione, i prodotti vengono divisi in categorie, dove per ognuna viene indicato il numero di prodotti inseriti nel carrello.
 
 <img src="./readmeImgs/num_prod.png" alt="num_prod" width="250"/>
 
@@ -48,7 +53,7 @@ Il carrello permette all'utente di avere una visuale generale su tutti i prodott
 
 ### Checkout
 
-La schermata di checkout permette all'utente di selezionare o inserire l'indirizzo che preferisce (anche tra quelli precedentemente usati), scegliere il metodo di pagamento e di visualizzare un riepilogo prima di effettuare il pagamento.
+La schermata di checkout permette all'utente di selezionare o inserire l'indirizzo che preferisce (anche tra quelli precedentemente usati), scegliere il metodo di pagamento e di visualizzare un riepilogo prima di concludere l'ordine.
 
 ![Alt text](./readmeImgs/checkout.png)
 
@@ -107,7 +112,7 @@ Ovviamente, il widget viene utilizzato solo dove strettamente necessario.
 ## Tecnologie 
 ### Gestione dello stato
 L'applicazione usa Bloc per la gestione dello stato, alternando sia bloc che cubit in base alle necessità.
-Inoltre, si è cercato per quanto possibile di annidare i widget in ascolto dello stato, aggiornando solo i widget necessari.
+Inoltre, si è cercato per quanto possibile di annidare i widget in ascolto dello stato, aggiornando solo i widget necessari - come per il widget [AddRemove](https://github.com/NunzioDA/food_delivery_app/blob/main/lib/Presentation/UIUtilities/add_remove_selector.dart) (Usato per aggiungere e rimuovere prodotti) che costruisce al suo interno un BlocConsumer, solo per il widget testuale che deve essere aggiornato (quando necessario) nel momento in cui il bloc specificato restituisce un nuovo stato.
 
 ### Architettura
 L'architettura dell'applicazione è divisa in tre parti fondamentali:
