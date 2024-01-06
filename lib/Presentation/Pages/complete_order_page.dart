@@ -122,12 +122,23 @@ class _CompleteOrderPageState extends State<CompleteOrderPage> {
         ),
         child: OrderSummary(
           onCompleteRequest : () {
-            DeliveryInfo? deliveryInfo = deliveryInfoManagement
-            .currentState?.getDeliveryInfo();
-            if(deliveryInfo!=null)
+            if(BlocProvider.of<ConnectivityCubit>(context).state is Connected)
             {
-              orderBloc.add(
-                ConfirmOrderEvent(deliveryInfo)
+              DeliveryInfo? deliveryInfo = deliveryInfoManagement
+              .currentState?.getDeliveryInfo();
+              if(deliveryInfo!=null)
+              {
+                orderBloc.add(
+                  ConfirmOrderEvent(deliveryInfo)
+                );
+              }
+            }
+            else{
+              DialogShower.showAlertDialog(
+                context, 
+                "Non sei connesso", 
+                "Sembra che ci siano dei problemi con la tua connessione.\n"
+                "Controlla la tua connessione e riprova."
               );
             }
           },
