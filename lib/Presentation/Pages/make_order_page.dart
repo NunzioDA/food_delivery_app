@@ -175,6 +175,54 @@ class _MakeOrderPageState extends State<MakeOrderPage> {
     categoriesBloc.add(const CategoriesFetchEvent());
   }
 
+  void redirectToLogin()
+  {
+    Navigator.of(context).push(PageRouteBuilder(
+      opaque: false,
+      pageBuilder: (context, animation, secondaryAnimation) {
+        return const LoginSignupPage();
+      },
+    ));
+  }
+
+  void openCheckoutPage()
+  {
+    Navigator.of(context).push(
+      PageRouteBuilder(     
+        transitionDuration: const Duration(milliseconds: 250),                         
+        reverseTransitionDuration: const Duration(milliseconds: 250),                         
+        pageBuilder: (newC, animation, secondaryAnimation) =>
+          MultiBlocProvider(
+            providers: [
+              BlocProvider.value(
+                value: cartBloc,
+              ),
+              BlocProvider.value(
+                value: BlocProvider.of<OrderBloc>(context),
+              )
+            ],
+            child: const CompleteOrderPage(),
+          ),
+        transitionsBuilder: (context, animation, secondaryAnimation, child) => 
+        SlideTransition(
+          position: Tween<Offset>(
+            begin: const Offset(0,1),
+            end: Offset.zero
+          ).animate(animation),
+          child: child
+        ),
+        
+      )
+    ).then((value) {
+      if(value != null)
+      {
+        loading.value = true;
+        loadingText.value = "Un attimo...";
+        isLoadingCartRelated = true;
+      }
+    },);
+  }
+
   @override
   Widget build(BuildContext context) {   
 
@@ -309,61 +357,34 @@ class _MakeOrderPageState extends State<MakeOrderPage> {
                     confirmText: "Carrello",
                     maxHeight: 5 * MediaQuery.of(context).size.height / 6,
                     onCompleteOrderRequest: () {
-                      if(userBloc.state is LoggedInState)
+                      if(connectivityCubit.state is Connected)
                       {
-                        if(cartBloc.state.cart.isNotEmpty)
+                        if(userBloc.state is LoggedInState)
                         {
-                          Navigator.of(context).push(
-                            PageRouteBuilder(     
-                              transitionDuration: const Duration(milliseconds: 250),                         
-                              reverseTransitionDuration: const Duration(milliseconds: 250),                         
-                              pageBuilder: (newC, animation, secondaryAnimation) =>
-                                MultiBlocProvider(
-                                  providers: [
-                                    BlocProvider.value(
-                                      value: cartBloc,
-                                    ),
-                                    BlocProvider.value(
-                                      value: BlocProvider.of<OrderBloc>(context),
-                                    )
-                                  ],
-                                  child: const CompleteOrderPage(),
-                                ),
-                              transitionsBuilder: (context, animation, secondaryAnimation, child) => 
-                              SlideTransition(
-                                position: Tween<Offset>(
-                                  begin: const Offset(0,1),
-                                  end: Offset.zero
-                                ).animate(animation),
-                                child: child
-                              ),
-                              
-                            )
-                          ).then((value) {
-                            if(value != null)
-                            {
-                              loading.value = true;
-                              loadingText.value = "Un attimo...";
-                              isLoadingCartRelated = true;
-                            }
-                          },);
+                          if(cartBloc.state.cart.isNotEmpty)
+                          {
+                            openCheckoutPage();
+                          }
+                          else{
+                            DialogShower.showAlertDialog(
+                              context, 
+                              "Il carrello è vuoto", 
+                              "Prima di completare l'ordine, metti qualcosa nel carrello."
+                            );
+                          }
                         }
-                        else{
-                          DialogShower.showAlertDialog(
-                            context, 
-                            "Il carrello è vuoto", 
-                            "Prima di completare l'ordine, metti qualcosa nel carrello."
-                          );
+                        else {
+                          redirectToLogin();
                         }
                       }
                       else {
-                        Navigator.of(context).push(PageRouteBuilder(
-                          opaque: false,
-                          pageBuilder: (context, animation, secondaryAnimation) {
-                            return const LoginSignupPage();
-                          },
-                        ));
-                      }
+                        DialogShower.showAlertDialog(
+                          context, 
+                          "Non sei connesso", 
+                          "Sembra che ci siano dei problemi con la tua connessione,"
+                          " controlla e riprova."
+                        );
+                      }                      
                     },
                   )
                 ],
