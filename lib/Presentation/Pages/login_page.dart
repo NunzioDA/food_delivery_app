@@ -475,28 +475,43 @@ class LoginSigninDivider extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      mainAxisSize: MainAxisSize.max,
-      children: [
-        Expanded(
-          child: Divider(
-              height: 2,
-              thickness: 0.5,
-              color: Colors.grey //Theme.of(context).primaryColor,
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return SizedBox(
+          height: 30,
+          child: Stack(
+            children: [
+              Positioned(
+                top: 0,
+                width: constraints.maxWidth > 100 ? constraints.maxWidth : 100,
+                child: const Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  mainAxisSize: MainAxisSize.max,
+                  children: [
+                    Expanded(
+                      child: Divider(
+                          height: 2,
+                          thickness: 0.5,
+                          color: Colors.grey //Theme.of(context).primaryColor,
+                          ),
+                    ),
+                    Gap(20),
+                    Text("oppure"),
+                    Gap(20),
+                    Expanded(
+                      child: Divider(
+                          height: 2,
+                          thickness: 0.5,
+                          color: Colors.grey //Theme.of(context).primaryColor,
+                          ),
+                    ),
+                  ],
+                ),
               ),
-        ),
-        Gap(20),
-        Text("oppure"),
-        Gap(20),
-        Expanded(
-          child: Divider(
-              height: 2,
-              thickness: 0.5,
-              color: Colors.grey //Theme.of(context).primaryColor,
-              ),
-        ),
-      ],
+            ],
+          ),
+        );
+      }
     );
   }
 }
