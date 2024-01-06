@@ -74,7 +74,7 @@ class _MakeOrderPageState extends State<MakeOrderPage> {
     cartSubscription = cartBloc.stream.listen((event) {
       if(event is CartError && event.event is FetchCart)
       {
-        DialogShower.showAlertDialog(
+        DialogVisualizer.showAlertDialog(
           context, 
           "Oops..", 
           "Non sono riuscito a recuperare il tuo carrello.\n"
@@ -103,18 +103,18 @@ class _MakeOrderPageState extends State<MakeOrderPage> {
                                         
     if (state is CategoriesErrorState &&
         state.event is! CategoryDeleteEvent) {
-      DialogShower.showAlertDialog(
+      DialogVisualizer.showAlertDialog(
           context,
           "Attenzione!",
           "Si è verificato un errore nella gesione dei dati\n"
               "Controlla la tua connessione e riprova.");
     } else if (state is CategoryAlreadyExisting) {
-      DialogShower.showAlertDialog(
+      DialogVisualizer.showAlertDialog(
           context,
           "Attenzione!",
           "La categoria che stai cercando di creare esiste già.");
     } else if (state is CategoryCreatedSuccesfully) {
-      DialogShower.showAlertDialog(context, "Fatto!",
+      DialogVisualizer.showAlertDialog(context, "Fatto!",
               "La categoria è stata creata correttamente")
           .then((value) => updateCategories());
     } else if (state is CategoryDeletedSuccesfully) {
@@ -324,7 +324,7 @@ class _MakeOrderPageState extends State<MakeOrderPage> {
                                                         e, false, hasPermission);
                                                     }
                                                     else{
-                                                      DialogShower.showAlertDialog(
+                                                      DialogVisualizer.showAlertDialog(
                                                         context, 
                                                         "Non sei connesso", 
                                                         "Sembra che tu non sia connesso. Controlla la tua connessione e riprova."
@@ -366,7 +366,7 @@ class _MakeOrderPageState extends State<MakeOrderPage> {
                             openCheckoutPage();
                           }
                           else{
-                            DialogShower.showAlertDialog(
+                            DialogVisualizer.showAlertDialog(
                               context, 
                               "Il carrello è vuoto", 
                               "Prima di completare l'ordine, metti qualcosa nel carrello."
@@ -378,7 +378,7 @@ class _MakeOrderPageState extends State<MakeOrderPage> {
                         }
                       }
                       else {
-                        DialogShower.showAlertDialog(
+                        DialogVisualizer.showAlertDialog(
                           context, 
                           "Non sei connesso", 
                           "Sembra che ci siano dei problemi con la tua connessione,"

@@ -100,7 +100,7 @@ class _OrderInfoHeaderState extends State<OrderInfoHeader> {
                 }
                 else if(state is OrderError && state.event is OrderUpdated)
                 {
-                  DialogShower.showAlertDialog(
+                  DialogVisualizer.showAlertDialog(
                     context,
                     "Attenzione", 
                     "C'è stato un problema nell'aggiornamento dell'ordine"

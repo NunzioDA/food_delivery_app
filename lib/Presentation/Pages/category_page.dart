@@ -95,19 +95,19 @@ class _CategoryPageState extends State<CategoryPage> {
     loading.value = false;
     if (event is CategoryDeletedSuccesfully) {
       categoriesSubscription.cancel();
-      DialogShower.showAlertDialog(
+      DialogVisualizer.showAlertDialog(
               context, "Fatto!", "La categoria è stata eliminata correttamente")
           .then((value) {
         Navigator.of(context).pop();
       });
     } else if (event is CategoriesErrorState &&
         event.event is CategoryDeleteEvent) {
-      DialogShower.showAlertDialog(context, "Attenzione",
+      DialogVisualizer.showAlertDialog(context, "Attenzione",
           "Ho riscontrato un errore provando ad eliminare la categoria. Riprova.");
     } else if (event is ProductCreatedSuccesfully ||
         event is ProductDeletedSuccesfully) {
       if (event is ProductDeletedSuccesfully) {
-        DialogShower.showAlertDialog(context, "Fatto!",
+        DialogVisualizer.showAlertDialog(context, "Fatto!",
                 "Il prodotto è stato eliminato correttamente")
             .then((value) {
           updateCategory();
@@ -117,11 +117,11 @@ class _CategoryPageState extends State<CategoryPage> {
       }
     } else if (event is CategoriesErrorState &&
         event.event is ProductDeleteEvent) {
-      DialogShower.showAlertDialog(context, "Attenzione",
+      DialogVisualizer.showAlertDialog(context, "Attenzione",
           "Ho riscontrato un errore provando ad eliminare un prodotto. Riprova.");
     } else if (event is CategoriesErrorState &&
         event.event is ProductCreateEvent) {
-      DialogShower.showAlertDialog(context, "Attenzione",
+      DialogVisualizer.showAlertDialog(context, "Attenzione",
           "Ho riscontrato un errore provando a creare un prodotto. Riprova.");
     } else if (event is CategoriesFetched) {
       setState(() {
@@ -221,7 +221,7 @@ class _CategoryPageState extends State<CategoryPage> {
                                                 alignment: Alignment.centerRight,
                                                 child: TextButton(
                                                   onPressed: () {
-                                                    DialogShower.showConfirmDenyDialog(
+                                                    DialogVisualizer.showConfirmDenyDialog(
                                                         context,
                                                         "Eliminazione",
                                                         "Sei sicuro di voler eliminare "
@@ -283,7 +283,7 @@ class _CategoryPageState extends State<CategoryPage> {
                                                 product: myCategory!.products[index],
                                                 hasPermission: widget.hasPermission,
                                                 onDeleteRequest: () {
-                                                  DialogShower.showConfirmDenyDialog(
+                                                  DialogVisualizer.showConfirmDenyDialog(
                                                     context, 
                                                     "Eliminazione", 
                                                     "Sei sicuro di voler "
@@ -380,7 +380,7 @@ class _CategoryPageState extends State<CategoryPage> {
                                                     ));
                                                   } else if (newCategoryImage ==
                                                       null) {
-                                                    DialogShower.showAlertDialog(
+                                                    DialogVisualizer.showAlertDialog(
                                                         context,
                                                         "Attenzione",
                                                         "Inserisci un'immagine prima di procedere");

@@ -130,7 +130,7 @@ class _CreateProductPageState extends State<CreateProductPage> {
                                       Navigator.of(context).pop((product, image));
                                     }
                                     else{
-                                      DialogShower.showAlertDialog(
+                                      DialogVisualizer.showAlertDialog(
                                         context, 
                                         "Immagine", 
                                         "Prima di procedere inserisci un'immagine che rappresenta il prodotto."

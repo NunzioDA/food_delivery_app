@@ -4,7 +4,7 @@ import 'package:gap/gap.dart';
 
 /// Classe formata da metodi statici che permettono di visualizzare
 /// [AlertDialog] di diverso genere da qualunque [BuildContext].
-class DialogShower
+class DialogVisualizer
 {
   static const double buttonsHeight = 40;
 

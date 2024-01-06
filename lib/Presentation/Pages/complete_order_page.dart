@@ -43,7 +43,7 @@ class _CompleteOrderPageState extends State<CompleteOrderPage> {
     orderSubscription = orderBloc.stream.listen((event) { 
       if(event is OrderPlaced)
       {
-        DialogShower.showTaskCompletedDialog(
+        DialogVisualizer.showTaskCompletedDialog(
           context, 
           "L'ordine è stato completato con successo"
         ).then((value) {
@@ -52,7 +52,7 @@ class _CompleteOrderPageState extends State<CompleteOrderPage> {
         });
       }
       else if(event is OrderError && event.event is ConfirmOrderEvent){
-        DialogShower.showAlertDialog(
+        DialogVisualizer.showAlertDialog(
           context, 
           "Attenzione", 
           "Si è verificato un problema con il tuo ordine. Riprova."
@@ -134,7 +134,7 @@ class _CompleteOrderPageState extends State<CompleteOrderPage> {
               }
             }
             else{
-              DialogShower.showAlertDialog(
+              DialogVisualizer.showAlertDialog(
                 context, 
                 "Non sei connesso", 
                 "Sembra che ci siano dei problemi con la tua connessione.\n"
@@ -422,7 +422,7 @@ class _DeliveryInfoManagementState extends State<DeliveryInfoManagement>
           listener: (context, state) {
             if(state is DeliveryInfoError)
             {
-              DialogShower.showAlertDialog(
+              DialogVisualizer.showAlertDialog(
                 context, 
                 "Attenzione", 
                 "Non è stato possibile ottenere le tue informazioni di consegna"

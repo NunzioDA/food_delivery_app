@@ -147,7 +147,7 @@ class _ShowOrdersPageState extends State<ShowOrdersPage> {
                   connectivityMsg = "Stato connessione:\n${connectivityCubit.stateToMessage()}";
                 }
 
-                DialogShower.showAlertDialog(
+                DialogVisualizer.showAlertDialog(
                   context, 
                   "Attenzione", 
                   "Si è verificato un problema nel caricamento degli ordini.\n"

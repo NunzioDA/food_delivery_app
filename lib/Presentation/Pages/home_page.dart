@@ -38,7 +38,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   void logOutProc() {
-    DialogShower.showConfirmDenyDialog(
+    DialogVisualizer.showConfirmDenyDialog(
       context,
       "Logout",
       "Sei sicuro di voler uscire?",
@@ -70,7 +70,7 @@ class _HomePageState extends State<HomePage> {
           {
             if(state.event is LogoutEvent)
             {
-              DialogShower.showAlertDialog(
+              DialogVisualizer.showAlertDialog(
                 context, 
                 "Errore", 
                 "Si sono verificati dei problemi provando ad effettuare il logout."
@@ -166,7 +166,7 @@ class TopBarUserStatus extends StatelessWidget {
                 ));
               }
               else{
-                DialogShower.showAlertDialog(
+                DialogVisualizer.showAlertDialog(
                   context, 
                   "Non sei connesso", 
                   "Sembra che tu non sia connesso. Controlla la tua connessione e riprova."

@@ -68,7 +68,7 @@ class _LoginSignupPageState extends State<LoginSignupPage> with SingleTickerProv
       case PasswordValidationErrors.good:
     }
 
-    DialogShower.showAlertDialog(
+    DialogVisualizer.showAlertDialog(
       context, 
       "Password", 
       "$message\n\n"
@@ -115,7 +115,7 @@ class _LoginSignupPageState extends State<LoginSignupPage> with SingleTickerProv
           }
           break;
         case CorrectlySignedinState():
-          DialogShower.showAlertDialog(
+          DialogVisualizer.showAlertDialog(
             context, 
             "Fatto!", 
             "Registrazione completata con successo",
@@ -135,7 +135,7 @@ class _LoginSignupPageState extends State<LoginSignupPage> with SingleTickerProv
 
       if(errorMessage!=null)
       {
-        DialogShower.showAlertDialog(
+        DialogVisualizer.showAlertDialog(
           context, 
           "Attenzione!", 
           errorMessage
