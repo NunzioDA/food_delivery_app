@@ -29,7 +29,7 @@ Loading            |  Dialogo
 
 Seguendo la legge di Miller, si è cercato di semplificare più possibile l'interfaccia, limitando il numero di informazioni contemporaneamente visibili sullo schermo.
 
-A tale scopo, i prodotti sono stati divisi in categorie: questo rende i prodotti facilmente rintracciabili; permette di avere una visione generica di ciò che si sta facendo; e questa suddivisione gerarchica permette solo su richiesta di visualizzare i dettagli di ogni categoria di prodotto.
+A tale scopo, i prodotti sono stati divisi in categorie: questo rende i prodotti facilmente rintracciabili; permette di avere una visione generica di ciò che si sta facendo; e questa suddivisione gerarchica permette di visualizzare i dettagli di ogni categoria di prodotto, solo su richiesta.
 
 
 Il flusso dell'ordinazione è il seguente:
@@ -153,15 +153,15 @@ Per il web l'applicazione viene esportata utilizzando il web renderer canvaskit 
 ### Package
 L'applicazione usufruisce di vari package aggiuntivi per la gestione di diversi aspetti interni:
 
-* google_fonts: per utilizzare i font forniti da google.
-* flutter_bloc: Bloc per la gestione dello stato
-* cross_file: utilizzata per la gestione dei file (le immagini) su piattaforme diverse
-* mime: verifica del tipo del file recuperato
-* gap: permette di generare uno spazio (gap) nelle righe/colonne. Equivalente ad inserire un SizedBox ma senza la necessità di sapere in quale widget viene inserito.  
-* image_picker: utilizzato per recuperare le immagini dal file system.
-* photo_view: utile per visualizzare le immagini a schermo intero
-* cached_network_image: recupera le immagini dalla rete, salvandole in cache
-* loading_animation_widget: utilizzato in FdaLoading per l'animazione di caricamento
-* shared_preferences: salvataggio di dati in locale (carrello e credenziali)
-* connectivity_plus: utilizzato per ascoltare eventi di connettività
-* auto_size_text: permette di creare un widget testuale che adatta la grandezza del font in base allo spazio a sua disposizione.
+* [google_fonts](https://pub.dev/packages/google_fonts): per utilizzare i font forniti da google.
+* [flutter_bloc](https://pub.dev/packages/flutter_bloc): Bloc per la gestione dello stato
+* [cross_file](https://pub.dev/packages/cross_file): utilizzata per la gestione dei file (le immagini) su piattaforme diverse
+* [mime](https://pub.dev/packages/mime): verifica del tipo del file recuperato
+* [gap](https://pub.dev/packages/gap): permette di generare uno spazio (gap) nelle righe/colonne. Equivalente ad inserire un SizedBox ma senza la necessità di sapere in quale widget viene inserito.  
+* [image_picker](https://pub.dev/packages/image_picker): utilizzato per recuperare le immagini dal file system.
+* [photo_view](https://pub.dev/packages/photo_view): utile per visualizzare le immagini a schermo intero
+* [cached_network_image](https://pub.dev/packages/cached_network_image): recupera le immagini dalla rete, salvandole in cache
+* [loading_animation_widget](https://pub.dev/packages/loading_animation_widget): utilizzato in FdaLoading per l'animazione di caricamento
+* [shared_preferences](https://pub.dev/packages/shared_preferences): salvataggio di dati in locale (carrello e credenziali)
+* [connectivity_plus](https://pub.dev/packages/connectivity_plus): utilizzato per ascoltare eventi di connettività
+* [auto_size_text](https://pub.dev/packages/auto_size_text): permette di creare un widget testuale che adatta la grandezza del font in base allo spazio a sua disposizione.
