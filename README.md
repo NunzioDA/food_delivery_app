@@ -6,8 +6,8 @@ Nunzio D'Amore, Mat.329163
 
 ## In breve
 
-Il presente progetto ha come obiettivo quello di creare un'app di ordinazione online di un ristorante.
-L'app permette ai clienti del ristorante di effettuare le ordinazioni, scegliendo i prodotti che più preferiscono; e permette al ristorante di gestire questi prodotti e gli ordini effettuati dai clienti.
+Il presente progetto ha come obiettivo quello di creare un app di ordinazione online di un ristorante.
+L'app permette ai clienti del ristorante di effettuare le ordinazioni, scegliendo i prodotti che più preferiscono e permette al ristorante di gestire questi prodotti e gli ordini effettuati dai clienti.
 
 ## Casi d'uso
 I casi d'uso di FDA sono visualizzati nel seguente diagramma.
@@ -16,7 +16,7 @@ I casi d'uso di FDA sono visualizzati nel seguente diagramma.
 
 ## UX e UI
 
-L'app è state progettata per rendere l'esperienza utente più semplice ma allo stesso tempo piacevole possibile, aggiungendo animazioni e transizioni che rendono l'UI fluida e reattiva.
+L'app è stata progettata per rendere l'esperienza utente più semplice ma allo stesso tempo piacevole possibile, aggiungendo animazioni e transizioni che rendono l'UI fluida e reattiva.
 
 ### UX
 Per migliorare la user experience - secondo il principio di reattività - l'interfaccia è stata progettata per fornire sempre un feedback all'utente, corredandola con animazioni di caricamento - tramite il widget FdaLoading - e dialoghi che informano l'utente su un qualsiasi evento (di errore e non). 
@@ -66,7 +66,7 @@ I miei ordini            |  Dettagli ordine
 
 ### Utente avanzato
 Un utente con permessi protrà, inoltre, visualizzare e gestire - nell'apposita schermata "Ordini ricevuti" - tutti gli ordini in arrivo dai clienti.
-La gestione dell'ordine consiste nella possibilità di cambiare lo stato dell'ordine scegliendolo tra : "In elaborazione", "Partito", "Consegnato" e "Annullato".
+La gestione dell'ordine consiste nella possibilità di cambiare lo stato dell'ordine scegliendolo tra: "In elaborazione", "Partito", "Consegnato" e "Annullato".
 
 Ordini ricevuti           |  Modifica stato ordine
 :-------------------------:|:-------------------------:
@@ -92,8 +92,8 @@ Menu in verticale chiuso   |  Menu in verticale aperto
 **Menu in orizzontale**
 ![Alt text](./readmeImgs/horizontal_side_view.png)
 
-Nelle immagini precedenti si può anche notare il widget [TotalAndConfirm](https://github.com/NunzioDA/food_delivery_app/blob/main/lib/Presentation/ModelVisualizzation/Cart/total_and_confirm.dart) che permette di visualizzare il totale in denaro dei prodotti selezionati, e su richiesta il carrello. Anche questo si adatta a seconda che lo spazio in cui viene visualizzato sia orizzontale o verticale. In caso di visualizzazione verticale viene mostrato il pulsante carrello che permette - attraverso un animazione di entrata a scorrimento dal basso verso l'alto - di visualizzare il carrello.
-Mentre, in caso di visualizzazione orizzontale viene mostrato un pulsante in alto a destra dello schermo (raffigurante un carrello) che permette - attraverso un animazione di entrata a scorrimento da destra verso sinistra - di visualizzare il carrello.
+Nelle immagini precedenti si può anche notare il widget [TotalAndConfirm](https://github.com/NunzioDA/food_delivery_app/blob/main/lib/Presentation/ModelVisualizzation/Cart/total_and_confirm.dart) che permette di visualizzare il totale in denaro dei prodotti selezionati, e su richiesta il carrello. Anche questo si adatta a seconda che lo spazio in cui viene visualizzato sia orizzontale o verticale. In caso di visualizzazione verticale viene mostrato il pulsante carrello che permette - attraverso un'animazione di entrata a scorrimento dal basso verso l'alto - di visualizzare il carrello.
+Mentre, in caso di visualizzazione orizzontale viene mostrato un pulsante in alto a destra dello schermo (raffigurante un carrello) che permette - attraverso un'animazione di entrata a scorrimento da destra verso sinistra - di visualizzare il carrello.
 
 Carrello verticale            |  Carrello orizzontale
 :----------------------:|:-------------------------:
@@ -105,7 +105,7 @@ Quasi tutte le transizioni tra pagine sono state animate tramite Hero, per garan
 
 SuperHero richiama una pagina "ponte" (senza opacità) che visualizza il figlio sovrapponendolo visivamente al SuperHero chiamante, e avvia successivamente la navigazione verso la pagina specificata, tramite l'animazione Hero.
 Resta in attesa della pagina e quando questa viene chiusa, torna automaticamente alla pagina chiamante (restituendone anche l'eventuale risultato).
-Il problema viene risolto poichè le nuove pagine non sono discendenti delle pagine chiamanti nell'albero dei widget.
+Il problema viene risolto poiché  le nuove pagine non sono discendenti delle pagine chiamanti nell'albero dei widget.
 
 Ovviamente, il widget viene utilizzato solo dove strettamente necessario.
 
@@ -126,13 +126,13 @@ L'architettura dell'applicazione è divisa in tre parti fondamentali:
 Questa architettura è un adattamento dello standard model-controller-view - il quale è stato integrato con bloc - rendendo l'applicazione facilmente mantenibile, scalabile e testabile, aumentandone la stabilità.
 
 ### Persistenza dei dati e backend
-La persistenza delle informazioni è garantita sia localmente tramite SharedPreferences (il carrello, in caso l'utente non si sia ancora autenticato e le credenziali di mantenimento della sessione, in caso di utente atuenticato), sia salvando informazioni sul database nel caso in cui l'utente fosse loggato.
+La persistenza delle informazioni è garantita sia localmente tramite SharedPreferences (il carrello, in caso l'utente non si sia ancora autenticato e le credenziali di mantenimento della sessione, in caso di utente autenticato), sia salvando informazioni sul database nel caso in cui l'utente fosse loggato.
 Per farlo, l'app comunica con il [backend](https://github.com/NunzioDA/backendFda) - interamente scritto in PHP - tramite richieste http. L'indirizzo del server è specificato nella variabile d'ambiente BACKEND.
 
-La comuniazione è divisa in tre strati logici:
+La comunicazione è divisa in tre strati logici:
 
 * Bloc, acquisisce ed riconosce l'evento generato dall'utente o da timer, per poi effettuare la richiesta al repository. In base alla risposta di quest'ultimo verrà generato un nuovo stato.
-* Il repository, è l'oggetto che si occupa di comunicare con le API e di trasformare le risposte di queste in dati riconoscibili dall'app, insanziando gli oggetti delle classi che compongono il model.
+* Il repository, è l'oggetto che si occupa di comunicare con le API e di trasformare le risposte di queste in dati riconoscibili dall'app, instanziando gli oggetti delle classi che compongono il model.
 * Le API sono classi statiche che si occupano di comunicare con il backend effettuando richieste http.
 
 Tutti i codici di errore del backend sono contenuti - sottoforma di mappa - nella classe ErrorCodes.
@@ -146,7 +146,7 @@ Le immagini vengono visualizzate tramite il widget FdaCachedNetworkImage; il qua
 L'app è stata progettata per resistere a perdite di connessione, recuperando l'attività e lo stato non appena una connessione internet torna ad essere disponibile e attiva.
 
 ### Piattaforme
-L'app è stata testata e buildata per android e web, ma non ha particolari limitazioni che non permettono di usufruirne tramite altre piattaforme.
+L'app è stata testata ed esportata per android e web, ma non ha particolari limitazioni che non permettono di usufruirne tramite altre piattaforme.
 
 Per il web l'applicazione viene esportata utilizzando il web renderer canvaskit per permettere una fluidità maggiore durante le animazioni e della UI in generale (anche se a discapito della memoria occupata).
 
