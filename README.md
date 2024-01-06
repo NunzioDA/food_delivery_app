@@ -165,3 +165,9 @@ L'applicazione usufruisce di vari package aggiuntivi per la gestione di diversi 
 * [shared_preferences](https://pub.dev/packages/shared_preferences): salvataggio di dati in locale (carrello e credenziali)
 * [connectivity_plus](https://pub.dev/packages/connectivity_plus): utilizzato per ascoltare eventi di connettività
 * [auto_size_text](https://pub.dev/packages/auto_size_text): permette di creare un widget testuale che adatta la grandezza del font in base allo spazio a sua disposizione.
+
+## Release
+* La pwa è raggiungibile a questo [link](https://smashdev.altervista.org/FDA/).
+* La release Android è presente in questo repository nella sezione apposita.
+
+Se si vuole testare l'app sul proprio dispositivo, si consiglia di effettuare il launch tramite VSCode utilizzando la configurazione di lancio in modalità release presente nella sezione di "Run e Debug" (Ctrl + Shift + D). Questo permette di lanciare l'app con l'apposito ambiente, che inizializza la variabile di backend di release (non presente in questo repository per le modalità di debug e profile).
