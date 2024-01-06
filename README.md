@@ -74,7 +74,7 @@ Ordini ricevuti           |  Modifica stato ordine
 
 ### Adattabilità UI
 La UI è stata progettata per adattarsi a qualsiasi schermo, di qualsiasi dimensione e in qualsiasi orientamento.
-Per farlo si è usufruito degli strumenti base di flutter, ma sono stati implementati anche widget dinamici come DynamicGridView che si basa su Wrap, in grado di adattare una lista di widget alla larghezza attuale dello schermo, incastrandoli nel miglior modo possibile rispettando i limiti imposti (l'effetto è visibile successivamente nelle immagini raffiguranti il menu in verticale/orizzontale, dove si vede come le categorie di prodotti si adattano alla schermata).
+Per farlo si è usufruito degli strumenti base di flutter, ma sono stati implementati anche widget dinamici come [DynamicGridView](https://github.com/NunzioDA/food_delivery_app/blob/main/lib/Presentation/UIUtilities/dynamic_grid_view.dart) che si basa su Wrap, in grado di adattare una lista di widget alla larghezza attuale dello schermo, incastrandoli nel miglior modo possibile rispettando i limiti imposti (l'effetto è visibile successivamente nelle immagini raffiguranti il menu in verticale/orizzontale, dove si vede come le categorie di prodotti si adattano alla schermata).
 
 O ancora, per la pagina di checkout è stato implementato un sistema di adattamento matematico che si adatta fluidamente al variare della dimensione della schermata. Questo fa in modo che per schermate larghe la sezione di raccolta delle informazioni prenda due terzi della schermata, mentre per schermate strette ci sia una divisione del 50 e 50.
 
@@ -92,7 +92,7 @@ Menu in verticale chiuso   |  Menu in verticale aperto
 **Menu in orizzontale**
 ![Alt text](./readmeImgs/horizontal_side_view.png)
 
-Nelle immagini precedenti si può anche notare il widget TotalAndConfirm che permette di visualizzare il totale in denaro dei prodotti selezionati, e su richiesta il carrello. Anche questo si adatta a seconda che lo spazio in cui viene visualizzato sia orizzontale o verticale. In caso di visualizzazione verticale viene mostrato il pulsante carrello che permette - attraverso un animazione di entrata a scorrimento dal basso verso l'alto - di visualizzare il carrello.
+Nelle immagini precedenti si può anche notare il widget [TotalAndConfirm](https://github.com/NunzioDA/food_delivery_app/blob/main/lib/Presentation/ModelVisualizzation/Cart/total_and_confirm.dart) che permette di visualizzare il totale in denaro dei prodotti selezionati, e su richiesta il carrello. Anche questo si adatta a seconda che lo spazio in cui viene visualizzato sia orizzontale o verticale. In caso di visualizzazione verticale viene mostrato il pulsante carrello che permette - attraverso un animazione di entrata a scorrimento dal basso verso l'alto - di visualizzare il carrello.
 Mentre, in caso di visualizzazione orizzontale viene mostrato un pulsante in alto a destra dello schermo (raffigurante un carrello) che permette - attraverso un animazione di entrata a scorrimento da destra verso sinistra - di visualizzare il carrello.
 
 Carrello verticale            |  Carrello orizzontale
@@ -101,7 +101,7 @@ Carrello verticale            |  Carrello orizzontale
 
 ### Risoluzione limiti di Hero
 
-Quasi tutte le transizioni tra pagine sono state animate tramite Hero, per garantire un collegamento logico e visivo tra tutte le azioni dell'utente, migliorandone la UX. Hero ha però un limite: non possono esserci discendenze tra widget Hero. Per garantire consistenza nella UI e UX è stato quindi creato un ulteriore widget per ovviare a questo problema: SuperHero.
+Quasi tutte le transizioni tra pagine sono state animate tramite Hero, per garantire un collegamento logico e visivo tra tutte le azioni dell'utente, migliorandone la UX. Hero ha però un limite: non possono esserci discendenze tra widget Hero. Per garantire consistenza nella UI e UX è stato quindi creato un ulteriore widget per ovviare a questo problema: [SuperHero](https://github.com/NunzioDA/food_delivery_app/blob/main/lib/Presentation/UIUtilities/super_hero.dart).
 
 SuperHero richiama una pagina "ponte" (senza opacità) che visualizza il figlio sovrapponendolo visivamente al SuperHero chiamante, e avvia successivamente la navigazione verso la pagina specificata, tramite l'animazione Hero.
 Resta in attesa della pagina e quando questa viene chiusa, torna automaticamente alla pagina chiamante (restituendone anche l'eventuale risultato).
@@ -112,7 +112,7 @@ Ovviamente, il widget viene utilizzato solo dove strettamente necessario.
 ## Tecnologie 
 ### Gestione dello stato
 L'applicazione usa Bloc per la gestione dello stato, alternando sia bloc che cubit in base alle necessità.
-Inoltre, si è cercato per quanto possibile di annidare i widget in ascolto dello stato, aggiornando solo i widget necessari - come per il widget [AddRemove](https://github.com/NunzioDA/food_delivery_app/blob/main/lib/Presentation/UIUtilities/add_remove_selector.dart) (Usato per aggiungere e rimuovere prodotti) che costruisce al suo interno un BlocConsumer, solo per il widget testuale che deve essere aggiornato (quando necessario) nel momento in cui il bloc specificato restituisce un nuovo stato.
+Inoltre, si è cercato per quanto possibile di annidare i widget in ascolto dello stato, aggiornando solo i widget necessari - come per il widget [AddRemove](https://github.com/NunzioDA/food_delivery_app/blob/main/lib/Presentation/UIUtilities/add_remove_selector.dart) (usato per aggiungere e rimuovere prodotti dal carrello) che costruisce al suo interno un BlocConsumer, solo per il widget testuale che deve essere aggiornato (quando necessario) nel momento in cui il bloc specificato restituisce un nuovo stato.
 
 ### Architettura
 L'architettura dell'applicazione è divisa in tre parti fondamentali:
@@ -120,7 +120,7 @@ L'architettura dell'applicazione è divisa in tre parti fondamentali:
 * Data che a sua volta è diviso in:
     * Model: la descrizione di tutti i dati gestiti dall'app
     * APIs: utile per la comunicazione con le API lato server
-    * Repositories: traduttore nella comunicazione tra bloc e le API, trasformando le risposte dell'API nei dati descritti nel model e viceversa, ma si occupa anche nella gestione dei dati salvati in locale sul dispositivo.
+    * Repositories: traduttore nella comunicazione tra bloc e le API, trasformando le risposte delle API nei dati descritti nel model e viceversa, ma si occupa anche nella gestione dei dati salvati in locale sul dispositivo.
 * Presentation: si occupa della visualizzazione dello stato dell'app, tramite widget generici o pagine.
 
 Questa architettura è un adattamento dello standard model-controller-view - il quale è stato integrato con bloc - rendendo l'applicazione facilmente mantenibile, scalabile e testabile, aumentandone la stabilità.
