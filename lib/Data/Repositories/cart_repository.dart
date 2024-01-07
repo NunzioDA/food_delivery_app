@@ -4,9 +4,10 @@ import 'package:food_delivery_app/Communication/http_communication.dart';
 import 'package:food_delivery_app/Data/APIs/cart_api.dart';
 import 'package:food_delivery_app/Data/Model/product.dart';
 import 'package:food_delivery_app/Data/Model/products_category.dart';
-import 'package:food_delivery_app/bloc/cart_bloc.dart';
 import 'package:food_delivery_app/bloc/user_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import '../Model/cart.dart';
 
 
 class CartRepository{

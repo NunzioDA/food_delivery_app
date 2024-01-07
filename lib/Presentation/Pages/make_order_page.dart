@@ -21,6 +21,8 @@ import 'package:food_delivery_app/bloc/user_bloc.dart';
 import 'package:food_delivery_app/cubit/connectivity_cubit.dart';
 import 'package:gap/gap.dart';
 
+import '../../Data/Model/cart.dart';
+
 /// Questa pagina permette di creare l'ordine
 /// da confermare successivamente, mostrando all'utente
 /// tutti i prodotti tra cui è possibile scegliere dividendo

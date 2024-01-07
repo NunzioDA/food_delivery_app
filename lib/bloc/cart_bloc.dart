@@ -5,6 +5,8 @@ import 'package:food_delivery_app/bloc/categories_bloc.dart';
 import 'package:food_delivery_app/bloc/user_bloc.dart';
 import 'package:meta/meta.dart';
 
+import '../Data/Model/cart.dart';
+
 part 'cart_event.dart';
 part 'cart_state.dart';
 

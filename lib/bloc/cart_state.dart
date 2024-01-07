@@ -1,7 +1,5 @@
 part of 'cart_bloc.dart';
 
-typedef Cart = Map<Product, int>;
-
 @immutable
 sealed class CartState {
   final Cart cart;
