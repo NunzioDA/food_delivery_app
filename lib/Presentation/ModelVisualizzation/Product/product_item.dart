@@ -23,8 +23,7 @@ import '../../UIUtilities/zoomable_image.dart';
 /// è contenuto in [CartBloc].
 
 class ProductItem extends StatefulWidget {
-  static const double imageSize = 100;
-  static const double rowHeight = 150;
+  static const double rowHeight = 120;
 
   final Product product;
   final bool hasPermission;
@@ -97,8 +96,8 @@ class _ProductItemState extends State<ProductItem> {
               mainAxisSize: MainAxisSize.max,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                SizedBox(
-                  width: ProductItem.imageSize,
+                AspectRatio(
+                  aspectRatio: 1,
                   child: Container(                     
                     clipBehavior: Clip.hardEdge,
                     decoration: BoxDecoration(
@@ -121,7 +120,7 @@ class _ProductItemState extends State<ProductItem> {
                     children: [
                       AutoSizeText(
                         widget.product.name,
-                        style: Theme.of(context).textTheme.titleSmall,
+                        style: Theme.of(context).textTheme.titleSmall,                        
                         textAlign: TextAlign.left,
                       ),                      
                       Expanded(
