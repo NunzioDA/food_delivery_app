@@ -23,8 +23,8 @@ import '../../UIUtilities/zoomable_image.dart';
 /// è contenuto in [CartBloc].
 
 class ProductItem extends StatefulWidget {
-  static const double imageSize = 80;
-  static const double rowHeight = 120;
+  static const double imageSize = 100;
+  static const double rowHeight = 150;
 
   final Product product;
   final bool hasPermission;
@@ -57,7 +57,6 @@ class _ProductItemState extends State<ProductItem> {
   late StreamSubscription cartSubscription;
 
   final double internalPadding = 10;
-  final double imageWidth = 100;
 
   ValueNotifier<bool> loading = ValueNotifier(false);
 
@@ -98,8 +97,8 @@ class _ProductItemState extends State<ProductItem> {
               mainAxisSize: MainAxisSize.max,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                AspectRatio(
-                  aspectRatio: 1,
+                SizedBox(
+                  width: ProductItem.imageSize,
                   child: Container(                     
                     clipBehavior: Clip.hardEdge,
                     decoration: BoxDecoration(
@@ -126,8 +125,11 @@ class _ProductItemState extends State<ProductItem> {
                         textAlign: TextAlign.left,
                       ),                      
                       Expanded(
-                        child: AutoSizeText(
-                          widget.product.description,
+                        child: SingleChildScrollView(
+                          child: Text(
+                            widget.product.description,                            
+                            overflow: TextOverflow.visible,
+                          ),
                         ),
                       ),                      
                       Row(
@@ -157,8 +159,7 @@ class _ProductItemState extends State<ProductItem> {
                       ),                      
                     ],
                   ),
-                ),
-                const Gap(10),    
+                ), 
                 if(!widget.canModifyCart)
                 Align(
                   alignment: Alignment.bottomCenter,
