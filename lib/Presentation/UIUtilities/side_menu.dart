@@ -86,7 +86,7 @@ class _SideMenuViewState extends State<SideMenuView>
     ).map((e) => _textWidth(e.name, Theme.of(context).textTheme.bodyMedium!)).reduce(max);
 
 
-    return buttonFractionScaleDown * (largerButtonNameWidth + SideMenuButton.iconSize + 15) 
+    return buttonFractionScaleDown * (largerButtonNameWidth + SideMenuButton.iconSize + 20) 
     / (MediaQuery.of(context).size.width);
   } 
 
