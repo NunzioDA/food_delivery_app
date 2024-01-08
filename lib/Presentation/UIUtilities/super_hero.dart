@@ -69,7 +69,7 @@ class _SuperHeroState extends State<SuperHero> {
           widget.onPageReturn.call(value);
           // Attesa del completamento dell'animazione
           await Future.delayed(const Duration(milliseconds: 300));
-          setState(() => visualizing = false);
+          if(mounted) setState(() => visualizing = false);
         });
 
       },
