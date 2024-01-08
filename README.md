@@ -82,7 +82,7 @@ Crea categoria           |  Crea prodotto
 La UI è stata progettata per adattarsi a qualsiasi schermo, di qualsiasi dimensione e in qualsiasi orientamento.
 Per farlo si è usufruito degli strumenti base di flutter, ma sono stati implementati anche widget dinamici come [DynamicGridView](https://github.com/NunzioDA/food_delivery_app/blob/main/lib/Presentation/UIUtilities/dynamic_grid_view.dart) che si basa su Wrap, in grado di adattare una lista di widget alla larghezza attuale dello schermo, incastrandoli nel miglior modo possibile rispettando i limiti imposti (l'effetto è visibile successivamente nelle immagini raffiguranti il menu in verticale/orizzontale, dove si vede come le categorie di prodotti si adattano alla schermata).
 
-O ancora, per la pagina di checkout è stato implementato un sistema di adattamento matematico che si adatta fluidamente al variare della dimensione della schermata. Questo fa in modo che per schermate larghe la sezione di raccolta delle informazioni prenda due terzi della schermata, mentre per schermate strette ci sia una divisione del 50 e 50.
+O ancora, per la pagina di checkout è stato implementato un sistema di adattamento matematico che si adatta fluidamente al variare della dimensione della schermata. Questo fa in modo che per schermate larghe la sezione di raccolta delle informazioni prenda due terzi della schermata, mentre per schermate strette ci sia una divisione del 50 e 50 (in verticale le due sezioni vengono visualizzate in colonna).
 
 Checkout largo            |  Checkout stretto 
 :-------------------------:|:-------------------------:
