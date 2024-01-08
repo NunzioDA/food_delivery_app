@@ -88,7 +88,7 @@ Checkout largo            |  Checkout stretto
 :-------------------------:|:-------------------------:
 ![Alt widech](./readmeImgs/wide_checkout.png)|  ![alt op_sid](./readmeImgs/narrow_checkout.png)
 
-A questo aspetto contribuisce ampiamente anche il widget SideMenuView che inserisce un menu a scomparsa laterale, permettendo sia di navigare tra diverse pagine che di effettuare delle azioni.
+A questo aspetto contribuisce ampiamente anche il widget [SideMenuView](https://github.com/NunzioDA/food_delivery_app/blob/main/lib/Presentation/UIUtilities/side_menu.dart) che inserisce un menu a scomparsa laterale, permettendo sia di navigare tra diverse pagine che di effettuare delle azioni.
 Questo widget si adatta dinamicamente a seconda che lo schermo sia in orizzontale o verticale. Come comportamento di default in caso di visuale orizzontale, il menu resta fisso al lato sinistro dello schermo.
 
 Menu in verticale chiuso   |  Menu in verticale aperto
@@ -141,12 +141,12 @@ La comunicazione è divisa in tre strati logici:
 * Il repository, è l'oggetto che si occupa di comunicare con le API e di trasformare le risposte di queste in dati riconoscibili dall'app, instanziando gli oggetti delle classi che compongono il model.
 * Le API sono classi statiche che si occupano di comunicare con il backend effettuando richieste http.
 
-Tutti i codici di errore del backend sono contenuti - sottoforma di mappa - nella classe ErrorCodes.
+Tutti i codici di errore del backend sono contenuti - sottoforma di mappa - nella classe [ErrorCodes](https://github.com/NunzioDA/food_delivery_app/blob/main/lib/Communication/http_communication.dart).
 
 ### Gestione delle immagini
 Le immagini vengono sempre convertite in png; con una risoluzione che non supera il FHD prima dell'invio, per ottimizzare i tempi di caricamento e il consumo dati. Inoltre, qualora dovesse essere specificato, il backend provvede anche ad una conversione della profondità a 8 bit, per garantire la trasparenza durante la visualizzazione delle immagini tramite CachedNetworkImage.
 
-Le immagini vengono visualizzate tramite il widget FdaCachedNetworkImage; il quale si basa sul widget CachedNetworkImage, settando delle impostazioni di base e mostrando un'animazione di caricamento. CachedNetwordImage permette di salvare le immagini in cache senza la necessità di riscaricare continuamente le immagini, risparmiando consumo dati e velocizzando la visualizzazione delle immagini.
+Le immagini vengono visualizzate tramite il widget [FdaCachedNetworkImage](https://github.com/NunzioDA/food_delivery_app/blob/main/lib/Presentation/UIUtilities/cached_image.dart), il quale si basa sul widget CachedNetworkImage, di cui ne setta le impostazioni di base e mostra un'animazione di caricamento. CachedNetwordImage permette di salvare le immagini in cache senza la necessità di riscaricare continuamente le immagini, risparmiando consumo dati e velocizzando la visualizzazione delle immagini.
 
 ### Resilienza a perdite di connessione
 L'app è stata progettata per resistere a perdite di connessione, recuperando l'attività e lo stato non appena una connessione internet torna ad essere disponibile e attiva.
