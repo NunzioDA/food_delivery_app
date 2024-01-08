@@ -1,4 +1,3 @@
-import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:food_delivery_app/Data/Model/delivery_info.dart';
@@ -135,6 +134,7 @@ class _OrderInfoHeaderState extends State<OrderInfoHeader> {
         ),
         const Gap(5),
         Row(
+          mainAxisSize: MainAxisSize.max,
           children: [
             Icon(
               Icons.location_on_rounded, 
@@ -142,21 +142,35 @@ class _OrderInfoHeaderState extends State<OrderInfoHeader> {
               size: 20,
             ),
             const Gap(10),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  widget.order.deliveryInfo.intercom,
-                  style: Theme.of(context).textTheme.titleSmall,
-                ),
-                AutoSizeText("${widget.order.deliveryInfo.city},\n${widget.order.deliveryInfo.address}, ${widget.order.deliveryInfo.houseNumber}"),
-              ],
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    widget.order.deliveryInfo.intercom,
+                    style: Theme.of(context).textTheme.titleSmall,
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
+                  ),
+                  Text(
+                    "${widget.order.deliveryInfo.city},",
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
+                  ),
+                  Text(
+                    "${widget.order.deliveryInfo.address}, ${widget.order.deliveryInfo.houseNumber}",
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
+                  ),
+                ],
+              ),
             ),
           ],
         ),
         const Gap(5),
         Row(
+          mainAxisSize: MainAxisSize.max,
           children: [
             Icon(
               Icons.access_time_outlined, 
@@ -164,10 +178,14 @@ class _OrderInfoHeaderState extends State<OrderInfoHeader> {
               size: 20,
             ),
             const Gap(10),
-            AutoSizeText(
-              "Data: ${timeInLocal.day}-${timeInLocal.month}-${timeInLocal.year} "
-              "${timeInLocal.hour.toString().padLeft(2,'0')}:"
-              "${timeInLocal.minute.toString().padLeft(2,'0')}"
+            Expanded(
+              child: Text(
+                "Data: ${timeInLocal.day}-${timeInLocal.month}-${timeInLocal.year} "
+                "${timeInLocal.hour.toString().padLeft(2,'0')}:"
+                "${timeInLocal.minute.toString().padLeft(2,'0')}",
+                overflow: TextOverflow.ellipsis,
+                maxLines: 1,
+              ),
             ),     
           ],
         ),           
