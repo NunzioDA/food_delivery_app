@@ -13,6 +13,7 @@ import 'package:food_delivery_app/Presentation/UIUtilities/add_element.dart';
 import 'package:food_delivery_app/Presentation/UIUtilities/dialog_manager.dart';
 import 'package:food_delivery_app/Presentation/UIUtilities/dynamic_grid_view.dart';
 import 'package:food_delivery_app/Presentation/UIUtilities/loading.dart';
+import 'package:food_delivery_app/Presentation/UIUtilities/side_menu.dart';
 import 'package:food_delivery_app/Presentation/UIUtilities/ui_utilities.dart';
 import 'package:food_delivery_app/bloc/cart_bloc.dart';
 import 'package:food_delivery_app/bloc/categories_bloc.dart';
@@ -246,7 +247,7 @@ class _MakeOrderPageState extends State<MakeOrderPage> {
                 children: [
                   Padding(                      
                     padding: EdgeInsets.only(
-                      bottom: !UIUtilities.isHorizontal(context)? 
+                      bottom: SideMenuViewInherited.of(context).isWithTopBarMode? 
                       TotalAndConfirm.closedPanelHeight : 0
                     ),
                     child: SingleChildScrollView(
